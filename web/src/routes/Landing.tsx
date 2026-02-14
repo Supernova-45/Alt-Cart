@@ -5,11 +5,36 @@ import { SkipLink } from "../components/SkipLink";
 import { extractProduct } from "../lib/api";
 import { urlToDemo } from "../lib/urlToDemo";
 
+const SEARCH_SITES = [
+  { value: "amazon", label: "Amazon", baseUrl: "https://www.amazon.com/s?k=" },
+  { value: "walmart", label: "Walmart", baseUrl: "https://www.walmart.com/search?q=" },
+] as const;
+
+function buildSearchUrl(query: string, site: (typeof SEARCH_SITES)[number]["value"]): string {
+  const entry = SEARCH_SITES.find((s) => s.value === site);
+  if (!entry) return "";
+  return entry.baseUrl + encodeURIComponent(query.trim());
+}
+
 export function Landing() {
   const [url, setUrl] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchSite, setSearchSite] = useState<(typeof SEARCH_SITES)[number]["value"]>("amazon");
   const [loading, setLoading] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  function handleSearchSubmit(e: FormEvent) {
+    e.preventDefault();
+    const trimmed = searchQuery.trim();
+    if (!trimmed) return;
+    setSearchLoading(true);
+    setError(null);
+    const searchUrl = buildSearchUrl(trimmed, searchSite);
+    navigate(`/extract-search?url=${encodeURIComponent(searchUrl)}`);
+    setSearchLoading(false);
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -56,10 +81,53 @@ export function Landing() {
           <p className="tagline">Shopping Made Accessible</p>
         </header>
 
-        <section className="url-input-section">
-          <h2>Get Product Passport</h2>
+        <section className="search-section url-input-section">
+          <h2>Search for Products</h2>
           <p>
-            Enter any online product URL to get an accessible "should I buy?" summary with detailed information, review insights, and text-to-speech support.
+            Tell us what you want to buy and where. We&apos;ll show you product listings from that store.
+          </p>
+
+          <form onSubmit={handleSearchSubmit} className="url-form">
+            <div className="form-row">
+              <div className="form-group form-group--flex">
+                <label htmlFor="search-query">What do you want to buy?</label>
+                <input
+                  id="search-query"
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="e.g. sneakers, backpacks, monitors"
+                  disabled={searchLoading}
+                  autoComplete="off"
+                />
+              </div>
+              <div className="form-group form-group--flex">
+                <label htmlFor="search-site">Where?</label>
+                <select
+                  id="search-site"
+                  value={searchSite}
+                  onChange={(e) => setSearchSite(e.target.value as (typeof SEARCH_SITES)[number]["value"])}
+                  disabled={searchLoading}
+                  aria-label="Select store"
+                >
+                  {SEARCH_SITES.map((s) => (
+                    <option key={s.value} value={s.value}>
+                      {s.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <button type="submit" disabled={searchLoading || !searchQuery.trim()} className="btn-primary">
+              {searchLoading ? "Searching..." : `Search ${SEARCH_SITES.find((s) => s.value === searchSite)?.label ?? ""}`}
+            </button>
+          </form>
+        </section>
+
+        <section className="url-input-section">
+          <h2>Or Enter a Product URL</h2>
+          <p>
+            Enter any online product URL to get an accessible &quot;should I buy?&quot; summary with detailed information, review insights, and text-to-speech support.
           </p>
 
           <form onSubmit={handleSubmit} className="url-form">
