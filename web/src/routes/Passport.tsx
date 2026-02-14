@@ -172,9 +172,6 @@ export function Passport() {
           <StatPill label="Price" value={p.priceText} />
           <StatPill label="Rating" value={p.ratingText} />
           <StatPill label="Reviews" value={p.reviewCountText} />
-          {p.returnRisk.label === "Low" && (
-            <span className="sustainable-badge">Sustainable choice</span>
-          )}
         </div>
         <TTSControls summaryText={p.narration.medium} disabled={loading} />
       </header>
