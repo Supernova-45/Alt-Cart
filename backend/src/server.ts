@@ -1,6 +1,6 @@
 import express from "express";
 import { config, validateEnv } from "./config/env";
-import { corsMiddleware } from "./middleware/cors";
+import { corsMiddleware, isAllowedOrigin } from "./middleware/cors";
 import { errorHandler } from "./middleware/errorHandler";
 import healthRoutes from "./routes/health";
 import productRoutes from "./routes/products";
@@ -19,11 +19,20 @@ try {
 // Create Express app
 const app = express();
 
-// CORS first (must handle preflight before other middleware)
-app.use(corsMiddleware);
+// Explicit OPTIONS handler FIRST - must return 204 for preflight to pass CORS check
+app.options("*", (req, res) => {
+  const origin = req.headers.origin;
+  const allowOrigin = origin && isAllowedOrigin(origin) ? origin : "https://altcart.vercel.app";
+  res.setHeader("Access-Control-Allow-Origin", allowOrigin);
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, HEAD");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Max-Age", "86400");
+  res.status(204).end();
+});
 
-// Explicit OPTIONS handler for preflight (ensures CORS headers on Vercel serverless)
-app.options("*", corsMiddleware);
+// CORS for non-OPTIONS requests
+app.use(corsMiddleware);
 
 app.use(express.json());
 

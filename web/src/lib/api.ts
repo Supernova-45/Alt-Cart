@@ -1,12 +1,9 @@
 import { ProductPassport } from "./productModel";
 
-const PRODUCTION_API = "https://altcartbackend.vercel.app";
-
 function getApiBase(): string {
   const isProduction = typeof window !== "undefined" && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1";
   if (isProduction) {
-    const envUrl = import.meta.env.VITE_API_BASE_URL;
-    return (envUrl && !envUrl.includes("localhost")) ? envUrl : PRODUCTION_API;
+    return ""; // Use same-origin /api (proxied to backend by Vercel)
   }
   return import.meta.env.VITE_API_BASE_URL || "http://localhost:3001";
 }
@@ -34,7 +31,8 @@ export interface ErrorResponse {
 }
 
 export async function extractProduct(url: string): Promise<ExtractResponse> {
-  const response = await fetch(`${API_BASE}/api/products/extract`, {
+  const base = API_BASE ? `${API_BASE}` : "";
+  const response = await fetch(`${base}/api/products/extract`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ url }),
@@ -55,7 +53,8 @@ export async function extractProduct(url: string): Promise<ExtractResponse> {
 }
 
 export async function getProduct(id: string): Promise<ProductResponse | null> {
-  const response = await fetch(`${API_BASE}/api/products/${id}`);
+  const base = API_BASE ? `${API_BASE}` : "";
+  const response = await fetch(`${base}/api/products/${id}`);
 
   if (!response.ok) {
     return null;
