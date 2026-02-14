@@ -10,7 +10,8 @@ export function TopBar({
   return (
     <header className="top-bar" role="banner">
       <Link to="/" className="top-bar__logo">
-        EchoCart
+        <img src="/logo.png" alt="Alt+Cart" className="top-bar__logo-img" />
+        Alt+Cart
       </Link>
       <div className="toggle">
         <label htmlFor="low-vision-toggle" className="toggle__label">

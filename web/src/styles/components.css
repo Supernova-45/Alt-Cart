@@ -45,11 +45,19 @@
 }
 
 .top-bar__logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
   font-family: var(--font-serif);
   font-weight: 600;
   font-size: var(--text-lg);
   color: var(--color-text);
   text-decoration: none;
+}
+
+.top-bar__logo-img {
+  height: 32px;
+  width: auto;
 }
 
 .top-bar__logo:hover {
