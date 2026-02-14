@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
 
 interface ProductCardProps {
-  id: string;
+  /** Passport ID for demo products - links to /p/:id */
+  id?: string;
+  /** Product URL for live extraction - links to /open?url=... */
+  productUrl?: string;
   name: string;
   priceText?: string;
   ratingText?: string;
@@ -12,6 +15,7 @@ interface ProductCardProps {
 
 export function ProductCard({
   id,
+  productUrl,
   name,
   priceText,
   ratingText,
@@ -20,6 +24,11 @@ export function ProductCard({
   imageAlt,
 }: ProductCardProps) {
   const meta = [priceText, ratingText, reviewCountText].filter(Boolean).join(" · ");
+  const linkTo = productUrl
+    ? `/open?url=${encodeURIComponent(productUrl)}`
+    : id
+      ? `/p/${id}`
+      : "#";
 
   return (
     <article className="product-card">
@@ -39,7 +48,7 @@ export function ProductCard({
         <div className="product-card__content">
           <h2 className="product-card__title">{name}</h2>
           {meta && <p className="product-card__meta">{meta}</p>}
-          <Link to={`/p/${id}`} className="product-card__link">
+          <Link to={linkTo} className="product-card__link">
             See details
           </Link>
         </div>

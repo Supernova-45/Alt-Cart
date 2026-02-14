@@ -4,6 +4,7 @@ import { corsMiddleware, isAllowedOrigin } from "./middleware/cors";
 import { errorHandler } from "./middleware/errorHandler";
 import healthRoutes from "./routes/health";
 import productRoutes from "./routes/products";
+import searchRoutes from "./routes/search";
 import { logger } from "./utils/logger";
 
 // Validate environment variables
@@ -49,6 +50,7 @@ app.use((req, res, next) => {
 // Routes
 app.use("/api/health", healthRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/search", searchRoutes);
 
 // Error handling
 app.use(errorHandler);

@@ -30,6 +30,11 @@ export function Open() {
   if (target.kind === "search") {
     return <Navigate to={`/s/${target.id}`} replace />;
   }
+  if (target.kind === "search_extract") {
+    const params = new URLSearchParams();
+    params.set("url", target.url);
+    return <Navigate to={`/extract-search?${params.toString()}`} replace />;
+  }
 
   if (isExtractableProductUrl(url)) {
     const extractParams = new URLSearchParams();

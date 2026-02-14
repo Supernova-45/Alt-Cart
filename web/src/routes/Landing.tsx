@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ProductList } from "../components/ProductList";
 import { SkipLink } from "../components/SkipLink";
 import { extractProduct } from "../lib/api";
+import { urlToDemo } from "../lib/urlToDemo";
 
 export function Landing() {
   const [url, setUrl] = useState("");
@@ -14,6 +15,24 @@ export function Landing() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
+    const target = urlToDemo(url);
+
+    if (target.kind === "search") {
+      navigate(`/s/${target.id}`);
+      setLoading(false);
+      return;
+    }
+    if (target.kind === "search_extract") {
+      navigate(`/extract-search?url=${encodeURIComponent(url)}`);
+      setLoading(false);
+      return;
+    }
+    if (target.kind === "product") {
+      navigate(`/p/${target.id}`);
+      setLoading(false);
+      return;
+    }
 
     try {
       const response = await extractProduct(url);
@@ -51,7 +70,7 @@ export function Landing() {
                 type="url"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                placeholder="https://www.amazon.com/dp/..."
+                placeholder="https://www.amazon.com/dp/... or search URL"
                 required
                 disabled={loading}
                 aria-describedby={error ? "url-error" : undefined}

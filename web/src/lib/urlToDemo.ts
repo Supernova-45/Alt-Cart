@@ -1,6 +1,7 @@
 export type OpenTarget =
   | { kind: "product"; id: string }
   | { kind: "search"; id: string }
+  | { kind: "search_extract"; url: string }
   | { kind: "unsupported"; reason: string };
 
 const AMAZON_ASIN_TO_ID: Record<string, string> = {
@@ -93,6 +94,9 @@ export function urlToDemo(url: string): OpenTarget {
       if (k.toLowerCase().includes("white") && k.toLowerCase().includes("sneaker")) {
         return { kind: "search", id: "a_search" };
       }
+      if (k.trim().length > 0) {
+        return { kind: "search_extract", url };
+      }
       return { kind: "unsupported", reason: "wrong_query" };
     }
     if (asin) {
@@ -109,6 +113,9 @@ export function urlToDemo(url: string): OpenTarget {
       const q = query.get("q") || "";
       if (q.toLowerCase().includes("backpack")) {
         return { kind: "search", id: "w_search" };
+      }
+      if (q.trim().length > 0) {
+        return { kind: "search_extract", url };
       }
       return { kind: "unsupported", reason: "wrong_query" };
     }

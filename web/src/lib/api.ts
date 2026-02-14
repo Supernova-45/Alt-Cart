@@ -52,6 +52,46 @@ export async function extractProduct(url: string): Promise<ExtractResponse> {
   return response.json();
 }
 
+export interface SearchResultItem {
+  name: string;
+  price?: string;
+  ratingText?: string;
+  reviewCountText?: string;
+  imageUrl?: string;
+  productUrl: string;
+}
+
+export interface ExtractSearchResponse {
+  status: "success";
+  data: {
+    query: string;
+    domain: string;
+    items: SearchResultItem[];
+  };
+}
+
+export async function extractSearch(url: string): Promise<ExtractSearchResponse> {
+  const base = API_BASE ? `${API_BASE}` : "";
+  const response = await fetch(`${base}/api/search/extract`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ url }),
+  });
+
+  if (!response.ok) {
+    let message = "Search extraction failed";
+    try {
+      const error: ErrorResponse = await response.json();
+      message = error.message || message;
+    } catch {
+      message = response.statusText;
+    }
+    throw new Error(message);
+  }
+
+  return response.json();
+}
+
 export async function getProduct(id: string): Promise<ProductResponse | null> {
   const base = API_BASE ? `${API_BASE}` : "";
   const response = await fetch(`${base}/api/products/${id}`);

@@ -4,6 +4,7 @@ import { Landing } from './routes/Landing'
 import { Home } from './routes/Home'
 import { Open } from './routes/Open'
 import { Extract } from './routes/Extract'
+import { ExtractSearch } from './routes/ExtractSearch'
 import { Passport } from './routes/Passport'
 import { SearchReader } from './routes/SearchReader'
 import { Unsupported } from './routes/Unsupported'
@@ -17,6 +18,7 @@ function App() {
         <Route path="/demo" element={<Home />} />
         <Route path="/open" element={<Open />} />
         <Route path="/extract" element={<Extract />} />
+        <Route path="/extract-search" element={<ExtractSearch />} />
         <Route path="/p/:id" element={<Passport />} />
         <Route path="/s/:id" element={<SearchReader />} />
         <Route path="/unsupported" element={<Unsupported />} />
