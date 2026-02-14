@@ -139,7 +139,22 @@ FRONTEND_URL=http://localhost:5173
 VITE_API_BASE_URL=http://localhost:3001
 ```
 
-**Vercel deployment:** When the frontend is deployed to altcart.vercel.app, it defaults to `https://api.altcart.vercel.app` for API calls. Deploy the backend to that URL, or set `VITE_API_BASE_URL` in Vercel's environment variables to your backend URL.
+**Vercel deployment:** When the frontend is deployed to altcart.vercel.app, it proxies API calls to the backend. Deploy the backend as a separate Vercel project (e.g. altcartbackend.vercel.app) and ensure the web project's `vercel.json` rewrites point to it.
+
+## Troubleshooting: Extraction 500 Errors
+
+If `POST /api/products/extract` returns 500:
+
+1. **Environment variables** – In the **backend** Vercel project, set:
+   - `BROWSERBASE_API_KEY` – from [Browserbase dashboard](https://browserbase.com)
+   - `BROWSERBASE_PROJECT_ID` – your project ID
+   Redeploy after adding them.
+
+2. **Function timeout** – Extraction can take 15–30+ seconds. In the backend Vercel project:
+   - **Settings → Functions → Function Max Duration** – set to 60s (or higher on Pro)
+   - Or ensure `vercel.json` has `functions` with `maxDuration: 60` for the server entry
+
+3. **Check logs** – Vercel Dashboard → Backend project → Deployments → select deployment → **Functions** tab → view logs for the actual error (e.g. missing env, Stagehand init failure, navigation timeout)
 
 ## Accessibility Features
 

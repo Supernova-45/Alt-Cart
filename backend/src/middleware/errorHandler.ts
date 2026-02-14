@@ -27,7 +27,7 @@ export const errorHandler = (
     logger.error("Extraction failed", { error: err.message, url: req.body?.url });
     return res.status(500).json({
       error: "Extraction failed",
-      message: "Unable to extract product data. Please try again later.",
+      message: err.message,
       canRetry: true,
     });
   }
@@ -42,6 +42,6 @@ export const errorHandler = (
 
   res.status(500).json({
     error: "Internal server error",
-    message: "Something went wrong. Please try again.",
+    message: err.message || "Something went wrong. Please try again.",
   });
 };
