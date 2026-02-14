@@ -2,6 +2,7 @@ import { ProductPassport } from "../models/productModel";
 import { parseProductUrl, ParsedUrl } from "../utils/urlParser";
 import { StagehandService } from "./stagehandService";
 import { AmazonExtractor } from "../extractors/amazonExtractor";
+import { WalmartExtractor } from "../extractors/walmartExtractor";
 import { TransformService } from "./transformService";
 import { logger } from "../utils/logger";
 import { ExtractionError } from "../middleware/errorHandler";
@@ -35,9 +36,14 @@ export class ExtractionService {
           stagehandService.getStagehand(),
           parsedUrl.fullUrl
         );
+      } else if (parsedUrl.domain === "walmart") {
+        const walmartExtractor = new WalmartExtractor();
+        extractedData = await walmartExtractor.extract(
+          stagehandService.getStagehand(),
+          parsedUrl.fullUrl
+        );
       } else {
-        // TODO: Implement Walmart extractor
-        throw new ExtractionError("Walmart extraction not yet implemented");
+        throw new ExtractionError(`Unsupported domain: ${parsedUrl.domain}`);
       }
 
       logger.info("Product data extracted successfully");
