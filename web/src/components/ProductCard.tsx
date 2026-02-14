@@ -1,4 +1,6 @@
+import { useCallback, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import { speak } from "../lib/tts";
 
 interface ProductCardProps {
   /** Passport ID for demo products - links to /p/:id */
@@ -37,6 +39,43 @@ export function ProductCard({
     }
   }
   const meta = [priceText, ratingText, sanitizedReviewCount].filter(Boolean).join(" · ");
+  const description = [name, meta, "See details"].filter(Boolean).join(". ");
+
+  const speakDescription = useCallback(() => {
+    if (description) speak(description);
+  }, [description]);
+
+  const hoveredSpeakRef = useRef<(() => void) | null>(null);
+
+  useEffect(() => {
+    const handleAltKey = (e: KeyboardEvent) => {
+      if (e.key === "Alt" && hoveredSpeakRef.current) {
+        hoveredSpeakRef.current();
+        e.preventDefault();
+      }
+    };
+    window.addEventListener("keydown", handleAltKey);
+    return () => window.removeEventListener("keydown", handleAltKey);
+  }, []);
+
+  const handleMouseEnter = useCallback(() => {
+    hoveredSpeakRef.current = speakDescription;
+  }, [speakDescription]);
+
+  const handleMouseLeave = useCallback(() => {
+    hoveredSpeakRef.current = null;
+  }, []);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === " " && e.target === e.currentTarget) {
+        speakDescription();
+        e.preventDefault();
+      }
+    },
+    [speakDescription]
+  );
+
   const linkTo = productUrl
     ? returnTo
       ? `/open?url=${encodeURIComponent(productUrl)}&returnTo=${encodeURIComponent(returnTo)}`
@@ -46,7 +85,14 @@ export function ProductCard({
       : "#";
 
   return (
-    <article className="product-card">
+    <article
+      className="product-card"
+      tabIndex={0}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onKeyDown={handleKeyDown}
+      aria-label={description}
+    >
       <div className="product-card__row">
         {imageUrl && (
           <div className="product-card__thumb">
