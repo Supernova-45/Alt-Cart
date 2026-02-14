@@ -21,6 +21,10 @@ const app = express();
 
 // CORS first (must handle preflight before other middleware)
 app.use(corsMiddleware);
+
+// Explicit OPTIONS handler for preflight (ensures CORS headers on Vercel serverless)
+app.options("*", corsMiddleware);
+
 app.use(express.json());
 
 // Request logging
