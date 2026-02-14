@@ -19,9 +19,9 @@ try {
 // Create Express app
 const app = express();
 
-// Middleware
-app.use(express.json());
+// CORS first (must handle preflight before other middleware)
 app.use(corsMiddleware);
+app.use(express.json());
 
 // Request logging
 app.use((req, res, next) => {
