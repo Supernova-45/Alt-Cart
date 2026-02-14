@@ -40,22 +40,25 @@ app.use("/api/products", productRoutes);
 // Error handling
 app.use(errorHandler);
 
-// Start server
+// Start server (skip on Vercel - it uses the exported app)
 const PORT = config.port;
 
-app.listen(PORT, () => {
-  logger.info(`Alt-Cart backend server running on port ${PORT}`);
-  logger.info(`Environment: ${config.nodeEnv}`);
-  logger.info(`Frontend URL: ${config.frontendUrl}`);
-});
+if (process.env.VERCEL !== "1") {
+  app.listen(PORT, () => {
+    logger.info(`Alt-Cart backend server running on port ${PORT}`);
+    logger.info(`Environment: ${config.nodeEnv}`);
+    logger.info(`Frontend URL: ${config.frontendUrl}`);
+  });
 
-// Graceful shutdown
-process.on("SIGTERM", () => {
-  logger.info("SIGTERM received, shutting down gracefully");
-  process.exit(0);
-});
+  process.on("SIGTERM", () => {
+    logger.info("SIGTERM received, shutting down gracefully");
+    process.exit(0);
+  });
 
-process.on("SIGINT", () => {
-  logger.info("SIGINT received, shutting down gracefully");
-  process.exit(0);
-});
+  process.on("SIGINT", () => {
+    logger.info("SIGINT received, shutting down gracefully");
+    process.exit(0);
+  });
+}
+
+export default app;
