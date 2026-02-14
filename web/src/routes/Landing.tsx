@@ -34,14 +34,13 @@ export function Landing() {
       <main id="main-content" className="container">
         <header className="landing-header">
           <h1>Alt-Cart</h1>
-          <p className="tagline">Accessible Product Information for Everyone</p>
+          <p className="tagline">Shopping Made Accessible</p>
         </header>
 
         <section className="url-input-section">
           <h2>Get Product Passport</h2>
           <p>
-            Enter any Amazon or Walmart product URL to get an accessible product passport
-            with detailed information, review insights, and text-to-speech support.
+            Enter any online product URL to get an accessible "should I buy?" summary with detailed information, review insights, and text-to-speech support.
           </p>
 
           <form onSubmit={handleSubmit} className="url-form">
