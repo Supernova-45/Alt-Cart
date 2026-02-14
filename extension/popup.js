@@ -12,9 +12,11 @@ document.addEventListener("DOMContentLoaded", () => {
     baseUrlInput.value = url;
   });
 
-  openBtn.addEventListener("click", () => {
-    chrome.runtime.sendMessage({ type: "OPEN_PASSPORT" });
-    window.close();
+  openBtn.addEventListener("mousedown", (e) => {
+    e.preventDefault();
+    chrome.runtime.sendMessage({ type: "OPEN_PASSPORT" }, () => {
+      window.close();
+    });
   });
 
   saveBtn.addEventListener("click", () => {
