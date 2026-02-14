@@ -45,8 +45,18 @@ export class AmazonSearchExtractor {
           const priceEl = card.querySelector(".a-price .a-offscreen");
           const price = priceEl?.textContent?.trim();
 
-          const ratingEl = card.querySelector(".a-icon-star-small .a-icon-alt, i.a-icon-star span.a-icon-alt");
-          const rating = ratingEl?.textContent?.trim();
+          let rating: string | undefined;
+          const ratingEl = card.querySelector(".a-icon-star-small .a-icon-alt, i.a-icon-star span.a-icon-alt, span[aria-label*='out of']");
+          const ratingRaw = ratingEl?.textContent?.trim() || ratingEl?.getAttribute("aria-label");
+          if (ratingRaw) {
+            const match = ratingRaw.match(/(\d+\.?\d*)\s*out of\s*5/);
+            rating = match ? `${match[1]} out of 5 stars` : ratingRaw;
+          }
+          if (!rating) {
+            const cardText = card.textContent || "";
+            const starsMatch = cardText.match(/(\d+\.?\d*)\s*out of\s*5\s*stars?/);
+            if (starsMatch) rating = `${starsMatch[1]} out of 5 stars`;
+          }
 
           // Prefer the review link (href contains customerReviews) - avoids picking variant text like "2 capacities"
           const reviewLink = card.querySelector('a[href*="customerReviews"]');

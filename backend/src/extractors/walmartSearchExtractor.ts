@@ -22,7 +22,7 @@ export class WalmartSearchExtractor {
       await page.waitForTimeout(3000);
 
       const extracted = await page.evaluate(() => {
-        const results: Array<{ name: string; price?: string; rating?: string; reviewCount?: string; imageUrl?: string; productUrl: string }> = [];
+        const results: Array<{ name: string; price?: string; ratingText?: string; reviewCountText?: string; imageUrl?: string; productUrl: string }> = [];
 
         const cards = document.querySelectorAll('[data-testid="list-view"] a[href*="/ip/"], [data-item-id] a[href*="/ip/"], a[href*="/ip/"][data-product-id]');
         const seen = new Set<string>();
@@ -60,10 +60,33 @@ export class WalmartSearchExtractor {
           const imgEl = container.querySelector("img");
           const imageUrl = imgEl?.getAttribute("src");
 
+          let ratingText: string | undefined;
+          const ratingEl = container.querySelector('[data-automation-id="product-rating"], [class*="rating"] span, [aria-label*="star"], [aria-label*="out of"]');
+          const ratingRaw = ratingEl?.textContent?.trim() || ratingEl?.getAttribute("aria-label");
+          if (ratingRaw) {
+            const match = ratingRaw.match(/(\d+\.?\d*)\s*out of\s*5/);
+            ratingText = match ? `${match[1]} out of 5 stars` : ratingRaw;
+          }
+          if (!ratingText) {
+            const containerText = container.textContent || "";
+            const starsMatch = containerText.match(/(\d+\.?\d*)\s*out of\s*5\s*stars?/);
+            if (starsMatch) ratingText = `${starsMatch[1]} out of 5 stars`;
+          }
+
+          let reviewCountText: string | undefined;
+          const reviewEl = container.querySelector('[data-automation-id="product-review-count"], [class*="review"]');
+          const reviewRaw = reviewEl?.textContent?.trim() || "";
+          const numMatch = reviewRaw.replace(/,/g, "").match(/\d+/);
+          if (numMatch && !/capacit|color|size|option/i.test(reviewRaw)) {
+            reviewCountText = `(${numMatch[0]})`;
+          }
+
           if (name && productUrl && name.length > 5) {
             results.push({
               name: name.slice(0, 150),
               price,
+              ratingText,
+              reviewCountText,
               imageUrl: imageUrl?.startsWith("http") ? imageUrl : undefined,
               productUrl,
             });
