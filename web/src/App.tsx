@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import { Shell } from './components/Shell'
+import { Landing } from './routes/Landing'
 import { Home } from './routes/Home'
 import { Open } from './routes/Open'
 import { Passport } from './routes/Passport'
@@ -11,11 +12,12 @@ function App() {
   return (
     <Shell>
       <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/demo" element={<Home />} />
         <Route path="/open" element={<Open />} />
         <Route path="/p/:id" element={<Passport />} />
         <Route path="/s/:id" element={<SearchReader />} />
         <Route path="/unsupported" element={<Unsupported />} />
-        <Route path="/" element={<Home />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Shell>

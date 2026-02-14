@@ -1,39 +1,175 @@
-# Alt+Cart 
+# Alt-Cart
 
-Accessible product passports for visually impaired shoppers. Seamless, sustainable shopping from Amazon pages.
+Seamless, sustainable shopping for the visually impaired.
 
-## Structure
+Alt-Cart is a web application that extracts accessible product information from e-commerce websites (Amazon, Walmart) and presents it in a screen-reader-first, keyboard-navigable format with full text-to-speech support.
+
+## Features
+
+- **Real-time product extraction** from Amazon and Walmart URLs
+- **Accessible product passports** with detailed information
+- **Review intelligence** - fit analysis, common themes, return risk assessment
+- **Image descriptions** for screen readers
+- **Text-to-speech** controls with adjustable speed
+- **Keyboard-first navigation** and WCAG-compliant design
+- **Demo products** for exploration
+
+## Project Structure
 
 ```
-  web/           # Vite + React app
-  extension/     # Chrome extension (MV3)
+Alt-Cart/
+├── backend/          # Node.js + Express API
+│   └── src/         # TypeScript source
+├── web/             # React frontend
+│   └── src/         # React components & routes
+└── extension/       # Chrome extension (legacy)
 ```
 
-## Development
+## Quick Start
 
-### Web app
+### Backend Setup
 
+1. Navigate to backend directory:
 ```bash
-cd web
+cd backend
+```
+
+2. Install dependencies:
+```bash
 npm install
+```
+
+3. Copy environment file:
+```bash
+cp .env.example .env
+```
+
+4. Add your Browserbase credentials to `.env`:
+```
+BROWSERBASE_API_KEY=your_api_key
+BROWSERBASE_PROJECT_ID=your_project_id
+```
+
+5. Start development server:
+```bash
 npm run dev
 ```
 
-Runs at http://localhost:5173
+Backend will run on `http://localhost:3001`
 
-### Chrome extension
+### Frontend Setup
+
+1. Navigate to web directory:
+```bash
+cd web
+```
+
+2. Install dependencies (if not already done):
+```bash
+npm install
+```
+
+3. Start development server:
+```bash
+npm run dev
+```
+
+Frontend will run on `http://localhost:5173`
+
+## How It Works
+
+1. **User enters product URL** - Amazon or Walmart product page URL
+2. **Backend extracts data** - Using Stagehand + Browserbase for browser automation
+3. **Transform to ProductPassport** - Analyze reviews, generate descriptions, assess return risk
+4. **Display accessible view** - Clean, screen-reader-friendly interface with TTS support
+
+## Tech Stack
+
+### Backend
+- Node.js + Express
+- TypeScript
+- Stagehand (AI browser automation)
+- Browserbase (managed browsers)
+- Zod (schema validation)
+
+### Frontend
+- React 18
+- TypeScript
+- React Router
+- Web Speech API (TTS)
+- Vite (build tool)
+
+## API Endpoints
+
+- `GET /api/health` - Health check
+- `POST /api/products/extract` - Extract product from URL
+- `GET /api/products/:id` - Get extracted product by ID
+
+## Development
+
+### Backend
+```bash
+cd backend
+npm run dev      # Start with hot reload
+npm run build    # Build for production
+npm start        # Run production build
+```
+
+### Frontend
+```bash
+cd web
+npm run dev      # Start dev server
+npm run build    # Build for production
+npm run preview  # Preview production build
+```
+
+## Environment Variables
+
+### Backend (.env)
+```
+PORT=3001
+NODE_ENV=development
+BROWSERBASE_API_KEY=your_api_key
+BROWSERBASE_PROJECT_ID=your_project_id
+FRONTEND_URL=http://localhost:5173
+```
+
+### Frontend (.env)
+```
+VITE_API_BASE_URL=http://localhost:3001
+```
+
+## Accessibility Features
+
+- Semantic HTML with proper heading hierarchy
+- ARIA labels and roles throughout
+- Skip links for keyboard navigation
+- Text-to-speech for all content sections
+- High contrast mode toggle
+- Keyboard-only navigation support
+- Screen reader optimized layout
+
+## Supported Platforms
+
+- Amazon.com
+- Walmart.com (partial support)
+
+More platforms coming soon!
+
+## Chrome Extension (Legacy)
+
+The Chrome extension is still available but is now secondary to the standalone web application. To use:
 
 1. Run the web app (`cd web && npm run dev`)
 2. Open Chrome → `chrome://extensions` → Enable Developer mode
 3. Load unpacked → select the `extension/` folder
 4. Navigate to an Amazon product page
-5. Use **Alt+Shift+P** or click the extension icon → Open Passport
+5. Use **Alt+Shift+P** or click the extension icon
 
-### Supported products (demo)
+## License
 
-- adidas VL Court 3.0 (ASIN: B0C2JYLPBW)
-- Adokoo Fashion Sneakers (ASIN: B0CH9FJY8V)
-- Puma Carina L (ASIN: B07HJLRXBT)
-- On Cloud 6 (ASIN: B0D31VM76T)
+MIT
 
-Extension opens: `http://localhost:5173/passport?url=<current-tab-url>`. The web app maps known ASINs to passport IDs; unknown URLs show a fallback with demo links.
+## Contributors
+
+Built for accessible, sustainable shopping.

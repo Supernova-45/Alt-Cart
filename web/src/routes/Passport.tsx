@@ -5,6 +5,7 @@ import { parseProductSnapshot } from "../lib/parseProductSnapshot";
 import { mergePassport } from "../lib/mergePassport";
 import { getFallbackPassport } from "../lib/demoFallbacks";
 import { SNAPSHOTS } from "../lib/snapshotRegistry";
+import { getProduct } from "../lib/api";
 import { speak } from "../lib/tts";
 import type { ProductPassport } from "../lib/productModel";
 import { TTSControls } from "../components/TTSControls";
@@ -25,33 +26,51 @@ export function Passport() {
       return;
     }
 
-    const fallback = getFallbackPassport(id);
-    if (!fallback) {
-      setPassport(null);
-      setError(null);
-      setLoading(false);
-      return;
-    }
-
-    const snapshotPath = SNAPSHOTS[id as keyof typeof SNAPSHOTS]?.path;
-    if (!snapshotPath) {
-      setPassport(fallback);
-      setLoading(false);
-      return;
-    }
-
     setLoading(true);
     setError(null);
 
-    fetchSnapshot(snapshotPath)
-      .then((doc) => {
-        const parsed = parseProductSnapshot(doc, snapshotPath);
-        const merged = mergePassport(fallback, parsed);
-        setPassport(merged);
+    // Try to fetch from API first
+    getProduct(id)
+      .then((response) => {
+        if (response) {
+          setPassport(response.passport);
+          setLoading(false);
+          return;
+        }
+
+        // API fetch failed or returned null, try fallback demo data
+        const fallback = getFallbackPassport(id);
+        if (!fallback) {
+          setPassport(null);
+          setLoading(false);
+          return;
+        }
+
+        const snapshotPath = SNAPSHOTS[id as keyof typeof SNAPSHOTS]?.path;
+        if (!snapshotPath) {
+          setPassport(fallback);
+          setLoading(false);
+          return;
+        }
+
+        return fetchSnapshot(snapshotPath)
+          .then((doc) => {
+            const parsed = parseProductSnapshot(doc, snapshotPath);
+            const merged = mergePassport(fallback, parsed);
+            setPassport(merged);
+          })
+          .catch((err) => {
+            setError(err instanceof Error ? err.message : "Failed to load snapshot");
+            setPassport(fallback);
+          });
       })
       .catch((err) => {
-        setError(err instanceof Error ? err.message : "Failed to load snapshot");
-        setPassport(fallback);
+        // API error, try fallback
+        const fallback = getFallbackPassport(id);
+        if (fallback) {
+          setPassport(fallback);
+        }
+        setError(err instanceof Error ? err.message : "Failed to load product");
       })
       .finally(() => {
         setLoading(false);
@@ -67,30 +86,34 @@ export function Passport() {
     );
   }
 
-  const fallback = getFallbackPassport(id);
-  if (!fallback) {
-    const errorBackTo = id.startsWith("w_")
-      ? { path: "/s/w_search", label: "Return to backpacks" }
-      : { path: "/s/a_search", label: "Return to sneakers" };
-    return (
-      <div className="error-card">
-        <h1>Product not found</h1>
-        <p className="error-card__message">Unknown product ID: {id}</p>
-        <Link to={errorBackTo.path}>{errorBackTo.label}</Link>
-      </div>
-    );
-  }
-
   if (loading && !passport) {
     return <p>Loading passport…</p>;
   }
 
-  const p = passport ?? fallback;
+  // If we don't have a passport yet (still loading or failed), show error
+  if (!passport && !loading) {
+    return (
+      <div className="error-card">
+        <h1>Product not found</h1>
+        <p className="error-card__message">Unable to load product. Please try again.</p>
+        <Link to="/">Return home</Link>
+      </div>
+    );
+  }
 
-  const backTo =
-    id?.startsWith("w_")
-      ? { path: "/s/w_search", label: "Back to backpacks" }
-      : { path: "/s/a_search", label: "Back to sneakers" };
+  // Use the passport we loaded (from API or fallback)
+  if (!passport) {
+    return <p>Loading…</p>;
+  }
+
+  const p = passport;
+  const fallback = getFallbackPassport(id);
+
+  const backTo = fallback
+    ? (id?.startsWith("w_")
+        ? { path: "/s/w_search", label: "Back to backpacks" }
+        : { path: "/s/a_search", label: "Back to sneakers" })
+    : { path: "/", label: "← Back to home" };
 
   const summaryText = [
     p.brand && `${p.brand}.`,
