@@ -1,13 +1,14 @@
 import { ProductPassport } from "./productModel";
 
+const PRODUCTION_API = "https://altcartbackend.vercel.app";
+
 function getApiBase(): string {
-  if (import.meta.env.VITE_API_BASE_URL) {
-    return import.meta.env.VITE_API_BASE_URL;
+  const isProduction = typeof window !== "undefined" && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1";
+  if (isProduction) {
+    const envUrl = import.meta.env.VITE_API_BASE_URL;
+    return (envUrl && !envUrl.includes("localhost")) ? envUrl : PRODUCTION_API;
   }
-  if (typeof window !== "undefined" && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
-    return "https://api.altcart.vercel.app";
-  }
-  return "http://localhost:3001";
+  return import.meta.env.VITE_API_BASE_URL || "http://localhost:3001";
 }
 
 const API_BASE = getApiBase();
