@@ -113,7 +113,7 @@ export function Passport() {
     ? (id?.startsWith("w_")
         ? { path: "/s/w_search", label: "Back to backpacks" }
         : { path: "/s/a_search", label: "Back to sneakers" })
-    : { path: "/", label: "← Back to home" };
+    : { path: "/", label: "Back to home" };
 
   const summaryText = [
     p.brand && `${p.brand}.`,
