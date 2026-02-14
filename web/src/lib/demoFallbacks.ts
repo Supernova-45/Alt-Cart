@@ -1,11 +1,12 @@
 import type { ProductPassport } from "./productModel";
-import { SNAPSHOTS } from "./snapshotRegistry";
+import { SNAPSHOTS, PRODUCT_IMAGE_URLS } from "./snapshotRegistry";
 import type { ProductSnapshotId } from "./snapshotRegistry";
 
 const DEMO_PASSPORTS: Record<ProductSnapshotId, ProductPassport> = {
   adidas: {
     id: "adidas",
     sourceSnapshotPath: SNAPSHOTS.adidas.path,
+    imageUrl: PRODUCT_IMAGE_URLS.adidas,
     name: "adidas VL Court 3.0",
     brand: "adidas",
     priceText: "$65.00",
@@ -72,6 +73,7 @@ const DEMO_PASSPORTS: Record<ProductSnapshotId, ProductPassport> = {
   adokoo: {
     id: "adokoo",
     sourceSnapshotPath: SNAPSHOTS.adokoo.path,
+    imageUrl: PRODUCT_IMAGE_URLS.adokoo,
     name: "Adokoo Fashion Sneakers",
     brand: "Adokoo",
     priceText: "$29.99",
@@ -138,6 +140,7 @@ const DEMO_PASSPORTS: Record<ProductSnapshotId, ProductPassport> = {
   puma: {
     id: "puma",
     sourceSnapshotPath: SNAPSHOTS.puma.path,
+    imageUrl: PRODUCT_IMAGE_URLS.puma,
     name: "Puma Carina L",
     brand: "Puma",
     priceText: "$75.00",
@@ -204,6 +207,7 @@ const DEMO_PASSPORTS: Record<ProductSnapshotId, ProductPassport> = {
   on: {
     id: "on",
     sourceSnapshotPath: SNAPSHOTS.on.path,
+    imageUrl: PRODUCT_IMAGE_URLS.on,
     name: "On Womens Cloud 6",
     brand: "On",
     priceText: "$147.99",
@@ -274,6 +278,7 @@ const DEMO_PASSPORTS: Record<ProductSnapshotId, ProductPassport> = {
   w_ozark: {
     id: "w_ozark",
     sourceSnapshotPath: SNAPSHOTS.w_ozark.path,
+    imageUrl: PRODUCT_IMAGE_URLS.w_ozark,
     name: "Ozark Trail Hiker Backpack 25 Liter",
     brand: "Ozark Trail",
     priceText: "$24.97",
@@ -340,6 +345,7 @@ const DEMO_PASSPORTS: Record<ProductSnapshotId, ProductPassport> = {
   w_dakimoe: {
     id: "w_dakimoe",
     sourceSnapshotPath: SNAPSHOTS.w_dakimoe.path,
+    imageUrl: PRODUCT_IMAGE_URLS.w_dakimoe,
     name: "Dakimoe Laptop Backpack",
     brand: "Dakimoe",
     priceText: "$32.99",
@@ -397,6 +403,7 @@ const DEMO_PASSPORTS: Record<ProductSnapshotId, ProductPassport> = {
   w_eastsport: {
     id: "w_eastsport",
     sourceSnapshotPath: SNAPSHOTS.w_eastsport.path,
+    imageUrl: PRODUCT_IMAGE_URLS.w_eastsport,
     name: "EastSport Classic Backpack",
     brand: "EastSport",
     priceText: "$29.99",
@@ -454,6 +461,7 @@ const DEMO_PASSPORTS: Record<ProductSnapshotId, ProductPassport> = {
   w_madden: {
     id: "w_madden",
     sourceSnapshotPath: SNAPSHOTS.w_madden.path,
+    imageUrl: PRODUCT_IMAGE_URLS.w_madden,
     name: "Madden NYC Backpack",
     brand: "Madden NYC",
     priceText: "$39.99",
@@ -511,6 +519,7 @@ const DEMO_PASSPORTS: Record<ProductSnapshotId, ProductPassport> = {
   w_honglong: {
     id: "w_honglong",
     sourceSnapshotPath: SNAPSHOTS.w_honglong.path,
+    imageUrl: PRODUCT_IMAGE_URLS.w_honglong,
     name: "Honglong Travel Backpack",
     brand: "Honglong",
     priceText: "$35.99",
@@ -568,6 +577,7 @@ const DEMO_PASSPORTS: Record<ProductSnapshotId, ProductPassport> = {
   w_reebok: {
     id: "w_reebok",
     sourceSnapshotPath: SNAPSHOTS.w_reebok.path,
+    imageUrl: PRODUCT_IMAGE_URLS.w_reebok,
     name: "Reebok Classic Backpack",
     brand: "Reebok",
     priceText: "$44.99",

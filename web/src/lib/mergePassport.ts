@@ -19,6 +19,9 @@ export function mergePassport(
   if (parsed.reviewCountText && parsed.reviewCountText.length > 0) {
     merged.reviewCountText = parsed.reviewCountText;
   }
+  if (parsed.imageUrl && parsed.imageUrl.length > 0) {
+    merged.imageUrl = parsed.imageUrl;
+  }
 
   return merged;
 }

@@ -3,6 +3,8 @@ export interface ParsedProductFields {
   priceText?: string;
   ratingText?: string;
   reviewCountText?: string;
+  /** Main product image URL (resolved absolute path) */
+  imageUrl?: string;
 }
 
 function sanitize(s: string | null | undefined): string | undefined {
@@ -11,7 +13,13 @@ function sanitize(s: string | null | undefined): string | undefined {
   return t.length > 0 ? t : undefined;
 }
 
-function parseAmazon(doc: Document): ParsedProductFields {
+function resolveImageUrl(rel: string, snapshotPath?: string): string {
+  if (!snapshotPath || rel.startsWith("/") || rel.startsWith("http")) return rel;
+  const base = snapshotPath.replace(/\/[^/]+$/, "/");
+  return rel.replace(/^\.\//, base);
+}
+
+function parseAmazon(doc: Document, snapshotPath?: string): ParsedProductFields {
   const out: ParsedProductFields = {};
 
   const titleEl = doc.querySelector("#productTitle");
@@ -55,10 +63,18 @@ function parseAmazon(doc: Document): ParsedProductFields {
     if (hook?.textContent) out.reviewCountText = sanitize(hook.textContent);
   }
 
+  const img = doc.querySelector("#landingImage") as HTMLImageElement | null;
+  const hires = img?.getAttribute("data-old-hires");
+  if (hires && hires.startsWith("http")) {
+    out.imageUrl = hires;
+  } else if (img?.getAttribute("src")) {
+    out.imageUrl = resolveImageUrl(img.getAttribute("src")!, snapshotPath);
+  }
+
   return out;
 }
 
-function parseWalmart(doc: Document): ParsedProductFields {
+function parseWalmart(doc: Document, snapshotPath?: string): ParsedProductFields {
   const out: ParsedProductFields = {};
 
   const ogTitle = doc.querySelector('meta[property="og:title"]');
@@ -113,6 +129,18 @@ function parseWalmart(doc: Document): ParsedProductFields {
     }
   }
 
+  const ogImage = doc.querySelector('meta[property="og:image"]');
+  const ogContent = ogImage?.getAttribute("content");
+  if (ogContent && ogContent.startsWith("http")) {
+    out.imageUrl = ogContent;
+  } else {
+    const heroImg = doc.querySelector('[data-testid="media-thumbnail"] img, [data-seo-id="hero-carousel-image"] img') as HTMLImageElement | null;
+    const src = heroImg?.getAttribute("src");
+    if (src && !src.startsWith("data:")) {
+      out.imageUrl = resolveImageUrl(src, snapshotPath);
+    }
+  }
+
   return out;
 }
 
@@ -121,7 +149,7 @@ export function parseProductSnapshot(
   snapshotPath?: string
 ): ParsedProductFields {
   if (snapshotPath?.includes("walmart")) {
-    return parseWalmart(doc);
+    return parseWalmart(doc, snapshotPath);
   }
-  return parseAmazon(doc);
+  return parseAmazon(doc, snapshotPath);
 }

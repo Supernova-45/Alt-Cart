@@ -177,8 +177,21 @@ export function Passport() {
         readText={imageDescText}
         onReadSection={() => speak(imageDescText)}
       >
-        <p><strong>Short:</strong> {p.images.altShort}</p>
-        <p>{p.images.altLong}</p>
+        <div style={{ display: "flex", gap: "var(--space-lg)", alignItems: "flex-start", flexWrap: "wrap" }}>
+          {p.imageUrl && (
+            <img
+              src={p.imageUrl}
+              alt={p.images.altLong}
+              width={160}
+              height={160}
+              style={{ objectFit: "contain", borderRadius: "var(--radius-sm)", background: "transparent" }}
+            />
+          )}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p><strong>Short:</strong> {p.images.altShort}</p>
+            <p>{p.images.altLong}</p>
+          </div>
+        </div>
       </SectionCard>
 
       {p.sustainability && (

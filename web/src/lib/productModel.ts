@@ -35,6 +35,9 @@ export interface ProductPassport {
   id: string;
   sourceSnapshotPath: string;
 
+  /** Main product image URL (absolute path). Used in search results and image description section. */
+  imageUrl?: string;
+
   name: string;
   brand?: string;
   priceText?: string;

@@ -71,6 +71,29 @@
   border-radius: var(--radius);
 }
 
+.product-card__row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-lg);
+}
+
+.product-card__thumb {
+  flex-shrink: 0;
+}
+
+.product-card__thumb img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+  background: transparent;
+}
+
+.product-card__content {
+  flex: 1;
+  min-width: 0;
+}
+
 .product-card__title {
   margin: 0 0 var(--space-sm);
 }
