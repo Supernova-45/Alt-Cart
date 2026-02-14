@@ -5,6 +5,8 @@ interface ProductCardProps {
   id?: string;
   /** Product URL for live extraction - links to /open?url=... */
   productUrl?: string;
+  /** Where to go when user clicks back from the product passport */
+  returnTo?: string;
   name: string;
   priceText?: string;
   ratingText?: string;
@@ -16,6 +18,7 @@ interface ProductCardProps {
 export function ProductCard({
   id,
   productUrl,
+  returnTo,
   name,
   priceText,
   ratingText,
@@ -35,7 +38,9 @@ export function ProductCard({
   }
   const meta = [priceText, ratingText, sanitizedReviewCount].filter(Boolean).join(" · ");
   const linkTo = productUrl
-    ? `/open?url=${encodeURIComponent(productUrl)}`
+    ? returnTo
+      ? `/open?url=${encodeURIComponent(productUrl)}&returnTo=${encodeURIComponent(returnTo)}`
+      : `/open?url=${encodeURIComponent(productUrl)}`
     : id
       ? `/p/${id}`
       : "#";

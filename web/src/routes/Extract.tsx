@@ -6,6 +6,7 @@ import { isExtractableProductUrl } from "../lib/urlToDemo";
 export function Extract() {
   const [searchParams] = useSearchParams();
   const url = searchParams.get("url");
+  const returnTo = searchParams.get("returnTo");
   const [status, setStatus] = useState<"loading" | "error" | "success">("loading");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [redirectId, setRedirectId] = useState<string | null>(null);
@@ -42,7 +43,8 @@ export function Extract() {
   }
 
   if (status === "success" && redirectId) {
-    return <Navigate to={`/p/${redirectId}`} replace />;
+    const passportUrl = returnTo ? `/p/${redirectId}?returnTo=${encodeURIComponent(returnTo)}` : `/p/${redirectId}`;
+    return <Navigate to={passportUrl} replace />;
   }
 
   if (status === "loading") {

@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, useLocation, Link } from "react-router-dom";
 import { extractSearch, type SearchResultItem } from "../lib/api";
 import { ProductCard } from "../components/ProductCard";
 
 export function ExtractSearch() {
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const url = searchParams.get("url");
+  const returnTo = `${location.pathname}${location.search}`;
   const [status, setStatus] = useState<"loading" | "error" | "success">("loading");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [query, setQuery] = useState<string>("");
@@ -85,6 +87,7 @@ export function ExtractSearch() {
               imageUrl={item.imageUrl}
               imageAlt={item.name}
               productUrl={item.productUrl}
+              returnTo={returnTo}
             />
           </li>
         ))}

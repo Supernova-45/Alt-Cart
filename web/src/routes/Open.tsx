@@ -8,6 +8,7 @@ export function Open() {
   const [searchParams] = useSearchParams();
   const [ready, setReady] = useState(false);
   const url = searchParams.get("url");
+  const returnTo = searchParams.get("returnTo");
 
   useEffect(() => {
     const t = setTimeout(() => setReady(true), MIN_LOADING_MS);
@@ -39,6 +40,7 @@ export function Open() {
   if (isExtractableProductUrl(url)) {
     const extractParams = new URLSearchParams();
     extractParams.set("url", url);
+    if (returnTo) extractParams.set("returnTo", returnTo);
     return <Navigate to={`/extract?${extractParams.toString()}`} replace />;
   }
 

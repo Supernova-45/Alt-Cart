@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { fetchSnapshot } from "../lib/fetchSnapshot";
 import { parseProductSnapshot } from "../lib/parseProductSnapshot";
 import { mergePassport } from "../lib/mergePassport";
@@ -14,6 +14,8 @@ import { StatPill } from "../components/StatPill";
 
 export function Passport() {
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
+  const returnTo = searchParams.get("returnTo");
   const [passport, setPassport] = useState<ProductPassport | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -109,11 +111,13 @@ export function Passport() {
   const p = passport;
   const fallback = getFallbackPassport(id);
 
-  const backTo = fallback
-    ? (id?.startsWith("w_")
-        ? { path: "/s/w_search", label: "Back to backpacks" }
-        : { path: "/s/a_search", label: "Back to sneakers" })
-    : { path: "/", label: "Back to home" };
+  const backTo = returnTo
+    ? { path: returnTo, label: "Back to search results" }
+    : fallback
+      ? (id?.startsWith("w_")
+          ? { path: "/s/w_search", label: "Back to backpacks" }
+          : { path: "/s/a_search", label: "Back to sneakers" })
+      : { path: "/", label: "Back to home" };
 
   const summaryText = [
     p.brand && `${p.brand}.`,
