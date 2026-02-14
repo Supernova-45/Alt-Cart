@@ -153,6 +153,27 @@ export class WalmartExtractor {
 
     logger.info("Basic product data extracted", { name, price, rating, reviewCount });
 
+    // Extract sustainability data (materials, origin, certifications)
+    let materials: string[] = [];
+    let certifications: string[] = [];
+    let origin: string | undefined;
+    let sustainabilityBadges: string[] = [];
+    try {
+      const sustainabilityData = await this.extractSustainabilityData(page);
+      materials = sustainabilityData.materials;
+      certifications = sustainabilityData.certifications;
+      origin = sustainabilityData.origin;
+      sustainabilityBadges = sustainabilityData.badges;
+      logger.info("Sustainability data extracted", {
+        materials: materials.length,
+        certifications: certifications.length,
+        origin,
+        badges: sustainabilityBadges.length
+      });
+    } catch (error) {
+      logger.warn("Failed to extract sustainability data", { error });
+    }
+
     // Extract reviews
     let reviews: ExtractedReview[] = [];
     try {
@@ -169,6 +190,8 @@ export class WalmartExtractor {
     console.log("Review Count:", reviewCount || "N/A");
     console.log("Description:", description ? `${description.substring(0, 100)}...` : "N/A");
     console.log("Main Image:", mainImage ? "✓" : "✗");
+    console.log("Materials:", materials.length);
+    console.log("Origin:", origin || "N/A");
     console.log("Reviews:", reviews.length);
     console.log("=== WALMART EXTRACTOR COMPLETED ===\n");
 
@@ -181,55 +204,231 @@ export class WalmartExtractor {
       reviews,
       images: { main: mainImage },
       sourceUrl: url,
+      materials,
+      certifications,
+      origin,
+      sustainabilityBadges,
     };
+  }
+
+  private async extractSustainabilityData(page: any): Promise<{
+    materials: string[];
+    certifications: string[];
+    origin?: string;
+    badges: string[];
+  }> {
+    const materials: string[] = [];
+    const certifications: string[] = [];
+    let origin: string | undefined;
+    const badges: string[] = [];
+
+    console.log("\n--- Extracting Walmart Sustainability Data ---");
+
+    try {
+      // Scroll to trigger lazy-loaded "About this item" / "Specifications" sections
+      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight * 0.6));
+      await page.waitForTimeout(1500);
+
+      // Extract from page using evaluate - Walmart embeds product details in various structures
+      const extracted = await page.evaluate(() => {
+        const result: { materials: string[]; origin?: string; certifications: string[] } = {
+          materials: [],
+          certifications: []
+        };
+        const bodyText = document.body?.innerText || "";
+
+        // Material patterns: "Material: 89% Polyester/11% Spandex" or "**Material:** 89% Polyester"
+        const materialMatch = bodyText.match(/(?:Material|Fabric|Composition)[:\s*]+([^\n]+?)(?:\n|$|Fabric Care|Country of Origin|Care Instructions)/i);
+        if (materialMatch) {
+          const val = materialMatch[1].trim();
+          if (val.length > 2 && val.length < 200) {
+            result.materials.push(val);
+          }
+        }
+
+        // Also look for "89% Polyester/11% Spandex" or "89% Polyester and 11% Spandex" in text
+        const compPattern = /(\d+%\s*(?:organic|recycled|sustainable)?\s*(?:cotton|polyester|nylon|wool|leather|silk|linen|rayon|spandex|elastane|viscose)(?:\s*\/\s*\d+%\s*(?:cotton|polyester|nylon|spandex|elastane)[^,.\n]*)?)/gi;
+        let compMatch;
+        while ((compMatch = compPattern.exec(bodyText)) !== null) {
+          const val = compMatch[1].trim();
+          if (val.length > 5 && val.length < 150 && !result.materials.some((m) => m.includes(val) || val.includes(m))) {
+            result.materials.push(val);
+          }
+        }
+
+        // Country of Origin: "Country of Origin: Imported" or "Imported"
+        const originMatch = bodyText.match(/(?:Country of Origin|Made in|Manufactured in)[:\s]+([^\n]+?)(?:\n|$|Brand|Specifications)/i);
+        if (originMatch) {
+          const val = originMatch[1].trim();
+          if (val.length > 1 && val.length < 100) {
+            result.origin = val;
+          }
+        }
+        if (!result.origin && /^Imported\s*$/m.test(bodyText)) {
+          result.origin = "Imported";
+        }
+
+        // Certifications
+        const certKeywords = ["fair trade", "gots", "oeko-tex", "bluesign", "organic certified", "fsc", "rainforest alliance", "carbon neutral"];
+        for (const cert of certKeywords) {
+          if (bodyText.toLowerCase().includes(cert)) {
+            result.certifications.push(cert);
+          }
+        }
+
+        return result;
+      });
+
+      materials.push(...(extracted.materials || []));
+      if (extracted.origin) origin = extracted.origin;
+      certifications.push(...(extracted.certifications || []));
+
+      // Also extract materials from description (e.g. "polyester design", "black polyester")
+      if (materials.length === 0 && (await page.$("meta[property='og:description']"))) {
+        const ogDesc = await page.$("meta[property='og:description']");
+        const descContent = await ogDesc?.getAttribute("content") || "";
+        const materialKeywords = ["polyester", "cotton", "nylon", "leather", "mesh", "fleece"];
+        for (const kw of materialKeywords) {
+          if (descContent.toLowerCase().includes(kw)) {
+            materials.push(kw.charAt(0).toUpperCase() + kw.slice(1));
+            break;
+          }
+        }
+      }
+
+      // Extract from JSON-LD if present
+      const jsonLdData = await page.evaluate(() => {
+        const scripts = Array.from(document.querySelectorAll('script[type="application/ld+json"]'));
+        for (const script of scripts) {
+          try {
+            const data = JSON.parse(script.textContent || "{}");
+            const item = Array.isArray(data["@graph"]) ? data["@graph"].find((g: { "@type"?: string }) => g["@type"] === "Product") : data;
+            if (item) {
+              return {
+                material: item.material || item.materialExtent,
+                countryOfOrigin: item.countryOfOrigin?.name || item.countryOfOrigin
+              };
+            }
+          } catch { /* ignore */ }
+        }
+        return null;
+      });
+      if (jsonLdData) {
+        if (jsonLdData.material && !materials.includes(jsonLdData.material)) {
+          materials.push(jsonLdData.material);
+        }
+        if (jsonLdData.countryOfOrigin && !origin) {
+          origin = jsonLdData.countryOfOrigin;
+        }
+      }
+
+      console.log(`  Summary: ${materials.length} materials, ${certifications.length} certifications, origin: ${origin || "N/A"}`);
+    } catch (error) {
+      logger.warn("Error extracting Walmart sustainability data", { error });
+    }
+
+    return { materials, certifications, origin, badges };
   }
 
   private async extractReviews(page: any): Promise<ExtractedReview[]> {
     const reviews: ExtractedReview[] = [];
 
-    console.log("\n--- Extracting Reviews ---");
+    console.log("\n--- Extracting Walmart Reviews ---");
 
     try {
+      // Scroll to reviews section - Walmart often lazy-loads reviews
       await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight / 2));
       await page.waitForTimeout(2000);
+      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+      await page.waitForTimeout(3000);
 
-      const reviewSelectors = [
-        '[data-testid="enhanced-review-section"]',
-        '[data-testid="review-card"]',
-        '[data-testid="review"]',
-        '.review',
-        '[class*="review"]',
-      ];
-
-      let reviewElements: any[] = [];
-      for (const selector of reviewSelectors) {
-        reviewElements = await page.$$(selector);
-        console.log(`  Trying selector '${selector}': found ${reviewElements.length} reviews`);
-        if (reviewElements.length > 0) break;
+      // Try to click "View all reviews" or similar to expand reviews if present
+      try {
+        const viewAllLink = await page.$('a[href*="reviews"], [data-testid*="view-all-reviews"]');
+        if (viewAllLink) {
+          await viewAllLink.click();
+          await page.waitForTimeout(2000);
+        }
+      } catch {
+        /* optional - continue without */
       }
 
-      for (const reviewEl of reviewElements.slice(0, 20)) {
+      // Strategy 1: enhanced-review-section is inside each review - get parent for full review block
+      let reviewElements: any[] = [];
+      const enhancedSections = await page.$$('[data-testid="enhanced-review-section"]');
+      if (enhancedSections.length > 0) {
+        const seen = new Set<string>();
+        for (const section of enhancedSections) {
+          const parent = await section.evaluateHandle((el: Element) => el.closest?.("div")?.parentElement || el.parentElement);
+          if (parent) {
+            const key = await parent.evaluate((e: Element) => e.textContent?.slice(0, 80) || "");
+            if (key && !seen.has(key)) {
+              seen.add(key);
+              reviewElements.push(parent);
+            }
+          }
+        }
+        console.log(`  Found ${reviewElements.length} reviews via enhanced-review-section`);
+      }
+
+      // Strategy 2: Fallback to review card/container selectors
+      if (reviewElements.length === 0) {
+        const selectors = [
+          '[data-testid="review-card"]',
+          '[data-testid="review"]',
+          '[data-testid="customer-review"]',
+          'article[class*="review"]',
+          '[class*="ReviewCard"]',
+          '[class*="customer-review"]',
+          '.review',
+        ];
+        for (const selector of selectors) {
+          reviewElements = await page.$$(selector);
+          console.log(`  Trying selector '${selector}': found ${reviewElements.length}`);
+          if (reviewElements.length > 0) break;
+        }
+      }
+
+      // Strategy 3: Find elements containing review text + thumbs-up (Walmart review structure)
+      if (reviewElements.length === 0) {
+        const thumbsUpButtons = await page.$$('[data-testid="thumbs-up-button"]');
+        for (const btn of thumbsUpButtons) {
+          const reviewBlock = await btn.evaluateHandle((el) => el.closest?.("div[class]")?.parentElement?.parentElement || el.parentElement?.parentElement);
+          if (reviewBlock) {
+            reviewElements.push(reviewBlock);
+          }
+        }
+      }
+
+      for (const reviewEl of reviewElements.slice(0, 25)) {
         try {
           let text = "";
-          const textEl = await reviewEl.$('[data-testid="review-text"], .review-text, [class*="review-text"], p');
+          const textEl = await reviewEl.$('[data-testid="review-text"], .review-text, [class*="review-text"], p, span');
           if (textEl) {
             const content = (await textEl.textContent())?.trim();
-            if (content && content.length > 10) text = content;
+            if (content && content.length > 15) text = content;
           }
           if (!text) {
             const content = (await reviewEl.textContent())?.trim();
-            if (content && content.length > 20) text = content;
+            if (content && content.length > 25) {
+              // Remove "Helpful?" and button text, get main review body
+              text = content.replace(/\s*Helpful\?\s*(0|1)?\s*Report\s*/gi, '').trim();
+            }
           }
 
           let rating = 0;
-          const ratingEl = await reviewEl.$('[data-testid="review-rating"], .stars, [class*="rating"], [aria-label*="star"]');
+          const ratingEl = await reviewEl.$('[data-testid="review-rating"], .stars, [class*="rating"], [aria-label*="star"], [aria-label*="star"]');
           if (ratingEl) {
             const ratingText = (await ratingEl.textContent()) ?? (await ratingEl.getAttribute("aria-label")) ?? "";
             const match = ratingText.match(/(\d+(?:\.\d+)?)/);
             if (match) rating = parseFloat(match[1]);
           }
+          if (!rating && text) {
+            const match = text.match(/(\d)\s*out of\s*5/);
+            if (match) rating = parseFloat(match[1]);
+          }
 
-          if (text && text.length > 10) {
+          if (text && text.length > 15) {
             reviews.push({ text, rating: rating || 0, verified: false });
           }
         } catch {
