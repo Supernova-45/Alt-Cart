@@ -1,6 +1,5 @@
 import { FormEvent, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { ProductList } from "../components/ProductList";
+import { Link, useNavigate } from "react-router-dom";
 import { SkipLink } from "../components/SkipLink";
 import { extractProduct } from "../lib/api";
 import { urlToDemo } from "../lib/urlToDemo";
@@ -146,7 +145,7 @@ export function Landing() {
             </div>
 
             <button type="submit" disabled={loading} className="btn-primary">
-              {loading ? "Extracting Product..." : "Get Product Passport"}
+              {loading ? "Extracting Product..." : "Get Product"}
             </button>
           </form>
 
@@ -163,26 +162,11 @@ export function Landing() {
           )}
         </section>
 
-        <section className="demo-section">
-          <h2>Or Try Demo Products</h2>
-          <p>Explore our pre-loaded demo products to see how Alt-Cart works:</p>
-          <ProductList />
-        </section>
-
-        <section className="about-section">
-          <h2>About Alt-Cart</h2>
-          <p>
-            Alt-Cart helps visually impaired shoppers make informed purchasing decisions by
-            providing accessible product information extracted from e-commerce websites.
-          </p>
-          <ul>
-            <li>Detailed image descriptions for screen readers</li>
-            <li>Review insights including fit analysis and common themes</li>
-            <li>Return risk assessment based on customer feedback</li>
-            <li>Full text-to-speech support with adjustable speed</li>
-            <li>Keyboard-first navigation and WCAG-compliant design</li>
-          </ul>
-        </section>
+        <p style={{ textAlign: "center", marginTop: "var(--space-lg)" }}>
+          <Link to="/demo" className="product-card__link">
+            Try demo
+          </Link>
+        </p>
       </main>
     </>
   );
