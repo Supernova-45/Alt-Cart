@@ -23,7 +23,17 @@ export function ProductCard({
   imageUrl,
   imageAlt,
 }: ProductCardProps) {
-  const meta = [priceText, ratingText, reviewCountText].filter(Boolean).join(" · ");
+  let sanitizedReviewCount: string | undefined;
+  if (reviewCountText) {
+    const trimmed = reviewCountText.trim();
+    const numMatch = trimmed.replace(/,/g, "").match(/\d+/);
+    const isVariantText =
+      /capacit|color|size|option|storage/i.test(trimmed) || (numMatch && numMatch[0].length < 2 && trimmed.length > 4);
+    if (numMatch && !isVariantText) {
+      sanitizedReviewCount = `(${numMatch[0]})`;
+    }
+  }
+  const meta = [priceText, ratingText, sanitizedReviewCount].filter(Boolean).join(" · ");
   const linkTo = productUrl
     ? `/open?url=${encodeURIComponent(productUrl)}`
     : id

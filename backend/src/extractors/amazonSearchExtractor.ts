@@ -48,8 +48,25 @@ export class AmazonSearchExtractor {
           const ratingEl = card.querySelector(".a-icon-star-small .a-icon-alt, i.a-icon-star span.a-icon-alt");
           const rating = ratingEl?.textContent?.trim();
 
-          const reviewEl = card.querySelector(".a-size-small .a-link-normal");
-          const reviewCount = reviewEl?.textContent?.trim();
+          // Prefer the review link (href contains customerReviews) - avoids picking variant text like "2 capacities"
+          const reviewLink = card.querySelector('a[href*="customerReviews"]');
+          let reviewCountText: string | undefined;
+          if (reviewLink) {
+            const raw = reviewLink.textContent?.trim() || "";
+            const numMatch = raw.replace(/,/g, "").match(/\d+/);
+            if (numMatch) {
+              reviewCountText = `(${numMatch[0]})`;
+            }
+          } else {
+            const reviewEl = card.querySelector(".a-size-small .a-link-normal");
+            const raw = reviewEl?.textContent?.trim() || "";
+            const numMatch = raw.replace(/,/g, "").match(/^\d+$/);
+            if (numMatch) {
+              reviewCountText = `(${numMatch[0]})`;
+            } else if (/^\d[\d,]*$/.test(raw.replace(/,/g, ""))) {
+              reviewCountText = `(${raw})`;
+            }
+          }
 
           const imgEl = card.querySelector(".s-product-image-container img");
           const imgSrc = imgEl?.getAttribute("src");
@@ -59,7 +76,7 @@ export class AmazonSearchExtractor {
               name,
               price: price || undefined,
               ratingText: rating || undefined,
-              reviewCountText: reviewCount ? `(${reviewCount})` : undefined,
+              reviewCountText: reviewCountText || undefined,
               imageUrl: imgSrc || undefined,
               productUrl,
             });
