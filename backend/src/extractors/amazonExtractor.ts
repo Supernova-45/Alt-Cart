@@ -465,7 +465,7 @@ export class AmazonExtractor {
         for (const pattern of materialPatterns) {
           const matches = descriptionText.match(pattern);
           if (matches) {
-            matches.forEach(match => {
+            matches.forEach((match: string) => {
               const cleaned = match.trim();
               if (cleaned.length > 3 && !materials.includes(cleaned)) {
                 materials.push(cleaned);
