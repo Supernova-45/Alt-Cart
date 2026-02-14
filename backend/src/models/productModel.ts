@@ -19,11 +19,29 @@ export interface ReturnRisk {
   drivers: string[]; // 2..4
 }
 
+export interface SustainabilityCategory {
+  score: number; // 0-100
+  label: string;
+  details: string[];
+}
+
 export interface SustainabilityInfo {
-  score: number; // 0..1, "eco score"
-  label: "Low" | "Medium" | "High";
-  materials?: string[];
-  badges?: string[];
+  overallScore: number; // 0-100
+  rating: "Excellent" | "Good" | "Fair" | "Poor" | "Very Poor";
+
+  // Category scores
+  categories: {
+    materials: SustainabilityCategory;
+    manufacturing: SustainabilityCategory;
+    certifications: SustainabilityCategory;
+    shipping: SustainabilityCategory;
+  };
+
+  // Extracted raw data
+  extractedMaterials: string[];
+  extractedCertifications: string[];
+  origin?: string;
+  sustainabilityBadges: string[];
 }
 
 export interface ImageDescriptions {
@@ -78,4 +96,8 @@ export interface ExtractedProductData {
     additional?: string[];
   };
   sourceUrl: string;
+  // Sustainability data
+  certifications?: string[];
+  origin?: string; // "Made in..."
+  sustainabilityBadges?: string[];
 }

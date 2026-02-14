@@ -7,6 +7,7 @@ import {
   ReviewTheme,
   ReturnRisk,
   SustainabilityInfo,
+  SustainabilityCategory,
   Severity,
 } from "../models/productModel";
 import { logger } from "../utils/logger";
@@ -33,7 +34,7 @@ export class TransformService {
       fitSummary: this.analyzeFit(reviews),
       themes: this.extractThemes(reviews),
       returnRisk: this.calculateReturnRisk(reviews),
-      sustainability: this.analyzeSustainability(extracted.materials, extracted.description),
+      sustainability: this.analyzeSustainability(extracted),
       narration: this.generateNarration(extracted, reviews),
       demoDisclosure: "This product passport was generated from live product data.",
     };
@@ -236,51 +237,247 @@ export class TransformService {
     return { score, label, drivers: finalDrivers };
   }
 
-  private analyzeSustainability(
-    materials?: string[],
-    description?: string
-  ): SustainabilityInfo | undefined {
-    const sustainableKeywords = [
-      "recycled", "organic", "sustainable", "eco-friendly",
-      "biodegradable", "renewable", "eco", "green"
-    ];
+  private analyzeSustainability(extracted: ExtractedProductData): SustainabilityInfo | undefined {
+    logger.debug("Analyzing comprehensive sustainability data");
 
-    let score = 0;
-    const foundMaterials: string[] = materials || [];
-    const badges: string[] = [];
+    const materials = extracted.materials || [];
+    const certifications = extracted.certifications || [];
+    const origin = extracted.origin;
+    const badges = extracted.sustainabilityBadges || [];
 
-    // Check materials
-    if (materials) {
-      for (const material of materials) {
-        if (sustainableKeywords.some(kw => material.toLowerCase().includes(kw))) {
-          score += 0.3;
-          foundMaterials.push(material);
-        }
-      }
-    }
+    // Score each category (0-100)
+    const materialsCategory = this.scoreMaterials(materials);
+    const manufacturingCategory = this.scoreManufacturing(origin);
+    const certificationsCategory = this.scoreCertifications(certifications);
+    const shippingCategory = this.scoreShipping(origin, badges);
 
-    // Check description
-    if (description) {
-      const descLower = description.toLowerCase();
-      for (const keyword of sustainableKeywords) {
-        if (descLower.includes(keyword)) {
-          score += 0.1;
-          badges.push(`Contains ${keyword} materials or processes`);
-        }
-      }
-    }
+    // Calculate overall score (weighted average)
+    const overallScore = Math.round(
+      materialsCategory.score * 0.35 +      // Materials: 35%
+      manufacturingCategory.score * 0.25 +  // Manufacturing: 25%
+      certificationsCategory.score * 0.30 + // Certifications: 30%
+      shippingCategory.score * 0.10         // Shipping: 10%
+    );
 
-    if (score === 0) return undefined;
+    // Determine rating
+    let rating: "Excellent" | "Good" | "Fair" | "Poor" | "Very Poor";
+    if (overallScore >= 80) rating = "Excellent";
+    else if (overallScore >= 60) rating = "Good";
+    else if (overallScore >= 40) rating = "Fair";
+    else if (overallScore >= 20) rating = "Poor";
+    else rating = "Very Poor";
 
-    score = Math.min(score, 1.0);
-    const label: "Low" | "Medium" | "High" = score < 0.3 ? "Low" : score < 0.6 ? "Medium" : "High";
+    logger.info("Sustainability analysis complete", { overallScore, rating });
 
     return {
-      score,
-      label,
-      materials: foundMaterials.length > 0 ? foundMaterials : undefined,
-      badges: badges.length > 0 ? badges : undefined,
+      overallScore,
+      rating,
+      categories: {
+        materials: materialsCategory,
+        manufacturing: manufacturingCategory,
+        certifications: certificationsCategory,
+        shipping: shippingCategory,
+      },
+      extractedMaterials: materials,
+      extractedCertifications: certifications,
+      origin,
+      sustainabilityBadges: badges,
     };
+  }
+
+  private scoreMaterials(materials: string[]): SustainabilityCategory {
+    const details: string[] = [];
+    let score = 0;
+
+    if (materials.length === 0) {
+      return {
+        score: 30, // Neutral score if no data
+        label: "Materials: Unknown",
+        details: ["No material information available"],
+      };
+    }
+
+    // Highly sustainable materials
+    const excellent = ["organic cotton", "recycled polyester", "recycled nylon", "tencel", "hemp", "linen", "recycled wool"];
+    // Moderately sustainable
+    const good = ["cotton", "wool", "silk", "bamboo"];
+    // Less sustainable
+    const poor = ["polyester", "nylon", "acrylic", "virgin plastic"];
+
+    let excellentCount = 0;
+    let goodCount = 0;
+    let poorCount = 0;
+
+    for (const material of materials) {
+      const lower = material.toLowerCase();
+
+      if (excellent.some(m => lower.includes(m))) {
+        excellentCount++;
+        details.push(`✓ ${material} (sustainable material)`);
+      } else if (good.some(m => lower.includes(m))) {
+        goodCount++;
+        details.push(`○ ${material} (conventional material)`);
+      } else if (poor.some(m => lower.includes(m))) {
+        poorCount++;
+        details.push(`✗ ${material} (less sustainable material)`);
+      } else {
+        details.push(`? ${material} (unknown sustainability)`);
+      }
+    }
+
+    // Calculate score
+    if (excellentCount > 0) score += 60;
+    if (goodCount > 0) score += 30;
+    if (poorCount > 0) score -= 20;
+
+    // Bonus for multiple sustainable materials
+    if (excellentCount >= 2) score += 20;
+
+    score = Math.max(0, Math.min(100, score));
+
+    let label = "Materials: ";
+    if (score >= 70) label += "Excellent";
+    else if (score >= 50) label += "Good";
+    else if (score >= 30) label += "Fair";
+    else label += "Poor";
+
+    return { score, label, details: details.slice(0, 5) };
+  }
+
+  private scoreManufacturing(origin?: string): SustainabilityCategory {
+    const details: string[] = [];
+    let score = 50; // Default neutral score
+
+    if (!origin) {
+      return {
+        score: 40,
+        label: "Manufacturing: Unknown",
+        details: ["Manufacturing location not specified"],
+      };
+    }
+
+    details.push(`Made in: ${origin}`);
+
+    const lower = origin.toLowerCase();
+
+    // Countries with strong environmental regulations
+    const excellent = ["usa", "united states", "germany", "denmark", "sweden", "norway", "finland", "switzerland", "netherlands", "uk", "united kingdom", "canada"];
+    const good = ["france", "italy", "spain", "portugal", "japan", "south korea"];
+    const fair = ["china", "india", "vietnam", "bangladesh", "thailand", "mexico", "turkey"];
+
+    if (excellent.some(country => lower.includes(country))) {
+      score = 85;
+      details.push("✓ Strong environmental regulations");
+      details.push("✓ Worker protection standards");
+    } else if (good.some(country => lower.includes(country))) {
+      score = 65;
+      details.push("○ Moderate environmental oversight");
+    } else if (fair.some(country => lower.includes(country))) {
+      score = 35;
+      details.push("⚠ Limited environmental regulations");
+      details.push("Consider looking for certifications");
+    } else {
+      score = 50;
+      details.push("? Manufacturing standards unclear");
+    }
+
+    let label = "Manufacturing: ";
+    if (score >= 70) label += "Excellent";
+    else if (score >= 50) label += "Good";
+    else if (score >= 30) label += "Fair";
+    else label += "Poor";
+
+    return { score, label, details };
+  }
+
+  private scoreCertifications(certifications: string[]): SustainabilityCategory {
+    const details: string[] = [];
+    let score = 0;
+
+    if (certifications.length === 0) {
+      return {
+        score: 20,
+        label: "Certifications: None",
+        details: ["No sustainability certifications found"],
+      };
+    }
+
+    // High-value certifications
+    const tier1 = ["gots", "fair trade", "cradle to cradle", "bluesign", "oeko-tex"];
+    const tier2 = ["organic", "fsc", "rainforest alliance", "certified b corp"];
+    const tier3 = ["climate pledge friendly", "compact by design"];
+
+    let tier1Count = 0;
+    let tier2Count = 0;
+    let tier3Count = 0;
+
+    for (const cert of certifications) {
+      const lower = cert.toLowerCase();
+
+      if (tier1.some(t => lower.includes(t))) {
+        tier1Count++;
+        details.push(`✓✓ ${cert} (premium certification)`);
+      } else if (tier2.some(t => lower.includes(t))) {
+        tier2Count++;
+        details.push(`✓ ${cert} (verified certification)`);
+      } else if (tier3.some(t => lower.includes(t))) {
+        tier3Count++;
+        details.push(`○ ${cert} (basic certification)`);
+      } else {
+        details.push(`? ${cert}`);
+      }
+    }
+
+    // Calculate score
+    score = (tier1Count * 40) + (tier2Count * 25) + (tier3Count * 15);
+    score = Math.min(100, score);
+
+    let label = "Certifications: ";
+    if (score >= 70) label += "Excellent";
+    else if (score >= 40) label += "Good";
+    else if (score >= 20) label += "Fair";
+    else label += "Limited";
+
+    return { score, label, details: details.slice(0, 5) };
+  }
+
+  private scoreShipping(origin?: string, badges?: string[]): SustainabilityCategory {
+    const details: string[] = [];
+    let score = 50; // Default neutral
+
+    // Check for local/regional manufacturing (reduces shipping)
+    if (origin) {
+      const lower = origin.toLowerCase();
+      if (["usa", "united states", "canada", "mexico"].some(c => lower.includes(c))) {
+        score += 20;
+        details.push("✓ Regional manufacturing reduces shipping impact");
+      } else {
+        score -= 10;
+        details.push("○ Overseas shipping increases carbon footprint");
+      }
+    }
+
+    // Check for compact packaging badges
+    if (badges) {
+      const compactKeywords = ["compact", "frustration-free", "minimal packaging"];
+      if (badges.some(b => compactKeywords.some(k => b.toLowerCase().includes(k)))) {
+        score += 20;
+        details.push("✓ Compact/minimal packaging");
+      }
+    }
+
+    score = Math.max(0, Math.min(100, score));
+
+    let label = "Shipping: ";
+    if (score >= 70) label += "Low Impact";
+    else if (score >= 50) label += "Moderate Impact";
+    else label += "High Impact";
+
+    if (details.length === 0) {
+      details.push("Shipping impact information not available");
+    }
+
+    return { score, label, details };
   }
 
   private generateNarration(extracted: ExtractedProductData, reviews: ExtractedReview[]): {

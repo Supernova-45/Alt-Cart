@@ -176,6 +176,28 @@ export class AmazonExtractor {
 
     logger.info("Basic product data extracted", { name, price, rating, reviewCount });
 
+    // Extract sustainability data
+    let materials: string[] = [];
+    let certifications: string[] = [];
+    let origin: string | undefined;
+    let sustainabilityBadges: string[] = [];
+
+    try {
+      const sustainabilityData = await this.extractSustainabilityData(page);
+      materials = sustainabilityData.materials;
+      certifications = sustainabilityData.certifications;
+      origin = sustainabilityData.origin;
+      sustainabilityBadges = sustainabilityData.badges;
+      logger.info("Sustainability data extracted", {
+        materials: materials.length,
+        certifications: certifications.length,
+        origin,
+        badges: sustainabilityBadges.length
+      });
+    } catch (error) {
+      logger.warn("Failed to extract sustainability data", { error });
+    }
+
     // Extract reviews
     let reviews: ExtractedReview[] = [];
     try {
@@ -207,6 +229,10 @@ export class AmazonExtractor {
         main: mainImage,
       },
       sourceUrl: url,
+      materials,
+      certifications,
+      origin,
+      sustainabilityBadges,
     };
   }
 
@@ -373,5 +399,159 @@ export class AmazonExtractor {
     }
 
     return reviews;
+  }
+
+  private async extractSustainabilityData(page: any): Promise<{
+    materials: string[];
+    certifications: string[];
+    origin?: string;
+    badges: string[];
+  }> {
+    const materials: string[] = [];
+    const certifications: string[] = [];
+    let origin: string | undefined;
+    const badges: string[] = [];
+
+    console.log("\n--- Extracting Sustainability Data ---");
+
+    try {
+      // Extract materials from product details/specifications
+      const materialKeywords = [
+        'material', 'fabric', 'composition', 'made of', 'constructed from',
+        'cotton', 'polyester', 'recycled', 'organic', 'sustainable'
+      ];
+
+      // Try to find material info in product details table
+      const detailRows = await page.$$('#productDetails_detailBullets_sections1 tr, #productDetails_techSpec_section_1 tr, .prodDetTable tr');
+      console.log(`  Found ${detailRows.length} detail rows`);
+
+      for (const row of detailRows) {
+        const rowText = (await row.textContent())?.toLowerCase() || '';
+
+        if (materialKeywords.some(keyword => rowText.includes(keyword))) {
+          const cells = await row.$$('td, th');
+          if (cells.length >= 2) {
+            const value = (await cells[1].textContent())?.trim();
+            if (value && value.length > 0 && value.length < 200) {
+              materials.push(value);
+              console.log(`  ✓ Found material: ${value}`);
+            }
+          }
+        }
+
+        // Extract origin
+        if (rowText.includes('country') || rowText.includes('made in') || rowText.includes('origin')) {
+          const cells = await row.$$('td, th');
+          if (cells.length >= 2) {
+            const value = (await cells[1].textContent())?.trim();
+            if (value && !origin) {
+              origin = value;
+              console.log(`  ✓ Found origin: ${value}`);
+            }
+          }
+        }
+      }
+
+      // Also check description for material mentions
+      if (materials.length === 0) {
+        const descriptionText = (await page.textContent('#productDescription, #feature-bullets'))?.toLowerCase() || '';
+
+        const materialPatterns = [
+          /(\d+%?\s*(?:organic|recycled|sustainable)?\s*(?:cotton|polyester|nylon|wool|leather|silk|linen|rayon|spandex|elastane))/gi,
+          /(made (?:from|of|with) [\w\s]+)/gi,
+          /(100% [\w\s]+)/gi,
+        ];
+
+        for (const pattern of materialPatterns) {
+          const matches = descriptionText.match(pattern);
+          if (matches) {
+            matches.forEach(match => {
+              const cleaned = match.trim();
+              if (cleaned.length > 3 && !materials.includes(cleaned)) {
+                materials.push(cleaned);
+                console.log(`  ✓ Found material in description: ${cleaned}`);
+              }
+            });
+          }
+        }
+      }
+
+      // Extract certifications
+      const certificationKeywords = [
+        'fair trade', 'gots', 'oeko-tex', 'bluesign', 'cradle to cradle',
+        'certified', 'fsc', 'rainforest alliance', 'organic certified',
+        'carbon neutral', 'climate pledge friendly', 'compact by design'
+      ];
+
+      const pageText = (await page.textContent('body'))?.toLowerCase() || '';
+
+      for (const cert of certificationKeywords) {
+        if (pageText.includes(cert)) {
+          // Find the actual text context
+          const certPattern = new RegExp(`([^.]*${cert}[^.]*)\\.`, 'i');
+          const match = pageText.match(certPattern);
+          if (match) {
+            const certText = match[1].trim();
+            if (!certifications.includes(certText) && certText.length < 150) {
+              certifications.push(certText);
+              console.log(`  ✓ Found certification: ${certText}`);
+            }
+          } else {
+            certifications.push(cert);
+            console.log(`  ✓ Found certification keyword: ${cert}`);
+          }
+        }
+      }
+
+      // Extract sustainability badges (Amazon-specific)
+      const badgeSelectors = [
+        '[data-a-badge-type="SUSTAINABILITY"]',
+        '.a-badge-sustainability',
+        'span:has-text("Climate Pledge Friendly")',
+        'span:has-text("Compact by Design")',
+        'span:has-text("Certified Frustration-Free")',
+      ];
+
+      for (const selector of badgeSelectors) {
+        try {
+          const badgeElements = await page.$$(selector);
+          for (const badge of badgeElements) {
+            const badgeText = (await badge.textContent())?.trim();
+            if (badgeText && !badges.includes(badgeText)) {
+              badges.push(badgeText);
+              console.log(`  ✓ Found badge: ${badgeText}`);
+            }
+          }
+        } catch (e) {
+          // Selector might not be supported, continue
+        }
+      }
+
+      // Also look for sustainability-related text in feature bullets
+      const features = await page.$$('#feature-bullets li, .a-unordered-list li');
+      for (const feature of features) {
+        const featureText = (await feature.textContent())?.trim() || '';
+        const lowerFeature = featureText.toLowerCase();
+
+        if (
+          lowerFeature.includes('sustainable') ||
+          lowerFeature.includes('eco-friendly') ||
+          lowerFeature.includes('recycled') ||
+          lowerFeature.includes('organic')
+        ) {
+          if (!badges.includes(featureText) && featureText.length < 200) {
+            badges.push(featureText);
+            console.log(`  ✓ Found sustainability feature: ${featureText}`);
+          }
+        }
+      }
+
+      console.log(`  Summary: ${materials.length} materials, ${certifications.length} certifications, origin: ${origin || 'N/A'}, ${badges.length} badges`);
+    } catch (error) {
+      logger.warn("Error extracting sustainability data", { error });
+      console.log("  ✗ Error:", error);
+    }
+
+    return { materials, certifications, origin, badges };
   }
 }
