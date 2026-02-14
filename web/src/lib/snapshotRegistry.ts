@@ -7,19 +7,19 @@ export const SNAPSHOTS: Record<SnapshotId, { label: string; path: string }> = {
   },
   adidas: {
     label: "adidas VL Court 3.0",
-    path: "/webpages/adidas.html",
+    path: "/webpages/amazon_adidas.html",
   },
   adokoo: {
     label: "Adokoo Fashion Sneakers",
-    path: "/webpages/adokoo.html",
+    path: "/webpages/amazon_adokoo.html",
   },
   puma: {
     label: "Puma Carina L",
-    path: "/webpages/puma.html",
+    path: "/webpages/amazon_puma.html",
   },
   on: {
     label: "On Cloud 6",
-    path: "/webpages/on.html",
+    path: "/webpages/amazon_on.html",
   },
 };
 
