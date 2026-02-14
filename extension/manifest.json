@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "EchoCart",
+  "version": "0.1.0",
+  "description": "Open accessible product passports from Amazon pages",
+  "permissions": ["tabs", "activeTab", "storage"],
+  "host_permissions": ["https://www.amazon.com/*"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Open EchoCart Passport",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png"
+    }
+  },
+  "background": {
+    "service_worker": "service_worker.js"
+  },
+  "commands": {
+    "open-passport": {
+      "suggested_key": {
+        "default": "Alt+Shift+P"
+      },
+      "description": "Open EchoCart Passport for current tab"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

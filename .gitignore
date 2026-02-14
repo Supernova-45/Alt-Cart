@@ -1,3 +1,6 @@
 public/webpages/*_files
+web/public/webpages/*_files
 dist/
+web/dist/
 node_modules/
+web/node_modules/

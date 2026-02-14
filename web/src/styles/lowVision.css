@@ -1,0 +1,24 @@
+/* Low Vision Mode - higher contrast, larger type */
+body.low-vision {
+  --color-bg: #f5f3ef;
+  --color-surface: #ffffff;
+  --color-text: #1a1816;
+  --color-text-muted: #3d3834;
+  --color-accent: #3d3229;
+  --color-border: #c9c4bc;
+  --text-base: 20px;
+  --text-sm: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 1.75rem;
+  --line-height: 1.7;
+}
+
+body.low-vision .section-card,
+body.low-vision .product-card {
+  border-width: 2px;
+}
+
+body.low-vision a {
+  font-weight: 500;
+}
