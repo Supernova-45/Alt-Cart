@@ -3,10 +3,14 @@
   "name": "Alt+Cart",
   "version": "0.1.0",
   "description": "Open accessible product passports from Amazon and Walmart pages",
-  "permissions": ["tabs", "activeTab"],
-  "host_permissions": [
-    "https://www.amazon.com/*",
-    "https://www.walmart.com/*"
+  "permissions": ["tabs", "activeTab", "storage"],
+  "host_permissions": ["https://www.amazon.com/*", "https://www.walmart.com/*"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
   ],
   "action": {
     "default_popup": "popup.html",

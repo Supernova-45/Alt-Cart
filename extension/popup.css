@@ -23,6 +23,21 @@ body {
   font-weight: 600;
 }
 
+.popup__toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.popup__toggle input {
+  width: 18px;
+  height: 18px;
+  accent-color: #5c4d3d;
+}
+
 .popup__btn {
   display: block;
   width: 100%;
