@@ -62,7 +62,7 @@ export function Passport() {
     return (
       <div className="error-card">
         <h1>Invalid product</h1>
-        <Link to="/unsupported">Return</Link>
+        <Link to="/">Return to products</Link>
       </div>
     );
   }
@@ -73,7 +73,7 @@ export function Passport() {
       <div className="error-card">
         <h1>Product not found</h1>
         <p className="error-card__message">Unknown product ID: {id}</p>
-        <Link to="/unsupported">Return</Link>
+        <Link to="/">Return to products</Link>
       </div>
     );
   }
@@ -130,8 +130,8 @@ export function Passport() {
   return (
     <>
       <header className="passport-header">
-        <Link to="/unsupported" className="passport-header__back">
-          ← Back
+        <Link to="/" className="passport-header__back">
+          ← Back to products
         </Link>
         <h1 className="passport-header__title">{p.name}</h1>
         <div className="passport-header__stats">

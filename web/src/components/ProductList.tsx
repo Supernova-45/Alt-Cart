@@ -16,6 +16,8 @@ export function ProductList() {
               priceText={passport.priceText}
               ratingText={passport.ratingText}
               reviewCountText={passport.reviewCountText}
+              imageUrl={passport.imageUrl}
+              imageAlt={passport.images.altShort}
             />
           </li>
         );

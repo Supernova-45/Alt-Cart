@@ -40,7 +40,7 @@ export function ProductCard({
           <h2 className="product-card__title">{name}</h2>
           {meta && <p className="product-card__meta">{meta}</p>}
           <Link to={`/p/${id}`} className="product-card__link">
-            Open Passport
+            See details
           </Link>
         </div>
       </div>
