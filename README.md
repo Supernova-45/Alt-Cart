@@ -150,9 +150,7 @@ If `POST /api/products/extract` returns 500:
    - `BROWSERBASE_PROJECT_ID` – your project ID
    Redeploy after adding them.
 
-2. **Function timeout** – Extraction can take 15–30+ seconds. In the backend Vercel project:
-   - **Settings → Functions → Function Max Duration** – set to 60s (or higher on Pro)
-   - Or ensure `vercel.json` has `functions` with `maxDuration: 60` for the server entry
+2. **Function timeout** – Extraction can take 15–30+ seconds. In the backend Vercel project: **Settings → Functions → Function Max Duration** – set to 60s (or higher on Pro). The Express framework preset doesn't support `maxDuration` in `vercel.json`, so use the Dashboard.
 
 3. **Check logs** – Vercel Dashboard → Backend project → Deployments → select deployment → **Functions** tab → view logs for the actual error (e.g. missing env, Stagehand init failure, navigation timeout)
 
