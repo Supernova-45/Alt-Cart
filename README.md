@@ -139,6 +139,8 @@ FRONTEND_URL=http://localhost:5173
 VITE_API_BASE_URL=http://localhost:3001
 ```
 
+**Vercel deployment:** When the frontend is deployed to altcart.vercel.app, it defaults to `https://api.altcart.vercel.app` for API calls. Deploy the backend to that URL, or set `VITE_API_BASE_URL` in Vercel's environment variables to your backend URL.
+
 ## Accessibility Features
 
 - Semantic HTML with proper heading hierarchy
