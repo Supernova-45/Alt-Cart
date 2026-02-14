@@ -101,3 +101,12 @@ export function urlToDemo(url: string): OpenTarget {
 
   return { kind: "unsupported", reason: "unknown_host" };
 }
+
+/**
+ * Returns true if the URL is a valid Amazon or Walmart product page
+ * that is NOT in the demo registry (i.e. should go to extraction flow).
+ */
+export function isExtractableProductUrl(url: string): boolean {
+  const target = urlToDemo(url);
+  return target.kind === "unsupported" && target.reason === "unknown_item";
+}

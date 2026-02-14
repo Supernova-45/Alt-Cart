@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, Navigate } from "react-router-dom";
-import { urlToDemo } from "../lib/urlToDemo";
+import { urlToDemo, isExtractableProductUrl } from "../lib/urlToDemo";
 
 const MIN_LOADING_MS = 200;
 
@@ -29,6 +29,12 @@ export function Open() {
   }
   if (target.kind === "search") {
     return <Navigate to={`/s/${target.id}`} replace />;
+  }
+
+  if (isExtractableProductUrl(url)) {
+    const extractParams = new URLSearchParams();
+    extractParams.set("url", url);
+    return <Navigate to={`/extract?${extractParams.toString()}`} replace />;
   }
 
   const params = new URLSearchParams();

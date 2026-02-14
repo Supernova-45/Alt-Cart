@@ -30,8 +30,14 @@ export async function extractProduct(url: string): Promise<ExtractResponse> {
   });
 
   if (!response.ok) {
-    const error: ErrorResponse = await response.json();
-    throw new Error(error.message || "Extraction failed");
+    let message = "Extraction failed";
+    try {
+      const error: ErrorResponse = await response.json();
+      message = error.message || message;
+    } catch {
+      message = response.statusText || message;
+    }
+    throw new Error(message);
   }
 
   return response.json();
