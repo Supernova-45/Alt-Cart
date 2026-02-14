@@ -1,4 +1,4 @@
-const DEFAULT_BASE_URL = "http://localhost:5173";
+const BASE_URL = "https://altcart.vercel.app";
 
 function isInvalidUrl(url) {
   return !url || url.startsWith("chrome://") || url.startsWith("chrome-extension://");
@@ -11,11 +11,9 @@ function openPassport() {
       return;
     }
 
-    chrome.storage.sync.get({ baseUrl: DEFAULT_BASE_URL }, (data) => {
-      const baseUrl = (data.baseUrl || DEFAULT_BASE_URL).replace(/\/$/, "");
-      const passportUrl = `${baseUrl}/open?url=${encodeURIComponent(tab.url)}`;
-      chrome.tabs.create({ url: passportUrl });
-    });
+    const baseUrl = BASE_URL.replace(/\/$/, "");
+    const passportUrl = `${baseUrl}/open?url=${encodeURIComponent(tab.url)}`;
+    chrome.tabs.create({ url: passportUrl });
   });
 }
 

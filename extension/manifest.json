@@ -1,16 +1,16 @@
 {
   "manifest_version": 3,
-  "name": "EchoCart",
+  "name": "Alt+Cart",
   "version": "0.1.0",
   "description": "Open accessible product passports from Amazon and Walmart pages",
-  "permissions": ["tabs", "activeTab", "storage"],
+  "permissions": ["tabs", "activeTab"],
   "host_permissions": [
     "https://www.amazon.com/*",
     "https://www.walmart.com/*"
   ],
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Open EchoCart Passport",
+    "default_title": "Open in Alt+Cart",
     "default_icon": {
       "16": "icons/icon16.png",
       "32": "icons/icon32.png",
@@ -23,7 +23,7 @@
   "commands": {
     "open-passport": {
       "suggested_key": { "default": "Alt+Shift+P" },
-      "description": "Open EchoCart Passport for current tab"
+      "description": "Open in Alt+Cart for current tab"
     }
   },
   "icons": {
