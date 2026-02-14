@@ -1,8 +1,8 @@
 import type { ProductPassport } from "./productModel";
 import { SNAPSHOTS } from "./snapshotRegistry";
-import type { SnapshotId } from "./snapshotRegistry";
+import type { ProductSnapshotId } from "./snapshotRegistry";
 
-const DEMO_PASSPORTS: Record<SnapshotId, ProductPassport> = {
+const DEMO_PASSPORTS: Record<ProductSnapshotId, ProductPassport> = {
   adidas: {
     id: "adidas",
     sourceSnapshotPath: SNAPSHOTS.adidas.path,
@@ -271,24 +271,362 @@ const DEMO_PASSPORTS: Record<SnapshotId, ProductPassport> = {
     },
     demoDisclosure: "This passport uses demo data. Product details are illustrative.",
   },
-  search: {
-    id: "search",
-    sourceSnapshotPath: SNAPSHOTS.search.path,
-    name: "White sneakers search",
-    brand: undefined,
-    shortDescription: "Search results for white sneakers.",
-    longDescription: "Search results page.",
-    images: { altShort: "Search results.", altLong: "Search results for white sneakers." },
-    themes: [],
-    returnRisk: { score: 0, label: "Low", drivers: [] },
-    narration: { short: "Search results.", medium: "Search results for white sneakers." },
-    demoDisclosure: "Search results.",
+  w_ozark: {
+    id: "w_ozark",
+    sourceSnapshotPath: SNAPSHOTS.w_ozark.path,
+    name: "Ozark Trail Hiker Backpack 25 Liter",
+    brand: "Ozark Trail",
+    priceText: "$24.97",
+    ratingText: "4.5 out of 5 stars",
+    reviewCountText: "(12,341)",
+    shortDescription:
+      "25-liter hiking backpack with multiple compartments. Durable polyester construction for day hikes and travel.",
+    longDescription:
+      "The Ozark Trail Hiker Backpack features a main compartment, front organizer pocket, and side mesh pockets. Padded back panel and adjustable shoulder straps for comfort.",
+    images: {
+      altShort: "Black 25-liter hiking backpack with multiple pockets.",
+      altLong:
+        "Overall: A black polyester hiking backpack. Main compartment with drawstring closure. Front pocket with organizer. Side mesh water bottle pockets. Padded back panel. Adjustable straps.",
+    },
+    fitSummary: {
+      verdict: "True to size",
+      confidence: 0.82,
+      evidence: [
+        "Demo snippet: Fits as expected for most users.",
+        "Demo snippet: Good capacity for day hikes.",
+      ],
+    },
+    themes: [
+      {
+        label: "Value",
+        share: 0.45,
+        severity: "low",
+        evidence: [
+          "Demo snippet: Great value for the price.",
+          "Demo snippet: Durable for everyday use.",
+        ],
+      },
+      {
+        label: "Comfort",
+        share: 0.3,
+        severity: "low",
+        evidence: [
+          "Demo snippet: Comfortable straps.",
+          "Demo snippet: Good padding on back.",
+        ],
+      },
+    ],
+    returnRisk: {
+      score: 0.18,
+      label: "Low",
+      drivers: [
+        "Demo snippet: Reliable quality reported.",
+        "Demo snippet: Matches description.",
+      ],
+    },
+    sustainability: {
+      score: 0.4,
+      label: "Medium",
+      materials: ["Polyester", "Recycled content in some components"],
+      badges: [],
+    },
+    narration: {
+      short: "Ozark Trail Hiker Backpack, $24.97. True to size, low return risk.",
+      medium:
+        "Ozark Trail Hiker Backpack 25 Liter, $24.97. Durable day-hike backpack. True to size with 82% confidence. Low return risk. Medium sustainability.",
+    },
+    demoDisclosure: "This passport uses demo data. Product details are illustrative.",
+  },
+  w_dakimoe: {
+    id: "w_dakimoe",
+    sourceSnapshotPath: SNAPSHOTS.w_dakimoe.path,
+    name: "Dakimoe Laptop Backpack",
+    brand: "Dakimoe",
+    priceText: "$32.99",
+    ratingText: "4.3 out of 5 stars",
+    reviewCountText: "(2,891)",
+    shortDescription:
+      "Laptop backpack with dedicated sleeve and USB charging port. Suitable for school and commute.",
+    longDescription:
+      "The Dakimoe backpack includes a padded laptop compartment, multiple pockets, and a built-in USB port for charging devices on the go.",
+    images: {
+      altShort: "Laptop backpack with USB port and multiple compartments.",
+      altLong:
+        "Overall: A modern laptop backpack. Padded laptop sleeve. Front organizer. Side pockets. USB charging port. Adjustable straps.",
+    },
+    fitSummary: {
+      verdict: "True to size",
+      confidence: 0.78,
+      evidence: [
+        "Demo snippet: Fits 15-inch laptops well.",
+        "Demo snippet: Adequate capacity for daily carry.",
+      ],
+    },
+    themes: [
+      {
+        label: "Functionality",
+        share: 0.4,
+        severity: "low",
+        evidence: [
+          "Demo snippet: USB port is convenient.",
+          "Demo snippet: Good organization.",
+        ],
+      },
+    ],
+    returnRisk: {
+      score: 0.25,
+      label: "Low",
+      drivers: [
+        "Demo snippet: Generally meets expectations.",
+        "Demo snippet: Good build quality.",
+      ],
+    },
+    sustainability: {
+      score: 0.35,
+      label: "Low",
+      materials: ["Polyester", "Nylon"],
+      badges: [],
+    },
+    narration: {
+      short: "Dakimoe Laptop Backpack, $32.99. True to size, low return risk.",
+      medium:
+        "Dakimoe Laptop Backpack, $32.99. School and commute backpack with USB charging. True to size. Low return risk.",
+    },
+    demoDisclosure: "This passport uses demo data. Product details are illustrative.",
+  },
+  w_eastsport: {
+    id: "w_eastsport",
+    sourceSnapshotPath: SNAPSHOTS.w_eastsport.path,
+    name: "EastSport Classic Backpack",
+    brand: "EastSport",
+    priceText: "$29.99",
+    ratingText: "4.2 out of 5 stars",
+    reviewCountText: "(5,234)",
+    shortDescription:
+      "Classic backpack with spacious main compartment. Ideal for school, work, or travel.",
+    longDescription:
+      "The EastSport Classic Backpack features a large main compartment, front pocket, and side mesh pockets. Durable construction with ergonomic design.",
+    images: {
+      altShort: "Classic backpack with large main compartment.",
+      altLong:
+        "Overall: A classic-style backpack. Large main compartment. Front organizer. Side mesh pockets. Padded back. Adjustable straps.",
+    },
+    fitSummary: {
+      verdict: "True to size",
+      confidence: 0.8,
+      evidence: [
+        "Demo snippet: Roomy and comfortable.",
+        "Demo snippet: Fits standard laptop sizes.",
+      ],
+    },
+    themes: [
+      {
+        label: "Durability",
+        share: 0.35,
+        severity: "low",
+        evidence: [
+          "Demo snippet: Holds up well over time.",
+          "Demo snippet: Sturdy zippers.",
+        ],
+      },
+    ],
+    returnRisk: {
+      score: 0.22,
+      label: "Low",
+      drivers: [
+        "Demo snippet: Reliable for daily use.",
+        "Demo snippet: Good value.",
+      ],
+    },
+    sustainability: {
+      score: 0.38,
+      label: "Low",
+      materials: ["Polyester"],
+      badges: [],
+    },
+    narration: {
+      short: "EastSport Classic Backpack, $29.99. True to size, low return risk.",
+      medium:
+        "EastSport Classic Backpack, $29.99. Spacious backpack for school and travel. True to size. Low return risk.",
+    },
+    demoDisclosure: "This passport uses demo data. Product details are illustrative.",
+  },
+  w_madden: {
+    id: "w_madden",
+    sourceSnapshotPath: SNAPSHOTS.w_madden.path,
+    name: "Madden NYC Backpack",
+    brand: "Madden NYC",
+    priceText: "$39.99",
+    ratingText: "4.4 out of 5 stars",
+    reviewCountText: "(1,567)",
+    shortDescription:
+      "Urban backpack with sleek design. Laptop compartment and multiple pockets for organized carry.",
+    longDescription:
+      "The Madden NYC backpack combines style with function. Padded laptop sleeve, water-resistant material, and modern aesthetic.",
+    images: {
+      altShort: "Urban backpack with sleek design.",
+      altLong:
+        "Overall: A sleek urban backpack. Padded laptop compartment. Water-resistant material. Modern design. Multiple pockets.",
+    },
+    fitSummary: {
+      verdict: "True to size",
+      confidence: 0.85,
+      evidence: [
+        "Demo snippet: Fits as described.",
+        "Demo snippet: Comfortable for all-day wear.",
+      ],
+    },
+    themes: [
+      {
+        label: "Style",
+        share: 0.4,
+        severity: "low",
+        evidence: [
+          "Demo snippet: Looks great.",
+          "Demo snippet: Professional appearance.",
+        ],
+      },
+    ],
+    returnRisk: {
+      score: 0.2,
+      label: "Low",
+      drivers: [
+        "Demo snippet: Quality matches price.",
+        "Demo snippet: Satisfied customers.",
+      ],
+    },
+    sustainability: {
+      score: 0.42,
+      label: "Medium",
+      materials: ["Polyester", "Recycled materials"],
+      badges: [],
+    },
+    narration: {
+      short: "Madden NYC Backpack, $39.99. True to size, low return risk.",
+      medium:
+        "Madden NYC Backpack, $39.99. Urban backpack with laptop compartment. True to size. Low return risk.",
+    },
+    demoDisclosure: "This passport uses demo data. Product details are illustrative.",
+  },
+  w_honglong: {
+    id: "w_honglong",
+    sourceSnapshotPath: SNAPSHOTS.w_honglong.path,
+    name: "Honglong Travel Backpack",
+    brand: "Honglong",
+    priceText: "$35.99",
+    ratingText: "4.1 out of 5 stars",
+    reviewCountText: "(892)",
+    shortDescription:
+      "Travel backpack with expandable capacity. TSA-friendly design for airport use.",
+    longDescription:
+      "The Honglong Travel Backpack expands for extra capacity. TSA-friendly laptop compartment, multiple pockets, and durable construction.",
+    images: {
+      altShort: "Travel backpack with expandable design.",
+      altLong:
+        "Overall: A travel backpack. Expandable main compartment. TSA-friendly laptop section. Multiple pockets. Durable construction.",
+    },
+    fitSummary: {
+      verdict: "True to size",
+      confidence: 0.75,
+      evidence: [
+        "Demo snippet: Good for short trips.",
+        "Demo snippet: Expandable feature is useful.",
+      ],
+    },
+    themes: [
+      {
+        label: "Travel",
+        share: 0.45,
+        severity: "low",
+        evidence: [
+          "Demo snippet: Great for flights.",
+          "Demo snippet: TSA-friendly design works well.",
+        ],
+      },
+    ],
+    returnRisk: {
+      score: 0.28,
+      label: "Low",
+      drivers: [
+        "Demo snippet: Meets travel needs.",
+        "Demo snippet: Good construction.",
+      ],
+    },
+    sustainability: {
+      score: 0.35,
+      label: "Low",
+      materials: ["Nylon", "Polyester"],
+      badges: [],
+    },
+    narration: {
+      short: "Honglong Travel Backpack, $35.99. True to size, low return risk.",
+      medium:
+        "Honglong Travel Backpack, $35.99. Expandable travel backpack with TSA-friendly design. True to size. Low return risk.",
+    },
+    demoDisclosure: "This passport uses demo data. Product details are illustrative.",
+  },
+  w_reebok: {
+    id: "w_reebok",
+    sourceSnapshotPath: SNAPSHOTS.w_reebok.path,
+    name: "Reebok Classic Backpack",
+    brand: "Reebok",
+    priceText: "$44.99",
+    ratingText: "4.5 out of 5 stars",
+    reviewCountText: "(3,102)",
+    shortDescription:
+      "Sporty backpack with Reebok branding. Padded laptop sleeve and ventilated back panel.",
+    longDescription:
+      "The Reebok Classic Backpack features a sporty design with the iconic Reebok logo. Padded laptop compartment, ventilated back, and durable materials.",
+    images: {
+      altShort: "Sporty Reebok backpack with ventilated back.",
+      altLong:
+        "Overall: A sporty backpack with Reebok branding. Padded laptop sleeve. Ventilated back panel. Multiple pockets. Durable construction.",
+    },
+    fitSummary: {
+      verdict: "True to size",
+      confidence: 0.88,
+      evidence: [
+        "Demo snippet: Comfortable for active use.",
+        "Demo snippet: Ventilation works well.",
+      ],
+    },
+    themes: [
+      {
+        label: "Comfort",
+        share: 0.4,
+        severity: "low",
+        evidence: [
+          "Demo snippet: Ventilated back is great.",
+          "Demo snippet: Comfortable for long wear.",
+        ],
+      },
+    ],
+    returnRisk: {
+      score: 0.15,
+      label: "Low",
+      drivers: [
+        "Demo snippet: Reliable Reebok quality.",
+        "Demo snippet: Matches expectations.",
+      ],
+    },
+    sustainability: {
+      score: 0.48,
+      label: "Medium",
+      materials: ["Polyester", "Recycled content"],
+      badges: ["Reebok sustainability initiative"],
+    },
+    narration: {
+      short: "Reebok Classic Backpack, $44.99. True to size, low return risk.",
+      medium:
+        "Reebok Classic Backpack, $44.99. Sporty backpack with ventilated back. True to size with 88% confidence. Low return risk. Medium sustainability.",
+    },
+    demoDisclosure: "This passport uses demo data. Product details are illustrative.",
   },
 };
 
 export function getFallbackPassport(id: string): ProductPassport | undefined {
   if (id in DEMO_PASSPORTS) {
-    return DEMO_PASSPORTS[id as SnapshotId];
+    return DEMO_PASSPORTS[id as ProductSnapshotId];
   }
   return undefined;
 }

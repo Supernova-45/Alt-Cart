@@ -13,7 +13,7 @@ function openPassport() {
 
     chrome.storage.sync.get({ baseUrl: DEFAULT_BASE_URL }, (data) => {
       const baseUrl = (data.baseUrl || DEFAULT_BASE_URL).replace(/\/$/, "");
-      const passportUrl = `${baseUrl}/passport?url=${encodeURIComponent(tab.url)}`;
+      const passportUrl = `${baseUrl}/open?url=${encodeURIComponent(tab.url)}`;
       chrome.tabs.create({ url: passportUrl });
     });
   });

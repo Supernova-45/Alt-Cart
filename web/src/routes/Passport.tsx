@@ -26,7 +26,7 @@ export function Passport() {
     }
 
     const fallback = getFallbackPassport(id);
-    if (!fallback || fallback.id === "search") {
+    if (!fallback) {
       setPassport(null);
       setError(null);
       setLoading(false);
@@ -45,7 +45,7 @@ export function Passport() {
 
     fetchSnapshot(snapshotPath)
       .then((doc) => {
-        const parsed = parseProductSnapshot(doc);
+        const parsed = parseProductSnapshot(doc, snapshotPath);
         const merged = mergePassport(fallback, parsed);
         setPassport(merged);
       })
@@ -62,18 +62,18 @@ export function Passport() {
     return (
       <div className="error-card">
         <h1>Invalid product</h1>
-        <Link to="/">Return to Home</Link>
+        <Link to="/unsupported">Return</Link>
       </div>
     );
   }
 
   const fallback = getFallbackPassport(id);
-  if (!fallback || fallback.id === "search") {
+  if (!fallback) {
     return (
       <div className="error-card">
         <h1>Product not found</h1>
         <p className="error-card__message">Unknown product ID: {id}</p>
-        <Link to="/">Return to Home</Link>
+        <Link to="/unsupported">Return</Link>
       </div>
     );
   }
@@ -130,8 +130,8 @@ export function Passport() {
   return (
     <>
       <header className="passport-header">
-        <Link to="/" className="passport-header__back">
-          ← Back to products
+        <Link to="/unsupported" className="passport-header__back">
+          ← Back
         </Link>
         <h1 className="passport-header__title">{p.name}</h1>
         <div className="passport-header__stats">

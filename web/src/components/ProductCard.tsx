@@ -21,7 +21,7 @@ export function ProductCard({
     <article className="product-card">
       <h2 className="product-card__title">{name}</h2>
       {meta && <p className="product-card__meta">{meta}</p>}
-      <Link to={`/passport/${id}`} className="product-card__link">
+      <Link to={`/p/${id}`} className="product-card__link">
         Open Passport
       </Link>
     </article>

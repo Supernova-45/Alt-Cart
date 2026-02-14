@@ -1,13 +1,21 @@
-import { ProductList } from "../components/ProductList";
+import { Link } from "react-router-dom";
 
 export function Home() {
   return (
-    <>
-      <h1>White Sneakers</h1>
+    <div style={{ maxWidth: "36rem", margin: "0 auto" }}>
+      <h1>EchoCart</h1>
       <p style={{ marginBottom: "1.5rem", color: "var(--color-text-muted)" }}>
-        Browse curated white sneaker products. Open a passport for accessible product details, image descriptions, and review insights.
+        Accessible product passports for Amazon white sneakers and Walmart backpacks. Use the browser extension on a product or search page to open a passport.
       </p>
-      <ProductList />
-    </>
+      <p style={{ marginBottom: "1rem" }}>
+        <Link to="/s/a_search" className="product-card__link">
+          Amazon white sneakers search demo
+        </Link>
+        {" · "}
+        <Link to="/s/w_search" className="product-card__link">
+          Walmart backpack search demo
+        </Link>
+      </p>
+    </div>
   );
 }

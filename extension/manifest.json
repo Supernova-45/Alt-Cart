@@ -2,9 +2,12 @@
   "manifest_version": 3,
   "name": "EchoCart",
   "version": "0.1.0",
-  "description": "Open accessible product passports from Amazon pages",
+  "description": "Open accessible product passports from Amazon and Walmart pages",
   "permissions": ["tabs", "activeTab", "storage"],
-  "host_permissions": ["https://www.amazon.com/*"],
+  "host_permissions": [
+    "https://www.amazon.com/*",
+    "https://www.walmart.com/*"
+  ],
   "action": {
     "default_popup": "popup.html",
     "default_title": "Open EchoCart Passport",
@@ -19,9 +22,7 @@
   },
   "commands": {
     "open-passport": {
-      "suggested_key": {
-        "default": "Alt+Shift+P"
-      },
+      "suggested_key": { "default": "Alt+Shift+P" },
       "description": "Open EchoCart Passport for current tab"
     }
   },

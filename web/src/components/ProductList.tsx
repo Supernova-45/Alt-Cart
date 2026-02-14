@@ -7,7 +7,7 @@ export function ProductList() {
     <ul className="product-list">
       {PRODUCT_IDS.map((id) => {
         const passport = getFallbackPassport(id);
-        if (!passport || passport.id === "search") return null;
+        if (!passport) return null;
         return (
           <li key={id}>
             <ProductCard
