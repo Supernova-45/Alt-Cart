@@ -62,18 +62,21 @@ export function Passport() {
     return (
       <div className="error-card">
         <h1>Invalid product</h1>
-        <Link to="/">Return to products</Link>
+        <Link to="/">Return home</Link>
       </div>
     );
   }
 
   const fallback = getFallbackPassport(id);
   if (!fallback) {
+    const errorBackTo = id.startsWith("w_")
+      ? { path: "/s/w_search", label: "Return to backpacks" }
+      : { path: "/s/a_search", label: "Return to sneakers" };
     return (
       <div className="error-card">
         <h1>Product not found</h1>
         <p className="error-card__message">Unknown product ID: {id}</p>
-        <Link to="/">Return to products</Link>
+        <Link to={errorBackTo.path}>{errorBackTo.label}</Link>
       </div>
     );
   }
@@ -83,6 +86,11 @@ export function Passport() {
   }
 
   const p = passport ?? fallback;
+
+  const backTo =
+    id?.startsWith("w_")
+      ? { path: "/s/w_search", label: "Back to backpacks" }
+      : { path: "/s/a_search", label: "Back to sneakers" };
 
   const summaryText = [
     p.brand && `${p.brand}.`,
@@ -130,8 +138,8 @@ export function Passport() {
   return (
     <>
       <header className="passport-header">
-        <Link to="/" className="passport-header__back">
-          ← Back to products
+        <Link to={backTo.path} className="passport-header__back">
+          ← {backTo.label}
         </Link>
         <h1 className="passport-header__title">{p.name}</h1>
         <div className="passport-header__stats">
