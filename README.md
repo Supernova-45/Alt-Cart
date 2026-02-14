@@ -2,11 +2,11 @@
 
 Seamless, sustainable shopping for the visually impaired.
 
-Alt-Cart is a web application that extracts accessible product information from e-commerce websites (Amazon, Walmart) and presents it in a screen-reader-first, keyboard-navigable format with full text-to-speech support.
+Alt-Cart is a web application that extracts accessible product information from e-commerce websites (Amazon, Walmart, eBay, Target, Macy's) and presents it in a screen-reader-first, keyboard-navigable format with full text-to-speech support.
 
 ## Features
 
-- **Real-time product extraction** from Amazon and Walmart URLs
+- **Real-time product extraction** from Amazon, Walmart, eBay, Target, and Macy's URLs
 - **Accessible product passports** with detailed information
 - **Review intelligence** - fit analysis, common themes, return risk assessment
 - **Image descriptions** for screen readers
@@ -78,7 +78,7 @@ Frontend will run on `http://localhost:5173`
 
 ## How It Works
 
-1. **User enters product URL** - Amazon or Walmart product page URL
+1. **User enters product URL** - Amazon, Walmart, eBay, Target, or Macy's product page URL
 2. **Backend extracts data** - Using Stagehand + Browserbase for browser automation
 3. **Transform to ProductPassport** - Analyze reviews, generate descriptions, assess return risk
 4. **Display accessible view** - Clean, screen-reader-friendly interface with TTS support
@@ -167,7 +167,10 @@ If `POST /api/products/extract` returns 500:
 ## Supported Platforms
 
 - Amazon.com
-- Walmart.com (partial support)
+- Walmart.com
+- eBay.com
+- Target.com
+- Macy's
 
 More platforms coming soon!
 

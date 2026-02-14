@@ -19,7 +19,7 @@ export const errorHandler = (
     return res.status(400).json({
       error: "Invalid URL",
       message: err.message,
-      supportedDomains: ["amazon.com", "walmart.com"],
+      supportedDomains: ["amazon.com", "walmart.com", "ebay.com", "target.com", "macys.com"],
     });
   }
 

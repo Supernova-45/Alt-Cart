@@ -5,7 +5,7 @@ export class InvalidUrlError extends Error {
   }
 }
 
-export type SupportedDomain = "amazon" | "walmart";
+export type SupportedDomain = "amazon" | "walmart" | "ebay" | "target" | "macys";
 
 export interface ParsedUrl {
   domain: SupportedDomain;
@@ -16,6 +16,9 @@ export interface ParsedUrl {
 const SUPPORTED_DOMAINS = {
   amazon: ["amazon.com", "www.amazon.com"],
   walmart: ["walmart.com", "www.walmart.com"],
+  ebay: ["ebay.com", "www.ebay.com"],
+  target: ["target.com", "www.target.com"],
+  macys: ["macys.com", "www.macys.com"],
 };
 
 export function parseProductUrl(urlString: string): ParsedUrl {
@@ -35,11 +38,17 @@ export function parseProductUrl(urlString: string): ParsedUrl {
     domain = "amazon";
   } else if (SUPPORTED_DOMAINS.walmart.includes(hostname)) {
     domain = "walmart";
+  } else if (SUPPORTED_DOMAINS.ebay.includes(hostname)) {
+    domain = "ebay";
+  } else if (SUPPORTED_DOMAINS.target.includes(hostname)) {
+    domain = "target";
+  } else if (SUPPORTED_DOMAINS.macys.includes(hostname)) {
+    domain = "macys";
   }
 
   if (!domain) {
     throw new InvalidUrlError(
-      `Unsupported domain. Supported domains: amazon.com, walmart.com`
+      `Unsupported domain. Supported: amazon.com, walmart.com, ebay.com, target.com, macys.com`
     );
   }
 
@@ -47,14 +56,23 @@ export function parseProductUrl(urlString: string): ParsedUrl {
   let productId: string | null = null;
 
   if (domain === "amazon") {
-    // Amazon: Extract ASIN from /dp/ or /gp/product/ paths
     const dpMatch = url.pathname.match(/\/dp\/([A-Z0-9]{10})/i);
     const gpMatch = url.pathname.match(/\/gp\/product\/([A-Z0-9]{10})/i);
     productId = dpMatch?.[1] || gpMatch?.[1] || null;
   } else if (domain === "walmart") {
-    // Walmart: Extract from /ip/ path or seQueueId query param
     const ipMatch = url.pathname.match(/\/ip\/([^\/]+)\/(\d+)/);
     productId = ipMatch?.[2] || url.searchParams.get("seQueueId") || null;
+  } else if (domain === "ebay") {
+    // eBay: /itm/405946765805 or /itm/405946765805?...
+    const itmMatch = url.pathname.match(/\/itm\/(\d+)/);
+    productId = itmMatch?.[1] || url.searchParams.get("itm") || null;
+  } else if (domain === "target") {
+    // Target: /p/.../-/A-87854495
+    const aMatch = url.pathname.match(/\/-\/A-(\d+)/);
+    productId = aMatch?.[1] || null;
+  } else if (domain === "macys") {
+    // Macy's: ?ID=19864965
+    productId = url.searchParams.get("ID") || null;
   }
 
   if (!productId) {

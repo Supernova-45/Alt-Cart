@@ -61,7 +61,7 @@ export function Extract() {
         {errorMessage}
       </p>
       <p style={{ marginBottom: "var(--space-md)", fontSize: "var(--text-sm)", color: "var(--color-text-muted)" }}>
-        Live extraction supports Amazon and Walmart product pages.
+        Live extraction supports Amazon, Walmart, eBay, Target, and Macy's product pages.
       </p>
       <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-sm)" }}>
         <Link

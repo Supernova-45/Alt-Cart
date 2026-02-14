@@ -3,6 +3,9 @@ import { parseProductUrl, ParsedUrl } from "../utils/urlParser";
 import { StagehandService } from "./stagehandService";
 import { AmazonExtractor } from "../extractors/amazonExtractor";
 import { WalmartExtractor } from "../extractors/walmartExtractor";
+import { EbayExtractor } from "../extractors/ebayExtractor";
+import { TargetExtractor } from "../extractors/targetExtractor";
+import { MacysExtractor } from "../extractors/macysExtractor";
 import { TransformService } from "./transformService";
 import { logger } from "../utils/logger";
 import { ExtractionError } from "../middleware/errorHandler";
@@ -39,6 +42,24 @@ export class ExtractionService {
       } else if (parsedUrl.domain === "walmart") {
         const walmartExtractor = new WalmartExtractor();
         extractedData = await walmartExtractor.extract(
+          stagehandService.getStagehand(),
+          parsedUrl.fullUrl
+        );
+      } else if (parsedUrl.domain === "ebay") {
+        const ebayExtractor = new EbayExtractor();
+        extractedData = await ebayExtractor.extract(
+          stagehandService.getStagehand(),
+          parsedUrl.fullUrl
+        );
+      } else if (parsedUrl.domain === "target") {
+        const targetExtractor = new TargetExtractor();
+        extractedData = await targetExtractor.extract(
+          stagehandService.getStagehand(),
+          parsedUrl.fullUrl
+        );
+      } else if (parsedUrl.domain === "macys") {
+        const macysExtractor = new MacysExtractor();
+        extractedData = await macysExtractor.extract(
           stagehandService.getStagehand(),
           parsedUrl.fullUrl
         );

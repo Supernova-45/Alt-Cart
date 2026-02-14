@@ -53,6 +53,24 @@ function walmartItemIdFromUrl(url: string): string | null {
   return match ? match[1] : null;
 }
 
+function ebayItemIdFromUrl(url: string): string | null {
+  const match = url.match(/\/itm\/(\d+)/);
+  return match ? match[1] : null;
+}
+
+function targetProductIdFromUrl(url: string): string | null {
+  const match = url.match(/\/-\/A-(\d+)/);
+  return match ? match[1] : null;
+}
+
+function macysProductIdFromUrl(url: string): string | null {
+  try {
+    return new URL(url).searchParams.get("ID");
+  } catch {
+    return null;
+  }
+}
+
 export function urlToDemo(url: string): OpenTarget {
   const host = getHost(url);
   const path = getPath(url);
@@ -99,11 +117,25 @@ export function urlToDemo(url: string): OpenTarget {
     }
   }
 
+  const isEbay = host.includes("ebay.com");
+  const isTarget = host.includes("target.com");
+  const isMacys = host.includes("macys.com");
+
+  if (isEbay && ebayItemIdFromUrl(url)) {
+    return { kind: "unsupported", reason: "unknown_item" };
+  }
+  if (isTarget && targetProductIdFromUrl(url)) {
+    return { kind: "unsupported", reason: "unknown_item" };
+  }
+  if (isMacys && macysProductIdFromUrl(url)) {
+    return { kind: "unsupported", reason: "unknown_item" };
+  }
+
   return { kind: "unsupported", reason: "unknown_host" };
 }
 
 /**
- * Returns true if the URL is a valid Amazon or Walmart product page
+ * Returns true if the URL is a valid product page (Amazon, Walmart, eBay, Target, Macy's)
  * that is NOT in the demo registry (i.e. should go to extraction flow).
  */
 export function isExtractableProductUrl(url: string): boolean {

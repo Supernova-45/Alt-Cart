@@ -393,7 +393,7 @@ export class WalmartExtractor {
       if (reviewElements.length === 0) {
         const thumbsUpButtons = await page.$$('[data-testid="thumbs-up-button"]');
         for (const btn of thumbsUpButtons) {
-          const reviewBlock = await btn.evaluateHandle((el) => el.closest?.("div[class]")?.parentElement?.parentElement || el.parentElement?.parentElement);
+          const reviewBlock = await btn.evaluateHandle((el: Element) => el.closest?.("div[class]")?.parentElement?.parentElement || el.parentElement?.parentElement);
           if (reviewBlock) {
             reviewElements.push(reviewBlock);
           }
