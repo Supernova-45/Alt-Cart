@@ -99,14 +99,11 @@ export function Landing() {
       <main id="main-content" className="container">
         <header className="landing-header">
           <h1>alt+cart</h1>
-          <p className="tagline">Shopping Made Accessible</p>
+          <p className="tagline">shopping made accessible</p>
         </header>
 
         <section className="search-section url-input-section">
           <h2>Search for Products</h2>
-          <p>
-            Choose a store, then enter your search. We support Amazon, Walmart, eBay, Etsy, Target, Lowe&apos;s, Home Depot, and Macy&apos;s. Or paste any search results URL with &quot;Other&quot;.
-          </p>
 
           <form onSubmit={handleSearchSubmit} className="url-form">
             <div className="form-row">
@@ -167,7 +164,7 @@ export function Landing() {
         </section>
 
         <section className="url-input-section">
-          <h2>Or Enter a Product URL</h2>
+          <h2>Enter a Product URL</h2>
           <p>
             Enter any online product URL to get an accessible &quot;should I buy?&quot; summary with detailed information, review insights, and text-to-speech support.
           </p>
