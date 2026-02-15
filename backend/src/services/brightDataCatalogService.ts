@@ -78,6 +78,33 @@ function mapScraperRecordsToItems(records: unknown[], domain: CatalogDomain): Se
       if (num) reviewCountText = `(${num[0]})`;
     }
 
+    // Parse numeric values for sorting
+    let priceNumeric: number | undefined;
+    if (rawPrice != null) {
+      const num = typeof rawPrice === "number" ? rawPrice : parseFloat(String(rawPrice).replace(/[^0-9.]/g, ""));
+      if (!isNaN(num)) priceNumeric = num;
+    }
+
+    let ratingNumeric: number | undefined;
+    if (rating) {
+      const match = String(rating).match(/(\d+\.?\d*)/);
+      if (match) {
+        const num = parseFloat(match[1]);
+        if (!isNaN(num) && num >= 0 && num <= 5) ratingNumeric = num;
+      }
+    }
+
+    // Sustainability: Climate Pledge Friendly, sustainability badges
+    const climatePledgeFriendly =
+      rec.climate_pledge_friendly === true ||
+      rec.climatePledgeFriendly === true ||
+      (typeof rec.climate_pledge_friendly === "string" && /true|yes|1/i.test(String(rec.climate_pledge_friendly)));
+    const sustainabilityFeatures = rec.sustainability_features ?? rec.sustainabilityFeatures;
+    const badgeCount = Array.isArray(sustainabilityFeatures) ? sustainabilityFeatures.length : 0;
+    const sustainabilityScore = climatePledgeFriendly || badgeCount > 0
+      ? Math.min(100, (climatePledgeFriendly ? 50 : 0) + badgeCount * 25)
+      : undefined;
+
     items.push({
       name: String(name).slice(0, 200),
       productUrl: String(productUrl),
@@ -85,6 +112,10 @@ function mapScraperRecordsToItems(records: unknown[], domain: CatalogDomain): Se
       ratingText,
       reviewCountText,
       imageUrl: imageUrl && String(imageUrl).startsWith("http") ? String(imageUrl) : undefined,
+      priceNumeric,
+      ratingNumeric,
+      climatePledgeFriendly: climatePledgeFriendly || undefined,
+      sustainabilityScore,
     });
   }
 

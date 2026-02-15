@@ -59,7 +59,22 @@ export interface SearchResultItem {
   reviewCountText?: string;
   imageUrl?: string;
   productUrl: string;
+  /** Numeric price for sorting. */
+  priceNumeric?: number;
+  /** Numeric rating (0-5) for sorting. */
+  ratingNumeric?: number;
+  /** Whether product has Climate Pledge Friendly or similar badge. */
+  climatePledgeFriendly?: boolean;
+  /** Sustainability score 0-100 for sorting. */
+  sustainabilityScore?: number;
 }
+
+export type SortOption =
+  | "relevance"
+  | "price_asc"
+  | "price_desc"
+  | "rating"
+  | "sustainability";
 
 export interface ExtractSearchResponse {
   status: "success";

@@ -60,6 +60,21 @@ export function parseWalmartSearchHtml(html: string): SearchResultItem[] {
       reviewCountText = `(${numMatch[0]})`;
     }
 
+    // Numeric values for sorting
+    let priceNumeric: number | undefined;
+    if (price) {
+      const num = parseFloat(price.replace(/[^0-9.]/g, ""));
+      if (!isNaN(num)) priceNumeric = num;
+    }
+    let ratingNumeric: number | undefined;
+    if (ratingText) {
+      const match = ratingText.match(/(\d+\.?\d*)/);
+      if (match) {
+        const num = parseFloat(match[1]);
+        if (!isNaN(num) && num >= 0 && num <= 5) ratingNumeric = num;
+      }
+    }
+
     if (name && productUrl && name.length > 5) {
       items.push({
         name: name.slice(0, 150),
@@ -68,6 +83,8 @@ export function parseWalmartSearchHtml(html: string): SearchResultItem[] {
         reviewCountText,
         imageUrl: imageUrl?.startsWith("http") ? imageUrl : undefined,
         productUrl,
+        priceNumeric,
+        ratingNumeric,
       });
     }
   });

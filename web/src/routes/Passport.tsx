@@ -122,12 +122,20 @@ export function Passport() {
   const summaryText = [
     p.brand && `${p.brand}.`,
     p.priceText && p.priceText,
-    p.fitSummary && `Fit: ${p.fitSummary.verdict}.`,
+    p.fitSummary && `Fit: ${p.fitSummary.verdict}, ${Math.round(p.fitSummary.confidence * 100)}% confidence.`,
     p.shortDescription,
     p.demoDisclosure,
   ]
     .filter(Boolean)
     .join(" ");
+
+  const sizingText = p.fitSummary
+    ? [
+        `Sizing: ${p.fitSummary.verdict}.`,
+        `Confidence: ${Math.round(p.fitSummary.confidence * 100)}% based on customer reviews.`,
+        ...p.fitSummary.evidence,
+      ].join(" ")
+    : "";
 
   const imageDescText = [p.images.altShort, p.images.altLong].filter(Boolean).join(" ");
 
@@ -145,7 +153,6 @@ export function Passport() {
     : "No sustainability data available.";
 
   const reviewerWarningsText = [
-    p.fitSummary && `Fit: ${p.fitSummary.verdict}. ${p.fitSummary.evidence.join(" ")}`,
     ...p.themes.map(
       (t) => `${t.label}: ${t.severity} severity. ${t.evidence.join(" ")}`
     ),
@@ -201,6 +208,33 @@ export function Passport() {
           {p.demoDisclosure}
         </p>
       </SectionCard>
+
+      {p.fitSummary && (
+        <SectionCard
+          id="sizing"
+          title="Sizing"
+          readText={sizingText}
+          onReadSection={() => speak(sizingText)}
+        >
+          <p>
+            <strong>Fit:</strong> {p.fitSummary.verdict} (confidence:{" "}
+            {Math.round(p.fitSummary.confidence * 100)}%)
+          </p>
+          <p style={{ fontSize: "var(--text-sm)", color: "var(--color-text-muted)", marginBottom: "var(--space-md)" }}>
+            Based on customer review analysis.
+          </p>
+          {p.fitSummary.evidence.length > 0 && (
+            <>
+              <h3 style={{ fontSize: "var(--text-base)", marginBottom: "var(--space-sm)" }}>Review insights</h3>
+              <ul>
+                {p.fitSummary.evidence.map((e, i) => (
+                  <li key={i}>{e}</li>
+                ))}
+              </ul>
+            </>
+          )}
+        </SectionCard>
+      )}
 
       <SectionCard
         id="image-description"
@@ -312,20 +346,6 @@ export function Passport() {
         readText={reviewerWarningsText}
         onReadSection={() => speak(reviewerWarningsText)}
       >
-        {p.fitSummary && (
-          <div style={{ marginBottom: "var(--space-md)" }}>
-            <h3>Fit</h3>
-            <p>
-              {p.fitSummary.verdict} (confidence:{" "}
-              {Math.round(p.fitSummary.confidence * 100)}%)
-            </p>
-            <ul>
-              {p.fitSummary.evidence.map((e, i) => (
-                <li key={i}>{e}</li>
-              ))}
-            </ul>
-          </div>
-        )}
         {p.themes.length > 0 && (
           <div>
             <h3>Themes</h3>

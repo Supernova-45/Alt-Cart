@@ -50,6 +50,24 @@ export function parseAmazonSearchHtml(html: string): SearchResultItem[] {
 
     const imgSrc = $card.find(".s-product-image-container img").attr("src");
 
+    // Numeric values for sorting
+    let priceNumeric: number | undefined;
+    if (price) {
+      const num = parseFloat(price.replace(/[^0-9.]/g, ""));
+      if (!isNaN(num)) priceNumeric = num;
+    }
+    let ratingNumeric: number | undefined;
+    if (ratingText) {
+      const match = ratingText.match(/(\d+\.?\d*)/);
+      if (match) {
+        const num = parseFloat(match[1]);
+        if (!isNaN(num) && num >= 0 && num <= 5) ratingNumeric = num;
+      }
+    }
+
+    // Climate Pledge Friendly badge on Amazon search cards
+    const hasCpf = $card.find(".a-badge-sustainability, [class*='climatePledge'], [class*='climate-pledge']").length > 0;
+
     if (name && productUrl) {
       items.push({
         name,
@@ -58,6 +76,10 @@ export function parseAmazonSearchHtml(html: string): SearchResultItem[] {
         reviewCountText: reviewCountText || undefined,
         imageUrl: imgSrc || undefined,
         productUrl,
+        priceNumeric,
+        ratingNumeric,
+        climatePledgeFriendly: hasCpf || undefined,
+        sustainabilityScore: hasCpf ? 50 : undefined,
       });
     }
   });
