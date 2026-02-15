@@ -33,7 +33,7 @@ export class TransformService {
       images: this.generateImageDescriptions(extracted.name, extracted.images?.main),
       fitSummary: this.analyzeFit(reviews),
       themes: this.extractThemes(reviews),
-      returnRisk: this.calculateReturnRisk(reviews),
+      returnRisk: this.calculateReturnRisk(extracted, reviews),
       sustainability: this.analyzeSustainability(extracted),
       narration: this.generateNarration(extracted, reviews),
       demoDisclosure: "This product passport was generated from live product data.",
@@ -198,7 +198,9 @@ export class TransformService {
     return themes;
   }
 
-  private calculateReturnRisk(reviews: ExtractedReview[]): ReturnRisk {
+  private calculateReturnRisk(extracted: ExtractedProductData, reviews: ExtractedReview[]): ReturnRisk {
+    const drivers: string[] = [];
+
     if (reviews.length === 0) {
       return {
         score: 0.5,
@@ -207,34 +209,53 @@ export class TransformService {
       };
     }
 
-    const riskKeywords = [
-      "return", "refund", "disappointed", "not as described",
-      "waste of money", "don't buy", "poor quality", "broke"
-    ];
+    // 1. Share of negative reviews (1-2 stars)
+    const negativeReviews = reviews.filter((r) => r.rating >= 1 && r.rating <= 2);
+    const negativeCount = negativeReviews.length;
+    const negativeShare = negativeCount / reviews.length;
 
-    let riskCount = 0;
-    const drivers: string[] = [];
+    // 2. Overall rating (parse from extracted.rating, e.g. "4.5 out of 5 stars")
+    const avgRatingFromReviews = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
+    const parsedProductRating = this.parseRating(extracted.rating);
+    const overallRating = parsedProductRating ?? avgRatingFromReviews;
+    const ratingRisk = Math.max(0, (5 - overallRating) / 4); // 5 stars -> 0, 1 star -> 1
 
-    for (const review of reviews) {
-      const text = review.text.toLowerCase();
-      if (riskKeywords.some(kw => text.includes(kw))) {
-        riskCount++;
-        if (review.rating <= 2 && drivers.length < 4) {
-          drivers.push(review.text.slice(0, 80) + "...");
-        }
-      }
-    }
+    // 3. Verified purchase: weight verified negative reviews more (they're more credible)
+    const verifiedNegative = negativeReviews.filter((r) => r.verified === true);
+    const verifiedNegativeShare = negativeCount > 0 ? verifiedNegative.length / negativeCount : 0;
 
-    const score = Math.min(riskCount / reviews.length, 1.0);
+    // Combined score: negative share (50%), rating (30%), verified negative credibility (20%)
+    const score = Math.min(
+      0.5 * negativeShare + 0.3 * ratingRisk + 0.2 * verifiedNegativeShare,
+      1.0
+    );
     const label: "Low" | "Medium" | "High" = score < 0.3 ? "Low" : score < 0.6 ? "Medium" : "High";
 
-    const finalDrivers = drivers.length > 0
-      ? drivers.slice(0, 4)
-      : ["Based on review analysis", "Check review themes for details"];
+    // Build drivers
+    const pctNegative = Math.round(negativeShare * 100);
+    drivers.push(`${pctNegative}% of reviews are 1-2 stars`);
+    drivers.push(`Overall rating: ${overallRating.toFixed(1)}/5`);
+    if (verifiedNegative.length > 0) {
+      drivers.push(`${verifiedNegative.length} verified purchase${verifiedNegative.length > 1 ? "s" : ""} gave low ratings`);
+    }
+    if (negativeCount > 0 && drivers.length < 4) {
+      const sample = negativeReviews[0].text.slice(0, 80).trim();
+      if (sample) drivers.push(`"${sample}${negativeReviews[0].text.length > 80 ? "..." : ""}"`);
+    }
 
-    logger.debug("Return risk calculated", { score, label, riskCount });
+    logger.debug("Return risk calculated", { score, label, negativeShare, ratingRisk, verifiedNegativeShare });
 
-    return { score, label, drivers: finalDrivers };
+    return { score, label, drivers: drivers.slice(0, 4) };
+  }
+
+  private parseRating(ratingText?: string): number | null {
+    if (!ratingText || typeof ratingText !== "string") return null;
+    const match = ratingText.match(/(\d+\.?\d*)\s*(?:out of\s*5|[/]\s*5)?/i);
+    if (match) {
+      const n = parseFloat(match[1]);
+      return n >= 0 && n <= 5 ? n : null;
+    }
+    return null;
   }
 
   private analyzeSustainability(extracted: ExtractedProductData): SustainabilityInfo | undefined {
@@ -512,7 +533,7 @@ export class TransformService {
 
     const fitSummary = this.analyzeFit(reviews);
     const themes = this.extractThemes(reviews);
-    const returnRisk = this.calculateReturnRisk(reviews);
+    const returnRisk = this.calculateReturnRisk(extracted, reviews);
 
     const fitText = fitSummary ? ` Fit verdict: ${fitSummary.verdict} with ${Math.round(fitSummary.confidence * 100)}% confidence.` : "";
     const themeText = themes.length > 0 ? ` Key reviewer notes: ${themes.slice(0, 2).map(t => t.label).join(", ")}.` : "";
