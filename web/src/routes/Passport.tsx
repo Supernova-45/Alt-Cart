@@ -189,6 +189,11 @@ export function Passport() {
         .join(" ")
     : "No sustainability data available.";
 
+  const notableFeaturesText =
+    p.sustainability?.sustainabilityBadges?.length
+      ? `Notable features: ${p.sustainability.sustainabilityBadges.join(". ")}`
+      : "";
+
   const reviewerWarningsText = [
     ...p.themes.map(
       (t) => `${t.label}: ${t.severity} severity. ${t.evidence.join(" ")}`
@@ -375,17 +380,21 @@ export function Passport() {
               </ul>
             )}
           </div>
+        </SectionCard>
+      )}
 
-          {p.sustainability.sustainabilityBadges && p.sustainability.sustainabilityBadges.length > 0 && (
-            <div className="sustainability-badges">
-              <h3 className="sustainability-badges__title">Notable features</h3>
-              <ul className="sustainability-category__details">
-                {p.sustainability.sustainabilityBadges.map((badge, idx) => (
-                  <li key={idx}>{badge}</li>
-                ))}
-              </ul>
-            </div>
-          )}
+      {p.sustainability?.sustainabilityBadges && p.sustainability.sustainabilityBadges.length > 0 && (
+        <SectionCard
+          id="notable-features"
+          title="Notable features"
+          readText={notableFeaturesText}
+          onReadSection={() => speak(notableFeaturesText)}
+        >
+          <ul className="passport-body__list">
+            {p.sustainability.sustainabilityBadges.map((badge, idx) => (
+              <li key={idx}>{badge}</li>
+            ))}
+          </ul>
         </SectionCard>
       )}
 
