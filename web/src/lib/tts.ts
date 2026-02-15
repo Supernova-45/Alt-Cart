@@ -1,6 +1,19 @@
 let lastSpokenText = "";
 let currentRate = 1;
 let currentVoiceName = "";
+let playableText = "";
+
+export function setPlayableText(text: string): void {
+  playableText = text ?? "";
+}
+
+export function clearPlayableText(): void {
+  playableText = "";
+}
+
+export function getPlayableText(): string {
+  return playableText;
+}
 
 export function splitIntoSentences(text: string): string[] {
   return text.split(/(?<=[.!?])\s+/).filter((s) => s.trim().length > 0);

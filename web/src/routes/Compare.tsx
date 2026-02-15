@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { getProduct } from "../lib/api";
 import { getFallbackPassport } from "../lib/demoFallbacks";
-import { speak } from "../lib/tts";
+import { speak, setPlayableText, clearPlayableText } from "../lib/tts";
 import { TTSControls } from "../components/TTSControls";
 import { SectionCard } from "../components/SectionCard";
 import { buildComparisonNarrative, buildAttributeSections } from "../lib/buildComparison";
@@ -50,6 +50,13 @@ export function Compare() {
 
   const narrative = buildComparisonNarrative(passports);
   const attributeSections = buildAttributeSections(passports);
+
+  useEffect(() => {
+    if (passports.length > 0) {
+      setPlayableText(narrative);
+    }
+    return () => clearPlayableText();
+  }, [narrative, passports.length]);
 
   const handleRemove = (id: string) => {
     removeFromCompare(id);

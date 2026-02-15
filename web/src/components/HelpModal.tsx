@@ -13,9 +13,9 @@ Add products to compare from search results or product passports. Compare up to 
 
 Use the Preferences page to customize font, font size, TTS voice, reduced motion, and more.
 
-Toggle dark mode and low vision mode from the top bar.
+Toggle dark mode and low vision mode from the Preferences page.
 
-Press Alt and question mark at any time to open or close this help.`;
+Keyboard shortcuts: Alt + ? for help. Tab and Shift+Tab to move focus. Enter to activate. Space to stop TTS. P to play or pause TTS. R to repeat. H for home. C for compare when you have items.`;
 
 interface HelpModalProps {
   isOpen: boolean;
@@ -72,7 +72,7 @@ export function HelpModal({ isOpen, onClose }: HelpModalProps) {
           <ul>
             <li>
               <strong>Search</strong> – Enter a search term and store, or paste a product or search URL (from Amazon,
-              Walmart, eBay, Target, Macy's, etc.)&apos;s.
+              Walmart, eBay, Target, Macy&apos;s, etc.).
             </li>
             <li>
               <strong>Product passports</strong> – Open a product to see fit analysis, return risk, sustainability, and
@@ -89,12 +89,36 @@ export function HelpModal({ isOpen, onClose }: HelpModalProps) {
               <strong>Preferences</strong> – Customize font, font size, TTS voice, reduced motion, and more.
             </li>
             <li>
-              <strong>Dark mode &amp; low vision</strong> – Toggle from the top bar.
-            </li>
-            <li>
-              <strong>Help</strong> – Press Alt + ? to open or close this help.
+              <strong>Dark mode &amp; low vision</strong> – Toggle from the Preferences page.
             </li>
           </ul>
+          <h3 style={{ fontSize: "var(--text-base)", marginTop: "var(--space-lg)", marginBottom: "var(--space-sm)" }}>
+            Keyboard shortcuts
+          </h3>
+          <dl className="help-modal__shortcuts">
+            <dt>Tab / Shift+Tab</dt>
+            <dd>Move focus forward or backward</dd>
+            <dt>Enter</dt>
+            <dd>Activate focused link or button</dd>
+            <dt>Alt + ?</dt>
+            <dd>Open or close help</dd>
+            <dt>Space</dt>
+            <dd>Stop audio when TTS is playing</dd>
+            <dt>P</dt>
+            <dd>Play or pause TTS (on passport or compare page)</dd>
+            <dt>R</dt>
+            <dd>Repeat last spoken text</dd>
+            <dt>H</dt>
+            <dd>Go to home</dd>
+            <dt>C</dt>
+            <dd>Go to compare (when you have items to compare)</dd>
+            <dt>Alt</dt>
+            <dd>Hover over a product card and press Alt to hear its description</dd>
+            <dt>Space</dt>
+            <dd>Focus a product card and press Space to hear its description</dd>
+            <dt>Escape</dt>
+            <dd>Close help (when help is open)</dd>
+          </dl>
         </div>
         <div className="help-modal__actions">
           <button

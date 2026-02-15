@@ -6,7 +6,7 @@ import { mergePassport } from "../lib/mergePassport";
 import { getFallbackPassport } from "../lib/demoFallbacks";
 import { SNAPSHOTS } from "../lib/snapshotRegistry";
 import { getProduct } from "../lib/api";
-import { speak } from "../lib/tts";
+import { speak, setPlayableText, clearPlayableText } from "../lib/tts";
 import { addToCompare, getCompareIds, getCompareUrl, MAX_COMPARE } from "../lib/compare";
 import type { ProductPassport } from "../lib/productModel";
 import { TTSControls } from "../components/TTSControls";
@@ -175,6 +175,11 @@ export function Passport() {
   ]
     .filter(Boolean)
     .join(" ");
+
+  useEffect(() => {
+    setPlayableText(p.narration.medium);
+    return () => clearPlayableText();
+  }, [p.narration.medium]);
 
   return (
     <>

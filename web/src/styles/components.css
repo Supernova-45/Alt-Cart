@@ -753,6 +753,25 @@ body.theme-dark .theme-pill__option--active {
   margin-bottom: var(--space-sm);
 }
 
+.help-modal__shortcuts {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-xs) var(--space-md);
+  align-items: baseline;
+}
+
+.help-modal__shortcuts dt {
+  margin: 0;
+  font-weight: 600;
+  font-family: var(--font-mono, monospace);
+}
+
+.help-modal__shortcuts dd {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
 .help-modal__actions {
   display: flex;
   justify-content: flex-end;

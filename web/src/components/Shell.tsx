@@ -1,9 +1,22 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { SkipLink } from "./SkipLink";
 import { TopBar } from "./TopBar";
 import { getTheme, setTheme, type Theme } from "../lib/theme";
 import { getPreferences } from "../lib/accessibilityPreferences";
-import { setVoice, cancel, isSpeaking } from "../lib/tts";
+import {
+  setVoice,
+  cancel,
+  isSpeaking,
+  isPaused,
+  pause,
+  resume,
+  repeatLast,
+  speak,
+  getPlayableText,
+  isTTSSupported,
+} from "../lib/tts";
+import { getCompareIds, getCompareUrl } from "../lib/compare";
 import { TTSCaptions } from "./TTSCaptions";
 import { HelpModal } from "./HelpModal";
 import { HelpButton } from "./HelpButton";
@@ -24,29 +37,69 @@ function applyAccessibilityPreferences(): void {
 }
 
 export function Shell({ children }: { children: React.ReactNode }) {
+  const navigate = useNavigate();
   const [theme, setThemeState] = useState<Theme>(() => getTheme());
   const [ttsCaptions, setTtsCaptions] = useState(() => getPreferences().ttsCaptions);
   const [helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      const isInput =
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.tagName === "SELECT" ||
+        target.isContentEditable;
+
       if ((e.key === "?" || e.key === "/") && e.altKey) {
         e.preventDefault();
         setHelpOpen((prev) => !prev);
         return;
       }
-      if (e.key === " " && isSpeaking()) {
-        const target = e.target as HTMLElement;
-        const isInput = target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable;
-        if (!isInput) {
+      if (e.key === " " && isSpeaking() && !isInput) {
+        e.preventDefault();
+        cancel();
+        return;
+      }
+      if (isInput) return;
+
+      if (e.key === "p" || e.key === "P") {
+        if (isTTSSupported()) {
           e.preventDefault();
-          cancel();
+          if (isSpeaking()) {
+            pause();
+          } else if (isPaused()) {
+            resume();
+          } else {
+            const text = getPlayableText();
+            if (text) speak(text, { interrupt: true });
+          }
+        }
+        return;
+      }
+      if (e.key === "r" || e.key === "R") {
+        if (isTTSSupported()) {
+          e.preventDefault();
+          repeatLast();
+        }
+        return;
+      }
+      if (e.key === "h" || e.key === "H") {
+        e.preventDefault();
+        navigate("/");
+        return;
+      }
+      if (e.key === "c" || e.key === "C") {
+        const ids = getCompareIds();
+        if (ids.length > 0) {
+          e.preventDefault();
+          navigate(getCompareUrl());
         }
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     applyAccessibilityPreferences();
