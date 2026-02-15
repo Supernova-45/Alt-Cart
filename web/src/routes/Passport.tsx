@@ -20,6 +20,7 @@ export function Passport() {
   const [passport, setPassport] = useState<ProductPassport | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const compareMode = useCompareModeOptional();
 
   useEffect(() => {
     if (!id) {
@@ -91,6 +92,12 @@ export function Passport() {
       .finally(() => setLoading(false));
   }, [id]);
 
+  useEffect(() => {
+    if (!passport) return;
+    setPlayableText(passport.narration.medium);
+    return () => clearPlayableText();
+  }, [passport?.narration.medium]);
+
   if (!id) {
     return (
       <div className="error-card">
@@ -129,7 +136,6 @@ export function Passport() {
 
   const p = passport;
   const fallback = getFallbackPassport(id);
-  const compareMode = useCompareModeOptional();
   const inCompareMode = compareMode?.compareMode ?? false;
   const selected = (compareMode?.selectedIds ?? []).includes(id);
   const selectionFull =
@@ -198,11 +204,6 @@ export function Passport() {
   ]
     .filter(Boolean)
     .join(" ");
-
-  useEffect(() => {
-    setPlayableText(p.narration.medium);
-    return () => clearPlayableText();
-  }, [p.narration.medium]);
 
   return (
     <>
