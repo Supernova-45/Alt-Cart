@@ -41,8 +41,8 @@ const DEMO_PASSPORTS: Record<ProductSnapshotId, ProductPassport> = {
       },
       {
         label: "Quality",
-        share: 0.25,
-        severity: "low",
+        share: 0.31,
+        severity: "medium",
         evidence: [
           "Demo snippet: Well-made for the price.",
           "Demo snippet: Sturdy construction.",
@@ -329,10 +329,10 @@ const DEMO_PASSPORTS: Record<ProductSnapshotId, ProductPassport> = {
       {
         label: "Value",
         share: 0.45,
-        severity: "low",
+        severity: "medium",
         evidence: [
           "Demo snippet: Great value for the price.",
-          "Demo snippet: Durable for everyday use.",
+          "Demo snippet: Some report zipper issues over time.",
         ],
       },
       {
@@ -468,10 +468,10 @@ const DEMO_PASSPORTS: Record<ProductSnapshotId, ProductPassport> = {
       {
         label: "Durability",
         share: 0.35,
-        severity: "low",
+        severity: "medium",
         evidence: [
           "Demo snippet: Holds up well over time.",
-          "Demo snippet: Sturdy zippers.",
+          "Demo snippet: Some report stitching issues.",
         ],
       },
     ],

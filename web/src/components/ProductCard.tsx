@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { speak } from "../lib/tts";
+import { formatReviewCount } from "../lib/formatReviewCount";
 import { useCompareModeOptional } from "./CompareModeContext";
 
 interface ProductCardProps {
@@ -47,26 +48,9 @@ export function ProductCard({
   };
 
   let formattedReviews: string | undefined;
-  if (reviewCountText) {
-    const trimmed = reviewCountText.trim().replace(/,/g, "").toUpperCase();
-    const kMatch = trimmed.match(/([\d.]+)\s*K/);
-    const mMatch = trimmed.match(/([\d.]+)\s*M/);
-    const isVariantText = /capacit|color|size|option|storage/i.test(reviewCountText);
-    if (!isVariantText) {
-      if (kMatch) {
-        const n = parseFloat(kMatch[1]) * 1000;
-        if (!isNaN(n)) formattedReviews = `${n >= 1000 ? (n / 1000).toFixed(1) + "K" : Math.round(n).toLocaleString()} reviews`;
-      } else if (mMatch) {
-        const n = parseFloat(mMatch[1]) * 1000000;
-        if (!isNaN(n)) formattedReviews = `${n >= 1000000 ? (n / 1000000).toFixed(1) + "M" : Math.round(n).toLocaleString()} reviews`;
-      } else {
-        const numMatch = trimmed.match(/\d+/);
-        if (numMatch && numMatch[0].length >= 2) {
-          const num = parseInt(numMatch[0], 10);
-          formattedReviews = `${num.toLocaleString()} reviews`;
-        }
-      }
-    }
+  if (reviewCountText && !/capacit|color|size|option|storage/i.test(reviewCountText)) {
+    const formatted = formatReviewCount(reviewCountText);
+    if (formatted) formattedReviews = `${formatted} reviews`;
   }
 
   const meta = [priceText, formatRating(ratingText), formattedReviews].filter(Boolean).join(", ");

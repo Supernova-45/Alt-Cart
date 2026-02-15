@@ -60,21 +60,19 @@ export class AmazonSearchExtractor {
 
           // Prefer the review link (href contains customerReviews) - avoids picking variant text like "2 capacities"
           const reviewLink = card.querySelector('a[href*="customerReviews"]');
+          const raw = (reviewLink
+            ? reviewLink.textContent?.trim()
+            : card.querySelector(".a-size-small .a-link-normal")?.textContent?.trim()) || "";
           let reviewCountText: string | undefined;
-          if (reviewLink) {
-            const raw = reviewLink.textContent?.trim() || "";
-            const numMatch = raw.replace(/,/g, "").match(/\d+/);
-            if (numMatch) {
-              reviewCountText = `(${numMatch[0]})`;
-            }
-          } else {
-            const reviewEl = card.querySelector(".a-size-small .a-link-normal");
-            const raw = reviewEl?.textContent?.trim() || "";
-            const numMatch = raw.replace(/,/g, "").match(/^\d+$/);
-            if (numMatch) {
-              reviewCountText = `(${numMatch[0]})`;
-            } else if (/^\d[\d,]*$/.test(raw.replace(/,/g, ""))) {
-              reviewCountText = `(${raw})`;
+          if (raw && !/capacit|color|size|option|storage/i.test(raw)) {
+            const cleaned = raw.replace(/,/g, "").trim().toUpperCase();
+            const kMatch = cleaned.match(/([\d.]+)\s*K/);
+            const mMatch = cleaned.match(/([\d.]+)\s*M/);
+            if (kMatch) reviewCountText = `(${kMatch[1]}K)`;
+            else if (mMatch) reviewCountText = `(${mMatch[1]}M)`;
+            else {
+              const numMatch = cleaned.match(/\d+/);
+              if (numMatch) reviewCountText = `(${numMatch[0]})`;
             }
           }
 

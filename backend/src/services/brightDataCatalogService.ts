@@ -13,6 +13,7 @@ import {
   searchViaSerp,
 } from "./brightDataService";
 import type { SearchResultItem } from "../types/search";
+import { parseReviewCount } from "../utils/parseReviewCount";
 import { parseAmazonSearchHtml } from "../extractors/catalogHtmlParsers/amazonSearchHtmlParser";
 import { parseWalmartSearchHtml } from "../extractors/catalogHtmlParsers/walmartSearchHtmlParser";
 import type { SearchDomain } from "../utils/searchUrlParser";
@@ -91,20 +92,9 @@ function mapScraperRecordsToItems(records: unknown[], domain: CatalogDomain): Se
     }
 
     let reviewCountText: string | undefined;
-    if (reviewCount) {
-      const str = String(reviewCount).replace(/,/g, "").toUpperCase();
-      const kMatch = str.match(/([\d.]+)\s*K/);
-      const mMatch = str.match(/([\d.]+)\s*M/);
-      if (kMatch) {
-        const n = Math.round(parseFloat(kMatch[1]) * 1000);
-        if (!isNaN(n)) reviewCountText = `(${n >= 1000 ? (n / 1000).toFixed(1) + "K" : n.toLocaleString()})`;
-      } else if (mMatch) {
-        const n = Math.round(parseFloat(mMatch[1]) * 1000000);
-        if (!isNaN(n)) reviewCountText = `(${n >= 1000000 ? (n / 1000000).toFixed(1) + "M" : n.toLocaleString()})`;
-      } else {
-        const num = str.match(/\d+/);
-        if (num) reviewCountText = `(${num[0]})`;
-      }
+    if (reviewCount != null) {
+      const parsed = parseReviewCount(String(reviewCount));
+      if (parsed) reviewCountText = parsed;
     }
 
     // Parse numeric values for sorting

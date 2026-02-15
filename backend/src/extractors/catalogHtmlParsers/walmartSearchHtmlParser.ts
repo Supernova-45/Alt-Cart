@@ -1,5 +1,6 @@
 import * as cheerio from "cheerio";
 import type { SearchResultItem } from "../../types/search";
+import { parseReviewCount } from "../../utils/parseReviewCount";
 
 export function parseWalmartSearchHtml(html: string): SearchResultItem[] {
   const $ = cheerio.load(html);
@@ -55,9 +56,8 @@ export function parseWalmartSearchHtml(html: string): SearchResultItem[] {
 
     let reviewCountText: string | undefined;
     const reviewRaw = $container.find('[data-automation-id="product-review-count"], [class*="review"]').first().text().trim();
-    const numMatch = reviewRaw.replace(/,/g, "").match(/\d+/);
-    if (numMatch && !/capacit|color|size|option/i.test(reviewRaw)) {
-      reviewCountText = `(${numMatch[0]})`;
+    if (reviewRaw && !/capacit|color|size|option/i.test(reviewRaw)) {
+      reviewCountText = parseReviewCount(reviewRaw);
     }
 
     // Numeric values for sorting

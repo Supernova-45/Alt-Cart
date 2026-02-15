@@ -1,5 +1,6 @@
 import * as cheerio from "cheerio";
 import type { SearchResultItem } from "../../types/search";
+import { parseReviewCount } from "../../utils/parseReviewCount";
 
 export function parseAmazonSearchHtml(html: string): SearchResultItem[] {
   const $ = cheerio.load(html);
@@ -36,17 +37,10 @@ export function parseAmazonSearchHtml(html: string): SearchResultItem[] {
     }
 
     let reviewCountText: string | undefined;
-    const reviewLink = $card.find('a[href*="customerReviews"]');
-    if (reviewLink.length) {
-      const raw = reviewLink.text().trim();
-      const numMatch = raw.replace(/,/g, "").match(/\d+/);
-      if (numMatch) reviewCountText = `(${numMatch[0]})`;
-    } else {
-      const raw = $card.find(".a-size-small .a-link-normal").first().text().trim();
-      const numMatch = raw.replace(/,/g, "").match(/^\d+$/);
-      if (numMatch) reviewCountText = `(${numMatch[0]})`;
-      else if (/^\d[\d,]*$/.test(raw.replace(/,/g, ""))) reviewCountText = `(${raw})`;
-    }
+    const raw = $card.find('a[href*="customerReviews"]').length
+      ? $card.find('a[href*="customerReviews"]').text().trim()
+      : $card.find(".a-size-small .a-link-normal").first().text().trim();
+    if (raw) reviewCountText = parseReviewCount(raw);
 
     const imgSrc = $card.find(".s-product-image-container img").attr("src");
 

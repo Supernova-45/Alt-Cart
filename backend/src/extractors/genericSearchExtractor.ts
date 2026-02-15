@@ -110,9 +110,16 @@ export class GenericSearchExtractor {
           let reviewCountText: string | undefined;
           const reviewEl = containerEl.querySelector("[class*='review']");
           const reviewRaw = reviewEl?.textContent?.trim() || "";
-          const numMatch = reviewRaw.replace(/,/g, "").match(/\d+/);
-          if (numMatch && !/color|size|option|capacit/i.test(reviewRaw)) {
-            reviewCountText = `(${numMatch[0]})`;
+          if (reviewRaw && !/color|size|option|capacit/i.test(reviewRaw)) {
+            const cleaned = reviewRaw.replace(/,/g, "").trim().toUpperCase();
+            const kMatch = cleaned.match(/([\d.]+)\s*K/);
+            const mMatch = cleaned.match(/([\d.]+)\s*M/);
+            if (kMatch) reviewCountText = `(${kMatch[1]}K)`;
+            else if (mMatch) reviewCountText = `(${mMatch[1]}M)`;
+            else {
+              const numMatch = cleaned.match(/\d+/);
+              if (numMatch) reviewCountText = `(${numMatch[0]})`;
+            }
           }
 
           results.push({

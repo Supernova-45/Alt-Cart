@@ -1,6 +1,7 @@
 import { Stagehand } from "@browserbasehq/stagehand";
 import { ExtractedProductData, ExtractedReview } from "../models/productModel";
 import { logger } from "../utils/logger";
+import { parseReviewCount } from "../utils/parseReviewCount";
 
 export class AmazonExtractor {
   async extract(stagehand: Stagehand, url: string): Promise<ExtractedProductData> {
@@ -79,12 +80,13 @@ export class AmazonExtractor {
       logger.warn("Failed to extract rating", { error });
     }
 
-    // Extract review count
+    // Extract review count (preserve K/M e.g. "109K ratings" → "(109K)", not "(109)")
     let reviewCount: string | undefined;
     try {
       const reviewEl = await page.$("#acrCustomerReviewText");
       if (reviewEl) {
-        reviewCount = (await reviewEl.textContent())?.trim();
+        const raw = (await reviewEl.textContent())?.trim();
+        if (raw) reviewCount = parseReviewCount(raw) ?? raw;
       }
     } catch (error) {
       logger.warn("Failed to extract review count", { error });

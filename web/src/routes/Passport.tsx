@@ -11,6 +11,7 @@ import type { ProductPassport } from "../lib/productModel";
 import { TTSControls } from "../components/TTSControls";
 import { SectionCard } from "../components/SectionCard";
 import { StatPill } from "../components/StatPill";
+import { formatReviewCount } from "../lib/formatReviewCount";
 import { useCompareModeOptional } from "../components/CompareModeContext";
 
 export function Passport() {
@@ -215,7 +216,7 @@ export function Passport() {
         <div className="passport-header__stats">
           <StatPill label="Price" value={p.priceText} />
           <StatPill label="Rating" value={p.ratingText} />
-          <StatPill label="Reviews" value={p.reviewCountText} />
+          <StatPill label="Reviews" value={p.reviewCountText ? (formatReviewCount(p.reviewCountText) ?? p.reviewCountText) : undefined} />
         </div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-sm)", alignItems: "center" }}>
           {inCompareMode && (
