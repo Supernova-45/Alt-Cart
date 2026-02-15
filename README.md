@@ -1,8 +1,8 @@
-# Alt-Cart
+# alt+cart
 
 Seamless, sustainable shopping for the visually impaired.
 
-Alt-Cart is a web application that extracts accessible product information from e-commerce websites (Amazon, Walmart, eBay, Target, Macy's) and presents it in a screen-reader-first, keyboard-navigable format with full text-to-speech support.
+alt+cart is a web application that extracts accessible product information from e-commerce websites (Amazon, Walmart, eBay, Target, Macy's) and presents it in a screen-reader-first, keyboard-navigable format with full text-to-speech support.
 
 ## Features
 
@@ -17,7 +17,7 @@ Alt-Cart is a web application that extracts accessible product information from 
 ## Project Structure
 
 ```
-Alt-Cart/
+alt+cart/
 ├── backend/          # Node.js + Express API
 │   └── src/         # TypeScript source
 ├── web/             # React frontend

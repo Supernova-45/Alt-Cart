@@ -1,7 +1,7 @@
 {
   "name": "altcart-backend",
   "version": "1.0.0",
-  "description": "Backend API for Alt-Cart product extraction",
+  "description": "Backend API for alt+cart product extraction",
   "main": "dist/server.js",
   "scripts": {
     "dev": "nodemon --exec tsx src/server.ts",

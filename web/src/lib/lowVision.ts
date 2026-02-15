@@ -1,4 +1,4 @@
-const LOW_VISION_KEY = "echocart-low-vision";
+const LOW_VISION_KEY = "altcart-low-vision";
 
 export function getLowVision(): boolean {
   if (typeof window === "undefined") return false;

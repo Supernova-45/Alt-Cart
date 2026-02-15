@@ -1,6 +1,6 @@
-# Alt-Cart Backend
+# alt+cart Backend
 
-Backend API for Alt-Cart product extraction service. Extracts accessible product information from Amazon and Walmart product pages using Stagehand + Browserbase.
+Backend API for alt+cart product extraction service. Extracts accessible product information from Amazon and Walmart product pages using Stagehand + Browserbase.
 
 ## Prerequisites
 

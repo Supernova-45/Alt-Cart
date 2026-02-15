@@ -6,7 +6,7 @@ export function Home() {
     <>
       <h1>Demo Products</h1>
       <p style={{ marginBottom: "1rem", color: "var(--color-text-muted)" }}>
-        Explore pre-loaded demo products to see how Alt-Cart works. No extraction needed.
+        Explore pre-loaded demo products to see how alt+cart works. No extraction needed.
       </p>
       <p style={{ marginBottom: "1.5rem", fontSize: "var(--text-sm)" }}>
         <Link to="/s/a_search" className="product-card__link">
@@ -24,9 +24,9 @@ export function Home() {
       </section>
 
       <section className="about-section">
-        <h2>About Alt-Cart</h2>
-        <p>
-          Alt-Cart helps visually impaired shoppers make informed purchasing decisions by
+<h2>About alt+cart</h2>
+          <p>
+            alt+cart helps visually impaired shoppers make informed purchasing decisions by
           providing accessible product information extracted from e-commerce websites.
         </p>
         <ul>

@@ -7,7 +7,7 @@ export function Unsupported() {
 
   return (
     <div className="section-card" style={{ maxWidth: "var(--max-width)" }}>
-      <h1>Unsupported in Alt+Cart</h1>
+      <h1>Unsupported in alt+cart</h1>
       <p style={{ marginBottom: "var(--space-lg)" }}>
         This demo doesn't currently support this URL.
       </p>

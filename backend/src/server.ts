@@ -60,7 +60,7 @@ const PORT = config.port;
 
 if (process.env.VERCEL !== "1") {
   app.listen(PORT, () => {
-    logger.info(`Alt-Cart backend server running on port ${PORT}`);
+    logger.info(`alt+cart backend server running on port ${PORT}`);
     logger.info(`Environment: ${config.nodeEnv}`);
     logger.info(`Frontend URL: ${config.frontendUrl}`);
   });

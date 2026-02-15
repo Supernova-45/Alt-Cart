@@ -76,7 +76,7 @@ export function Landing() {
       <SkipLink targetId="main-content" />
       <main id="main-content" className="container">
         <header className="landing-header">
-          <h1>Alt+Cart</h1>
+          <h1>alt+cart</h1>
           <p className="tagline">Shopping Made Accessible</p>
         </header>
 

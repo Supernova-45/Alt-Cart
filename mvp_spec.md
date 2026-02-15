@@ -1,4 +1,4 @@
-# EchoCart MVP Spec (Vite + React) — Accessible “Product Passport” from Saved Amazon Pages (Condensed)
+# alt+cart MVP Spec (Vite + React) — Accessible “Product Passport” from Saved Amazon Pages (Condensed)
 
 This is a **coding-agent-ready spec** for a **minimal, polished, accessible** MVP.  
 **Important:** A Chrome extension will be added later, but **DO NOT build the extension in this phase**. The MVP is the web app only.
