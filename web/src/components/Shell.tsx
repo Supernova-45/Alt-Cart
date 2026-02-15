@@ -6,6 +6,7 @@ import { getTheme, setTheme, type Theme } from "../lib/theme";
 import { getPreferences } from "../lib/accessibilityPreferences";
 import {
   setVoice,
+  setRate,
   cancel,
   isSpeaking,
   isPaused,
@@ -25,6 +26,7 @@ function applyAccessibilityPreferences(): void {
   if (typeof document === "undefined") return;
   const prefs = getPreferences();
   setVoice(prefs.ttsVoice);
+  setRate(prefs.speechRate);
 
   document.body.classList.toggle("preferences-dyslexia-font", prefs.fontFamily === "dyslexia");
   document.body.classList.remove("preferences-font-small", "preferences-font-medium", "preferences-font-large");

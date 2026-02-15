@@ -6,6 +6,7 @@ export interface AccessibilityPreferences {
   fontFamily: FontFamily;
   fontSize: FontSize;
   ttsVoice: string;
+  speechRate: number;
   reducedMotion: ReducedMotion;
   highlightFocus: boolean;
   ttsCaptions: boolean;
@@ -18,6 +19,7 @@ const DEFAULTS: AccessibilityPreferences = {
   fontFamily: "default",
   fontSize: "medium",
   ttsVoice: "",
+  speechRate: 1,
   reducedMotion: "auto",
   highlightFocus: false,
   ttsCaptions: true,
@@ -31,10 +33,13 @@ function loadFromStorage(): AccessibilityPreferences {
     const parsed = raw ? (JSON.parse(raw) as Partial<AccessibilityPreferences>) : {};
     const lowVisionFallback =
       parsed.lowVision ?? (typeof window !== "undefined" && localStorage.getItem("altcart-low-vision") === "true");
+    const speechRate = parsed.speechRate ?? DEFAULTS.speechRate;
+    const clampedRate = typeof speechRate === "number" ? Math.max(0.8, Math.min(1.4, speechRate)) : DEFAULTS.speechRate;
     return {
       fontFamily: parsed.fontFamily ?? DEFAULTS.fontFamily,
       fontSize: parsed.fontSize ?? DEFAULTS.fontSize,
       ttsVoice: parsed.ttsVoice ?? DEFAULTS.ttsVoice,
+      speechRate: clampedRate,
       reducedMotion: parsed.reducedMotion ?? DEFAULTS.reducedMotion,
       highlightFocus: parsed.highlightFocus ?? DEFAULTS.highlightFocus,
       ttsCaptions: parsed.ttsCaptions ?? DEFAULTS.ttsCaptions,

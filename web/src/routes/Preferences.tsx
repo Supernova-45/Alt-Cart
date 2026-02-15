@@ -10,6 +10,7 @@ import {
 import {
   getAvailableVoices,
   setVoice,
+  setRate,
   isTTSSupported,
 } from "../lib/tts";
 
@@ -31,6 +32,10 @@ export function Preferences() {
   useEffect(() => {
     setVoice(prefs.ttsVoice);
   }, [prefs.ttsVoice]);
+
+  useEffect(() => {
+    setRate(prefs.speechRate);
+  }, [prefs.speechRate]);
 
   const handleFontFamilyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const v = e.target.value as FontFamily;
@@ -159,8 +164,30 @@ export function Preferences() {
       {isTTSSupported() && (
         <section aria-labelledby="prefs-tts-heading" style={{ marginBottom: "var(--space-xl)" }}>
           <h2 id="prefs-tts-heading" style={{ fontSize: "var(--text-lg)", marginBottom: "var(--space-md)" }}>
-            Text-to-speech voice
+            Text-to-speech
           </h2>
+          <div className="form-group" style={{ marginBottom: "var(--space-md)" }}>
+            <label htmlFor="prefs-speech-rate">Speech speed</label>
+            <input
+              id="prefs-speech-rate"
+              type="range"
+              min="0.8"
+              max="1.4"
+              step="0.1"
+              value={prefs.speechRate}
+              onChange={(e) => {
+                const v = parseFloat(e.target.value);
+                setPreference("speechRate", v);
+                setPrefs((p) => ({ ...p, speechRate: v }));
+                setRate(v);
+              }}
+              aria-describedby="prefs-speech-rate-desc"
+              style={{ display: "block", width: "100%", maxWidth: "200px" }}
+            />
+            <p id="prefs-speech-rate-desc" style={{ margin: "var(--space-xs) 0 0", fontSize: "var(--text-sm)", color: "var(--color-text-muted)" }}>
+              {prefs.speechRate}x (0.8 = slower, 1.4 = faster)
+            </p>
+          </div>
           <div className="form-group">
             <label htmlFor="prefs-tts-voice">Voice</label>
             <select
