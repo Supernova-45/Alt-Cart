@@ -507,6 +507,11 @@ body.theme-dark .theme-pill__option--active {
   border-radius: var(--radius);
 }
 
+.search-section .form-row {
+  gap: var(--space-xl);
+  padding: 0 var(--space-lg);
+}
+
 .url-input-section h2 {
   margin-top: 0;
 }
