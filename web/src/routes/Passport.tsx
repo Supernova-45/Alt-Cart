@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { fetchSnapshot } from "../lib/fetchSnapshot";
 import { parseProductSnapshot } from "../lib/parseProductSnapshot";
 import { mergePassport } from "../lib/mergePassport";
@@ -7,11 +7,11 @@ import { getFallbackPassport } from "../lib/demoFallbacks";
 import { SNAPSHOTS } from "../lib/snapshotRegistry";
 import { getProduct } from "../lib/api";
 import { speak, setPlayableText, clearPlayableText } from "../lib/tts";
-import { addToCompare, getCompareIds, getCompareUrl, MAX_COMPARE } from "../lib/compare";
 import type { ProductPassport } from "../lib/productModel";
 import { TTSControls } from "../components/TTSControls";
 import { SectionCard } from "../components/SectionCard";
 import { StatPill } from "../components/StatPill";
+import { useCompareModeOptional } from "../components/CompareModeContext";
 
 export function Passport() {
   const { id } = useParams<{ id: string }>();
@@ -111,12 +111,17 @@ export function Passport() {
 
   const p = passport;
   const fallback = getFallbackPassport(id);
-  const navigate = useNavigate();
-  const compareIds = getCompareIds();
-  const compareFull = compareIds.length >= MAX_COMPARE && !compareIds.includes(id);
-  const handleAddToCompare = () => {
-    addToCompare(id);
-    navigate(getCompareUrl());
+  const compareMode = useCompareModeOptional();
+  const inCompareMode = compareMode?.compareMode ?? false;
+  const selected = (compareMode?.selectedIds ?? []).includes(id);
+  const selectionFull =
+    inCompareMode &&
+    (compareMode?.selectedIds ?? []).length >= 3 &&
+    !(compareMode?.selectedIds ?? []).includes(id);
+
+  const handleSelectForCompare = () => {
+    if (selectionFull) return;
+    compareMode?.toggleProduct(id);
   };
 
   const backTo = returnTo
@@ -194,15 +199,18 @@ export function Passport() {
           <StatPill label="Reviews" value={p.reviewCountText} />
         </div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-sm)", alignItems: "center" }}>
-          <button
-            type="button"
-            className="compare-add-btn"
-            onClick={handleAddToCompare}
-            disabled={compareFull}
-            aria-label={compareFull ? "Compare list is full" : "Add to compare"}
-          >
-            {compareFull ? "Compare full" : "Add to compare"}
-          </button>
+          {inCompareMode && (
+            <button
+              type="button"
+              className="compare-select-btn"
+              onClick={handleSelectForCompare}
+              disabled={selectionFull}
+              aria-pressed={selected}
+              aria-label={selectionFull ? "Compare list is full" : selected ? "Remove from compare" : "Select for compare"}
+            >
+              {selected ? "Selected" : selectionFull ? "Compare full" : "Select for compare"}
+            </button>
+          )}
           <TTSControls summaryText={p.narration.medium} disabled={loading} />
         </div>
       </header>

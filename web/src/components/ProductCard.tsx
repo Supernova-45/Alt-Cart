@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { speak } from "../lib/tts";
-import { addToCompare, getCompareIds, getCompareUrl, MAX_COMPARE } from "../lib/compare";
+import { useCompareModeOptional } from "./CompareModeContext";
 
 interface ProductCardProps {
   /** Passport ID for demo products - links to /p/:id */
@@ -67,17 +67,7 @@ export function ProductCard({
     hoveredSpeakRef.current = null;
   }, []);
 
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === " " && e.target === e.currentTarget) {
-        speakDescription();
-        e.preventDefault();
-      }
-    },
-    [speakDescription]
-  );
-
-  const navigate = useNavigate();
+  const compareMode = useCompareModeOptional();
   const linkTo = productUrl
     ? returnTo
       ? `/open?url=${encodeURIComponent(productUrl)}&returnTo=${encodeURIComponent(returnTo)}`
@@ -86,34 +76,48 @@ export function ProductCard({
       ? `/p/${id}`
       : "#";
 
-  const handleAddToCompare = useCallback(
-    (e: React.MouseEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (!id) return;
-      const current = getCompareIds();
-      if (current.includes(id)) {
-        navigate(getCompareUrl());
-        return;
+  const inCompareMode = compareMode?.compareMode ?? false;
+  const selected = id != null && (compareMode?.selectedIds ?? []).includes(id);
+  const canSelect = id != null && inCompareMode;
+  const selectionFull =
+    inCompareMode &&
+    (compareMode?.selectedIds ?? []).length >= 3 &&
+    !(compareMode?.selectedIds ?? []).includes(id ?? "");
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === " " && e.target === e.currentTarget) {
+        e.preventDefault();
+        if (canSelect && !selectionFull && id) {
+          compareMode?.toggleProduct(id);
+        } else {
+          speakDescription();
+        }
       }
-      addToCompare(id);
-      navigate(getCompareUrl());
     },
-    [id, navigate]
+    [speakDescription, canSelect, selectionFull, id, compareMode]
   );
 
-  const canAddToCompare = id != null;
-  const compareIds = getCompareIds();
-  const compareFull = compareIds.length >= MAX_COMPARE && !compareIds.includes(id ?? "");
+  const handleCardClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (!canSelect || selectionFull) return;
+      if ((e.target as HTMLElement).closest("a")) return;
+      e.preventDefault();
+      compareMode!.toggleProduct(id!);
+    },
+    [canSelect, selectionFull, id, compareMode]
+  );
 
   return (
     <article
-      className="product-card"
+      className={`product-card ${canSelect ? "product-card--compare-mode" : ""} ${selected ? "product-card--selected" : ""}`}
       tabIndex={0}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onKeyDown={handleKeyDown}
+      onClick={handleCardClick}
       aria-label={description}
+      aria-selected={canSelect ? selected : undefined}
     >
       <div className="product-card__row">
         {imageUrl && (
@@ -132,19 +136,13 @@ export function ProductCard({
           <h2 className="product-card__title">{name}</h2>
           {meta && <p className="product-card__meta">{meta}</p>}
           <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-sm)", alignItems: "center" }}>
-            <Link to={linkTo} className="product-card__link">
+            <Link to={linkTo} className="product-card__link" onClick={(e) => e.stopPropagation()}>
               See details
             </Link>
-            {canAddToCompare && (
-              <button
-                type="button"
-                className="compare-add-btn"
-                onClick={handleAddToCompare}
-                disabled={compareFull}
-                aria-label={compareFull ? "Compare list is full" : "Add to compare"}
-              >
-                {compareFull ? "Compare full" : "Add to compare"}
-              </button>
+            {canSelect && (
+              <span className="product-card__select-label" aria-hidden>
+                {selected ? "Selected" : selectionFull ? "Compare full" : "Select"}
+              </span>
             )}
           </div>
         </div>

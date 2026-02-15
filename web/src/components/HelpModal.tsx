@@ -9,7 +9,7 @@ Open a product passport to see detailed information including fit analysis, retu
 
 Use the text-to-speech controls to hear summaries and sections read aloud. Each section has a "Read this section" button.
 
-Use "Add to compare" on product cards or passports to add up to 3 products. Press C to view your spoken comparison when you have items.
+On search results, click Compare to enter compare mode, select 2–3 products, then click Compare to view your spoken comparison.
 
 Use the Preferences page to customize font, font size, TTS voice, reduced motion, and more.
 
@@ -84,8 +84,8 @@ export function HelpModal({ isOpen, onClose }: HelpModalProps) {
               section&quot; button.
             </li>
             <li>
-              <strong>Compare</strong> – Use &quot;Add to compare&quot; on product cards or passports to add up to 3
-              products. Press C to view your spoken comparison.
+              <strong>Compare</strong> – On search results, click Compare to enter compare mode, select 2–3 products,
+              then click Compare to view.
             </li>
             <li>
               <strong>Preferences</strong> – Customize font, font size, TTS voice, reduced motion, and more.
@@ -113,7 +113,7 @@ export function HelpModal({ isOpen, onClose }: HelpModalProps) {
             <dt>H</dt>
             <dd>Go to home</dd>
             <dt>C</dt>
-            <dd>View compare (when you have 2–3 products added)</dd>
+            <dd>View compare (when in compare mode with 2+ selected, or when you have items from a previous session)</dd>
             <dt>Alt</dt>
             <dd>Hover over a product card and press Alt to hear its description</dd>
             <dt>Space</dt>

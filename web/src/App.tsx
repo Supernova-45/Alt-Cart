@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import { Shell } from './components/Shell'
+import { CompareModeProvider } from './components/CompareModeContext'
 import { Landing } from './routes/Landing'
 import { Home } from './routes/Home'
 import { Open } from './routes/Open'
@@ -14,7 +15,8 @@ import { NotFound } from './routes/NotFound'
 
 function App() {
   return (
-    <Shell>
+    <CompareModeProvider>
+      <Shell>
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/demo" element={<Home />} />
@@ -29,6 +31,7 @@ function App() {
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Shell>
+    </CompareModeProvider>
   )
 }
 

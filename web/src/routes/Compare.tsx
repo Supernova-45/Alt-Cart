@@ -78,10 +78,7 @@ export function Compare() {
       <div className="section-card">
         <h1>Compare products</h1>
         <p style={{ marginBottom: "1rem", color: "var(--color-text-muted)" }}>
-          Add 2 or 3 products to compare them side by side with a spoken comparison.
-        </p>
-        <p>
-          Use &quot;Add to compare&quot; on a product card (search results or passport) to add it here.
+          Select products to compare. On search results, click Compare to enter compare mode, then select 2–3 products and click Compare.
         </p>
         <Link to="/s/a_search" className="product-card__link" style={{ display: "inline-block", marginTop: "1rem" }}>
           Try demo search
@@ -125,7 +122,7 @@ export function Compare() {
 
       {passports.length === 1 && (
         <p style={{ marginBottom: "1rem", color: "var(--color-text-muted)" }}>
-          Add another product to compare. Use &quot;Add to compare&quot; on a product from search results or a passport.
+          Add another product to compare. Go to search results, click Compare, and select another product.
         </p>
       )}
 

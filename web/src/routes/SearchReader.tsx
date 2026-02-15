@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useState, useMemo, useEffect } from "react";
 import { ProductCard } from "../components/ProductCard";
+import { useCompareMode } from "../components/CompareModeContext";
 import { getFallbackPassport } from "../lib/demoFallbacks";
 import { getSortPreference, setSortPreference } from "../lib/preferences";
 import { sortSearchResults, hasSustainabilityData } from "../lib/sortSearchResults";
@@ -18,6 +19,7 @@ function DemoSearchResults({
   itemIds: readonly string[];
 }) {
   const [sortBy, setSortBy] = useState<SortOption>(() => getSortPreference());
+  const { compareMode, enterCompareMode } = useCompareMode();
 
   const items = useMemo(() => {
     return itemIds
@@ -85,7 +87,7 @@ function DemoSearchResults({
         Fit and sizing info available after opening a product.
       </p>
 
-      <div style={{ marginBottom: "1.5rem" }}>
+      <div style={{ marginBottom: "1.5rem", display: "flex", flexWrap: "wrap", gap: "var(--space-md)", alignItems: "center" }}>
         <select
           id="sort-results"
           value={effectiveSortBy}
@@ -100,6 +102,15 @@ function DemoSearchResults({
             <option value="sustainability">Sustainability: highest first</option>
           )}
         </select>
+        <button
+          type="button"
+          className={`search-results__compare-btn ${compareMode ? "search-results__compare-btn--active" : ""}`}
+          onClick={() => enterCompareMode()}
+          aria-pressed={compareMode}
+          aria-label={compareMode ? "Compare mode on" : "Enter compare mode to select products"}
+        >
+          compare
+        </button>
         <div role="status" aria-live="polite" aria-atomic="true" className="visually-hidden">
           {items.length} results sorted by {sortLabel}
         </div>

@@ -21,6 +21,8 @@ import { getCompareIds, getCompareUrl } from "../lib/compare";
 import { TTSCaptions } from "./TTSCaptions";
 import { HelpModal } from "./HelpModal";
 import { HelpButton } from "./HelpButton";
+import { CompareBar } from "./CompareBar";
+import { useCompareModeOptional } from "./CompareModeContext";
 
 function applyAccessibilityPreferences(): void {
   if (typeof document === "undefined") return;
@@ -40,6 +42,7 @@ function applyAccessibilityPreferences(): void {
 
 export function Shell({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
+  const compareMode = useCompareModeOptional();
   const [theme, setThemeState] = useState<Theme>(() => getTheme());
   const [ttsCaptions, setTtsCaptions] = useState(() => getPreferences().ttsCaptions);
   const [helpOpen, setHelpOpen] = useState(false);
@@ -92,6 +95,11 @@ export function Shell({ children }: { children: React.ReactNode }) {
         return;
       }
       if ((e.key === "c" || e.key === "C") && !e.metaKey && !e.ctrlKey) {
+        if (compareMode?.compareMode && compareMode.selectedIds.length >= 2) {
+          e.preventDefault();
+          compareMode.confirmCompare(navigate);
+          return;
+        }
         const ids = getCompareIds();
         if (ids.length > 0) {
           e.preventDefault();
@@ -132,6 +140,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
     <div className="shell">
       <SkipLink />
       <TopBar theme={theme} onThemeChange={handleThemeChange} />
+      <CompareBar />
       <main id="content" className="shell__main" role="main" tabIndex={-1}>
         {children}
       </main>
