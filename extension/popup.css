@@ -17,10 +17,20 @@ body {
   padding: 16px;
 }
 
+.popup__header {
+  margin-bottom: 12px;
+}
+
 .popup__title {
-  margin: 0 0 12px;
+  margin: 0 0 2px;
   font-size: 16px;
   font-weight: 600;
+}
+
+.popup__tagline {
+  margin: 0;
+  font-size: 12px;
+  color: #666;
 }
 
 .popup__toggle {
@@ -36,6 +46,12 @@ body {
   width: 18px;
   height: 18px;
   accent-color: #5c4d3d;
+  flex-shrink: 0;
+}
+
+.popup__toggle input:focus {
+  outline: 2px solid #5c4d3d;
+  outline-offset: 2px;
 }
 
 .popup__btn {
@@ -44,8 +60,6 @@ body {
   padding: 8px 12px;
   font-size: 14px;
   font-family: inherit;
-  background: #5c4d3d;
-  color: #fff;
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -56,6 +70,131 @@ body {
   outline-offset: 2px;
 }
 
-.popup__btn:hover {
+.popup__btn--primary {
+  background: #5c4d3d;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.popup__btn--primary:hover {
   opacity: 0.9;
+}
+
+.popup__btn--secondary {
+  background: transparent;
+  color: #5c4d3d;
+  border: 1px solid #5c4d3d;
+}
+
+.popup__btn--secondary:hover {
+  background: rgba(92, 77, 61, 0.08);
+}
+
+/* Help modal */
+.help-modal {
+  max-width: min(400px, 92vw);
+  max-height: 85vh;
+  padding: 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+}
+
+.help-modal::backdrop {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.help-modal__inner {
+  padding: 20px;
+  overflow-y: auto;
+  max-height: 85vh;
+}
+
+.help-modal__title {
+  margin: 0 0 16px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.help-modal__content {
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.help-modal__content p {
+  margin: 0 0 8px;
+}
+
+.help-modal__content p + p {
+  margin-top: 12px;
+}
+
+.help-modal__content ul {
+  margin: 0 0 12px;
+  padding-left: 20px;
+}
+
+.help-modal__content li {
+  margin-bottom: 6px;
+}
+
+.help-modal__shortcuts {
+  margin: 0 0 12px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 16px;
+  align-items: baseline;
+}
+
+.help-modal__shortcuts dt {
+  margin: 0;
+  font-weight: 600;
+  font-family: monospace;
+}
+
+.help-modal__shortcuts dd {
+  margin: 0;
+  color: #666;
+}
+
+.help-modal__link {
+  color: #5c4d3d;
+  text-decoration: underline;
+}
+
+.help-modal__link:hover {
+  text-decoration: none;
+}
+
+.help-modal__link:focus {
+  outline: 2px solid #5c4d3d;
+  outline-offset: 2px;
+}
+
+.help-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.help-modal__close {
+  padding: 8px 16px;
+  background: #5c4d3d;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.help-modal__close:hover {
+  opacity: 0.9;
+}
+
+.help-modal__close:focus {
+  outline: 2px solid #5c4d3d;
+  outline-offset: 2px;
 }

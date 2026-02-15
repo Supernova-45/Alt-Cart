@@ -8,13 +8,55 @@
 </head>
 <body>
   <div class="popup">
-    <h1 class="popup__title">alt+cart</h1>
+    <header class="popup__header">
+      <h1 class="popup__title">alt+cart</h1>
+      <p class="popup__tagline">shopping made accessible</p>
+    </header>
     <label class="popup__toggle">
-      <input type="checkbox" id="hover-speak-toggle" checked />
-      <span>Enable Alt-hover speak</span>
+      <input type="checkbox" id="hover-speak-toggle" checked aria-describedby="hover-speak-desc" />
+      <span id="hover-speak-desc">Hold Alt + hover to speak image descriptions on any page</span>
     </label>
-    <button type="button" id="open-btn" class="popup__btn">Open in alt+cart</button>
+    <button type="button" id="open-btn" class="popup__btn popup__btn--primary" aria-label="Open current page in alt+cart (Alt+Shift+P)">
+      Open in alt+cart (Alt+Shift+P)
+    </button>
+    <button type="button" id="help-btn" class="popup__btn popup__btn--secondary" aria-label="Help: What alt+cart does and keyboard shortcuts">
+      Help
+    </button>
   </div>
+
+  <dialog id="help-dialog" class="help-modal" aria-labelledby="help-title" aria-describedby="help-content">
+    <div class="help-modal__inner">
+      <h2 id="help-title" class="help-modal__title">alt+cart Help</h2>
+      <div id="help-content" class="help-modal__content">
+        <p><strong>What alt+cart does</strong></p>
+        <p>alt+cart opens product pages in an accessible format with fit analysis, return risk, image descriptions, and text-to-speech support.</p>
+
+        <p><strong>Extension features</strong></p>
+        <ul>
+          <li><strong>Open in alt+cart</strong> — Send the current page to alt+cart (button above or keyboard shortcut)</li>
+          <li><strong>Hover to speak</strong> — Hold Alt and hover over images on any page to hear their descriptions read aloud</li>
+        </ul>
+
+        <p><strong>Keyboard shortcuts</strong></p>
+        <dl class="help-modal__shortcuts">
+          <dt>Alt+Shift+P</dt>
+          <dd>Open current tab in alt+cart</dd>
+        </dl>
+
+        <p><strong>Full app</strong></p>
+        <p>For search, compare mode, preferences, and more, open alt+cart in your browser:</p>
+        <a href="https://altcart.vercel.app" target="_blank" rel="noopener noreferrer" class="help-modal__link">
+          altcart.vercel.app
+        </a>
+      </div>
+      <div class="help-modal__actions">
+        <button type="button" id="help-close-btn" class="help-modal__close" aria-label="Close help">
+          Close
+        </button>
+      </div>
+    </div>
+  </dialog>
+
   <script src="popup.js"></script>
 </body>
 </html>
