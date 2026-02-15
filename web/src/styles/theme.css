@@ -1,0 +1,20 @@
+/* Dark mode */
+body.theme-dark {
+  --color-bg: #1a1816;
+  --color-surface: #2c2825;
+  --color-text: #f5f3ef;
+  --color-text-muted: #b8b2a8;
+  --color-accent: #d4c4a8;
+  --color-border: #4a4540;
+  --color-focus: #d4c4a8;
+  --color-error: #e88;
+}
+
+body.theme-dark.low-vision {
+  --color-bg: #1a1816;
+  --color-surface: #2c2825;
+  --color-text: #f5f3ef;
+  --color-text-muted: #b8b2a8;
+  --color-accent: #d4c4a8;
+  --color-border: #5c554d;
+}

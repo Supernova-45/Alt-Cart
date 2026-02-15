@@ -166,7 +166,7 @@ export function Landing() {
         <section className="url-input-section">
           <h2>Enter a Product URL</h2>
           <p>
-            Enter any online product URL to get an accessible &quot;should I buy?&quot; summary with detailed information, review insights, and text-to-speech support.
+            Enter any online product URL to get an &quot;should I buy?&quot; summary with detailed specifications, review insights, and text-to-speech support.
           </p>
 
           <form onSubmit={handleSubmit} className="url-form">

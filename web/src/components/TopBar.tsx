@@ -1,13 +1,18 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getCompareIds, getCompareUrl, onCompareUpdated } from "../lib/compare";
+import type { Theme } from "../lib/theme";
 
 export function TopBar({
   lowVision,
   onLowVisionChange,
+  theme,
+  onThemeChange,
 }: {
   lowVision: boolean;
   onLowVisionChange: (enabled: boolean) => void;
+  theme: Theme;
+  onThemeChange: (theme: Theme) => void;
 }) {
   const [compareCount, setCompareCount] = useState(0);
 
@@ -23,6 +28,19 @@ export function TopBar({
         alt+cart
       </Link>
       <div className="top-bar__actions">
+        <button
+          type="button"
+          className="top-bar__theme-toggle"
+          onClick={() => onThemeChange(theme === "dark" ? "light" : "dark")}
+          aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+          title={theme === "dark" ? "Light mode" : "Dark mode"}
+        >
+          {theme === "dark" ? (
+            <span className="top-bar__theme-icon" aria-hidden>☀</span>
+          ) : (
+            <span className="top-bar__theme-icon" aria-hidden>🌙</span>
+          )}
+        </button>
         <Link
           to={getCompareUrl()}
           className="top-bar__compare"

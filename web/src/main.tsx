@@ -5,6 +5,7 @@ import './styles/tokens.css'
 import './styles/base.css'
 import './styles/components.css'
 import './styles/lowVision.css'
+import './styles/theme.css'
 import App from './App'
 
 createRoot(document.getElementById('root')!).render(
