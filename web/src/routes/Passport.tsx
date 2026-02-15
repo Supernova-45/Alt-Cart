@@ -32,7 +32,27 @@ export function Passport() {
     setLoading(true);
     setError(null);
 
-    // Try to fetch from API first
+    const fallback = getFallbackPassport(id);
+    const snapshotPath = SNAPSHOTS[id as keyof typeof SNAPSHOTS]?.path;
+    const isDemoProduct = !!fallback && !!snapshotPath;
+
+    // For known demo products, skip API and load from snapshot directly (avoids blank screen while API times out)
+    if (isDemoProduct) {
+      fetchSnapshot(snapshotPath!)
+        .then((doc) => {
+          const parsed = parseProductSnapshot(doc, snapshotPath!);
+          const merged = mergePassport(fallback!, parsed);
+          setPassport(merged);
+        })
+        .catch((err) => {
+          setError(err instanceof Error ? err.message : "Failed to load snapshot");
+          setPassport(fallback);
+        })
+        .finally(() => setLoading(false));
+      return;
+    }
+
+    // For non-demo products, try API first
     getProduct(id)
       .then((response) => {
         if (response) {
@@ -41,15 +61,12 @@ export function Passport() {
           return;
         }
 
-        // API fetch failed or returned null, try fallback demo data
-        const fallback = getFallbackPassport(id);
         if (!fallback) {
           setPassport(null);
           setLoading(false);
           return;
         }
 
-        const snapshotPath = SNAPSHOTS[id as keyof typeof SNAPSHOTS]?.path;
         if (!snapshotPath) {
           setPassport(fallback);
           setLoading(false);
@@ -68,16 +85,10 @@ export function Passport() {
           });
       })
       .catch((err) => {
-        // API error, try fallback
-        const fallback = getFallbackPassport(id);
-        if (fallback) {
-          setPassport(fallback);
-        }
+        if (fallback) setPassport(fallback);
         setError(err instanceof Error ? err.message : "Failed to load product");
       })
-      .finally(() => {
-        setLoading(false);
-      });
+      .finally(() => setLoading(false));
   }, [id]);
 
   if (!id) {
@@ -90,7 +101,11 @@ export function Passport() {
   }
 
   if (loading && !passport) {
-    return <p>Loading passport…</p>;
+    return (
+      <div className="passport-loading" role="status" aria-live="polite">
+        <p>Loading passport…</p>
+      </div>
+    );
   }
 
   // If we don't have a passport yet (still loading or failed), show error
@@ -104,9 +119,12 @@ export function Passport() {
     );
   }
 
-  // Use the passport we loaded (from API or fallback)
   if (!passport) {
-    return <p>Loading…</p>;
+    return (
+      <div className="passport-loading" role="status" aria-live="polite">
+        <p>Loading…</p>
+      </div>
+    );
   }
 
   const p = passport;

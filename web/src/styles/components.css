@@ -366,6 +366,19 @@ body.theme-dark .theme-pill__option--active {
   font-size: var(--text-sm);
 }
 
+.passport-loading {
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl);
+}
+
+.passport-loading p {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
 .passport-header {
   margin-bottom: var(--space-xl);
 }
