@@ -108,7 +108,7 @@ export function ExtractSearch() {
 
   if (status === "loading") {
     return (
-      <div className="section-card" style={{ maxWidth: "var(--max-width)" }}>
+      <div className="section-card">
         <h1>Extracting search results</h1>
         <p>Loading the search page and extracting product listings. This may take a moment.</p>
       </div>

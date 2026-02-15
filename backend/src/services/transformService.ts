@@ -289,7 +289,7 @@ export class TransformService {
     const short = `${name}${brand ? ` by ${brand}` : ""}. Priced at ${price}. ${rating} with ${reviewCount}.`;
 
     const fitSummary = this.analyzeFit(reviews);
-    const themes = this.extractThemes(reviews);
+    const themes = this.extractThemes(reviews, extracted.name);
     const returnRisk = generateReturnRisk(extracted.name, extracted.rating);
 
     const fitText = fitSummary ? ` Fit verdict: ${fitSummary.verdict} with ${Math.round(fitSummary.confidence * 100)}% confidence.` : "";
