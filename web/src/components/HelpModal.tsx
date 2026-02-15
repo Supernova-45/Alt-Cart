@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { speak, cancel } from "../lib/tts";
 
-const HELP_INSTRUCTIONS = `Welcome to alt+cart. Here's what you can do:
+const HELP_INSTRUCTIONS = `Welcome to alt+cart, a reimagined shopping experience for the visually impaired. Here's what you can do:
 
 Search for products by entering a search term and store, or paste a product or search URL from Amazon, Walmart, eBay, Target, or Macy's.
 
