@@ -35,13 +35,18 @@
 
 .top-bar {
   width: 100%;
-  max-width: var(--max-width);
   padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.top-bar__inner {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid var(--color-border);
-  background: var(--color-surface);
 }
 
 .top-bar__logo {
@@ -68,6 +73,17 @@
   display: flex;
   align-items: center;
   gap: var(--space-lg);
+}
+
+.top-bar__demo {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+
+.top-bar__demo:hover {
+  color: var(--color-text);
+  text-decoration: underline;
 }
 
 .top-bar__settings {

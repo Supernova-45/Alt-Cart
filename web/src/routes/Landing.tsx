@@ -1,5 +1,5 @@
 import { FormEvent, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { SkipLink } from "../components/SkipLink";
 import { extractProduct } from "../lib/api";
 import { urlToDemo } from "../lib/urlToDemo";
@@ -201,12 +201,6 @@ export function Landing() {
             </div>
           )}
         </section>
-
-        <p style={{ textAlign: "center", marginTop: "var(--space-lg)" }}>
-          <Link to="/demo" className="product-card__link">
-            Try demo
-          </Link>
-        </p>
       </main>
     </>
   );
