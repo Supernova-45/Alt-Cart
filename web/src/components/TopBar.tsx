@@ -8,11 +8,13 @@ export function TopBar({
   onLowVisionChange,
   theme,
   onThemeChange,
+  onHelpClick,
 }: {
   lowVision: boolean;
   onLowVisionChange: (enabled: boolean) => void;
   theme: Theme;
   onThemeChange: (theme: Theme) => void;
+  onHelpClick: () => void;
 }) {
   const [compareCount, setCompareCount] = useState(0);
 
@@ -28,6 +30,15 @@ export function TopBar({
         alt+cart
       </Link>
       <div className="top-bar__actions">
+        <button
+          type="button"
+          className="top-bar__help-btn"
+          onClick={onHelpClick}
+          aria-label="Help. Press Alt and question mark to open or close."
+          title="Help (Alt + ?)"
+        >
+          ?
+        </button>
         <button
           type="button"
           className="top-bar__theme-toggle"

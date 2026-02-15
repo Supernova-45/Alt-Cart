@@ -6,6 +6,7 @@ import { getTheme, setTheme, type Theme } from "../lib/theme";
 import { getPreferences } from "../lib/accessibilityPreferences";
 import { setVoice } from "../lib/tts";
 import { TTSCaptions } from "./TTSCaptions";
+import { HelpModal } from "./HelpModal";
 
 function applyAccessibilityPreferences(): void {
   if (typeof document === "undefined") return;
@@ -25,6 +26,18 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const [lowVision, setLowVisionState] = useState(() => getLowVision());
   const [theme, setThemeState] = useState<Theme>(() => getTheme());
   const [ttsCaptions, setTtsCaptions] = useState(() => getPreferences().ttsCaptions);
+  const [helpOpen, setHelpOpen] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.key === "?" || e.key === "/") && e.altKey) {
+        e.preventDefault();
+        setHelpOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   useEffect(() => {
     applyAccessibilityPreferences();
@@ -74,11 +87,13 @@ export function Shell({ children }: { children: React.ReactNode }) {
         onLowVisionChange={handleLowVisionChange}
         theme={theme}
         onThemeChange={handleThemeChange}
+        onHelpClick={() => setHelpOpen((prev) => !prev)}
       />
       <main id="content" className="shell__main" role="main" tabIndex={-1}>
         {children}
       </main>
       <TTSCaptions enabled={ttsCaptions} />
+      <HelpModal isOpen={helpOpen} onClose={() => setHelpOpen(false)} />
     </div>
   );
 }
