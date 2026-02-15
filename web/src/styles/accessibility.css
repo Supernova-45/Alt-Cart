@@ -1,0 +1,73 @@
+/* OpenDyslexic font */
+@font-face {
+  font-family: "OpenDyslexic";
+  src: url("https://unpkg.com/open-dyslexic@1.0.3/woff/OpenDyslexic-Regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "OpenDyslexic";
+  src: url("https://unpkg.com/open-dyslexic@1.0.3/woff/OpenDyslexic-Bold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Dyslexia-friendly font */
+body.preferences-dyslexia-font {
+  --font-sans: "OpenDyslexic", "Comic Sans MS", sans-serif;
+  --font-serif: "OpenDyslexic", "Comic Sans MS", serif;
+}
+
+/* Font size */
+body.preferences-font-small {
+  --text-base: 16px;
+  --text-sm: 0.875rem;
+  --text-lg: 1.0625rem;
+  --text-xl: 1.1875rem;
+  --text-2xl: 1.375rem;
+}
+
+body.preferences-font-medium {
+  --text-base: 18px;
+  --text-sm: 0.9rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+}
+
+body.preferences-font-large {
+  --text-base: 20px;
+  --text-sm: 0.95rem;
+  --text-lg: 1.1875rem;
+  --text-xl: 1.3125rem;
+  --text-2xl: 1.625rem;
+}
+
+/* Reduced motion - respect system preference */
+@media (prefers-reduced-motion: reduce) {
+  body:not(.preferences-reduced-motion-off) *,
+  body:not(.preferences-reduced-motion-off) *::before,
+  body:not(.preferences-reduced-motion-off) *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* User explicitly enabled reduced motion */
+body.preferences-reduced-motion-on *,
+body.preferences-reduced-motion-on *::before,
+body.preferences-reduced-motion-on *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* Highlight focus - stronger focus ring */
+body.preferences-highlight-focus :focus-visible {
+  outline-width: 3px;
+  outline-offset: 3px;
+}

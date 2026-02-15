@@ -7,6 +7,7 @@ import { Extract } from './routes/Extract'
 import { ExtractSearch } from './routes/ExtractSearch'
 import { Passport } from './routes/Passport'
 import { Compare } from './routes/Compare'
+import { Preferences } from './routes/Preferences'
 import { SearchReader } from './routes/SearchReader'
 import { Unsupported } from './routes/Unsupported'
 import { NotFound } from './routes/NotFound'
@@ -22,6 +23,7 @@ function App() {
         <Route path="/extract-search" element={<ExtractSearch />} />
         <Route path="/p/:id" element={<Passport />} />
         <Route path="/compare" element={<Compare />} />
+        <Route path="/preferences" element={<Preferences />} />
         <Route path="/s/:id" element={<SearchReader />} />
         <Route path="/unsupported" element={<Unsupported />} />
         <Route path="*" element={<NotFound />} />

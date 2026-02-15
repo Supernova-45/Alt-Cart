@@ -41,6 +41,9 @@ export function TopBar({
             <span className="top-bar__theme-icon" aria-hidden>🌙</span>
           )}
         </button>
+        <Link to="/preferences" className="top-bar__compare" aria-label="Preferences">
+          Preferences
+        </Link>
         <Link
           to={getCompareUrl()}
           className="top-bar__compare"
