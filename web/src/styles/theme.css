@@ -18,3 +18,8 @@ body.theme-dark.low-vision {
   --color-accent: #d4c4a8;
   --color-border: #5c554d;
 }
+
+body.theme-dark .help-fab {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+}
