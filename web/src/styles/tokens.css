@@ -1,12 +1,12 @@
 :root {
-  /* Warm neutrals */
-  --color-bg: #faf8f5;
-  --color-surface: #fffefb;
-  --color-text: #2c2825;
-  --color-text-muted: #5c554d;
-  --color-accent: #5c4d3d;
-  --color-border: #e8e4df;
-  --color-focus: #5c4d3d;
+  /* Black and white light mode */
+  --color-bg: #f5f5f5;
+  --color-surface: #ffffff;
+  --color-text: #1a1a1a;
+  --color-text-muted: #555555;
+  --color-accent: #333333;
+  --color-border: #e0e0e0;
+  --color-focus: #333333;
 
   /* Typography */
   --font-sans: "DM Sans", system-ui, sans-serif;

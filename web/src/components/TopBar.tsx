@@ -2,19 +2,18 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getCompareIds, getCompareUrl, onCompareUpdated } from "../lib/compare";
 import type { Theme } from "../lib/theme";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function TopBar({
   lowVision,
   onLowVisionChange,
   theme,
   onThemeChange,
-  onHelpClick,
 }: {
   lowVision: boolean;
   onLowVisionChange: (enabled: boolean) => void;
   theme: Theme;
   onThemeChange: (theme: Theme) => void;
-  onHelpClick: () => void;
 }) {
   const [compareCount, setCompareCount] = useState(0);
 
@@ -30,28 +29,7 @@ export function TopBar({
         alt+cart
       </Link>
       <div className="top-bar__actions">
-        <button
-          type="button"
-          className="top-bar__help-btn"
-          onClick={onHelpClick}
-          aria-label="Help. Press Alt and question mark to open or close."
-          title="Help (Alt + ?)"
-        >
-          ?
-        </button>
-        <button
-          type="button"
-          className="top-bar__theme-toggle"
-          onClick={() => onThemeChange(theme === "dark" ? "light" : "dark")}
-          aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-          title={theme === "dark" ? "Light mode" : "Dark mode"}
-        >
-          {theme === "dark" ? (
-            <span className="top-bar__theme-icon" aria-hidden>☀</span>
-          ) : (
-            <span className="top-bar__theme-icon" aria-hidden>🌙</span>
-          )}
-        </button>
+        <ThemeToggle theme={theme} onChange={onThemeChange} />
         <Link to="/preferences" className="top-bar__compare" aria-label="Preferences">
           Preferences
         </Link>

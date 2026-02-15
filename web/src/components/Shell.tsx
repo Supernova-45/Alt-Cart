@@ -7,6 +7,7 @@ import { getPreferences } from "../lib/accessibilityPreferences";
 import { setVoice } from "../lib/tts";
 import { TTSCaptions } from "./TTSCaptions";
 import { HelpModal } from "./HelpModal";
+import { HelpButton } from "./HelpButton";
 
 function applyAccessibilityPreferences(): void {
   if (typeof document === "undefined") return;
@@ -87,12 +88,12 @@ export function Shell({ children }: { children: React.ReactNode }) {
         onLowVisionChange={handleLowVisionChange}
         theme={theme}
         onThemeChange={handleThemeChange}
-        onHelpClick={() => setHelpOpen((prev) => !prev)}
       />
       <main id="content" className="shell__main" role="main" tabIndex={-1}>
         {children}
       </main>
       <TTSCaptions enabled={ttsCaptions} />
+      <HelpButton onClick={() => setHelpOpen((prev) => !prev)} />
       <HelpModal isOpen={helpOpen} onClose={() => setHelpOpen(false)} />
     </div>
   );

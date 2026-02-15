@@ -1,11 +1,11 @@
 /* Low Vision Mode - higher contrast, larger type */
 body.low-vision {
-  --color-bg: #f5f3ef;
+  --color-bg: #f0f0f0;
   --color-surface: #ffffff;
-  --color-text: #1a1816;
-  --color-text-muted: #3d3834;
-  --color-accent: #3d3229;
-  --color-border: #c9c4bc;
+  --color-text: #000000;
+  --color-text-muted: #333333;
+  --color-accent: #000000;
+  --color-border: #999999;
   --text-base: 20px;
   --text-sm: 1rem;
   --text-lg: 1.25rem;
