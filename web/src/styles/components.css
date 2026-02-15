@@ -70,16 +70,20 @@
   gap: var(--space-lg);
 }
 
-.top-bar__compare {
-  font-size: var(--text-sm);
-  font-weight: 500;
+.top-bar__settings {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
   color: var(--color-text-muted);
   text-decoration: none;
+  border-radius: var(--radius-sm);
 }
 
-.top-bar__compare:hover {
+.top-bar__settings:hover {
   color: var(--color-text);
-  text-decoration: underline;
 }
 
 /* Theme pill toggle */
