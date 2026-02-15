@@ -14,7 +14,9 @@ export class SearchExtractionService {
   async extractSearchResults(url: string): Promise<{ query: string; domain: string; items: SearchResultItem[] }> {
     const parsed = parseSearchUrl(url);
     if (!parsed) {
-      throw new ExtractionError("Invalid search URL. Supported: Amazon /s?k=... and Walmart /search?q=...");
+      throw new ExtractionError(
+        "Invalid search URL. Supported: Amazon, Walmart, eBay, Etsy, Lowes, Target, Macy's, Home Depot"
+      );
     }
 
     logger.info("Starting search extraction", { url, domain: parsed.domain, query: parsed.query });
@@ -36,30 +38,35 @@ export class SearchExtractionService {
       }
     }
 
-    // 2. Fallback: Browserbase + Stagehand
-    const stagehandService = new StagehandService();
+    // 2. Fallback: Browserbase + Stagehand (Amazon/Walmart only - no DOM extractors for other sites)
+    if (parsed.domain === "amazon" || parsed.domain === "walmart") {
+      const stagehandService = new StagehandService();
 
-    try {
-      await stagehandService.initialize();
-      await stagehandService.navigateToUrl(parsed.fullUrl);
+      try {
+        await stagehandService.initialize();
+        await stagehandService.navigateToUrl(parsed.fullUrl);
 
-      let items: SearchResultItem[] = [];
+        const extractor =
+          parsed.domain === "amazon"
+            ? new AmazonSearchExtractor()
+            : new WalmartSearchExtractor();
+        const items = await extractor.extract(stagehandService.getStagehand(), parsed.fullUrl);
 
-      if (parsed.domain === "amazon") {
-        const extractor = new AmazonSearchExtractor();
-        items = await extractor.extract(stagehandService.getStagehand(), parsed.fullUrl);
-      } else if (parsed.domain === "walmart") {
-        const extractor = new WalmartSearchExtractor();
-        items = await extractor.extract(stagehandService.getStagehand(), parsed.fullUrl);
+        return {
+          query: parsed.query,
+          domain: parsed.domain,
+          items,
+        };
+      } finally {
+        await stagehandService.close();
       }
-
-      return {
-        query: parsed.query,
-        domain: parsed.domain,
-        items,
-      };
-    } finally {
-      await stagehandService.close();
     }
+
+    // eBay, Etsy, Lowes, Target, Macy's, Home Depot: Bright Data only, no Browserbase fallback
+    return {
+      query: parsed.query,
+      domain: parsed.domain,
+      items: [],
+    };
   }
 }

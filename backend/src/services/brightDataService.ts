@@ -127,6 +127,163 @@ export async function scrapeWalmartByKeyword(
   return [];
 }
 
+export interface KeywordsScrapeOptions {
+  location?: string;
+  zipcode?: string;
+  page?: number;
+}
+
+/**
+ * Bright Data eBay - Discover by keywords.
+ * Input: { keywords }
+ * Query: type=discover_new&discover_by=keywords
+ */
+export async function scrapeEbayByKeywords(
+  datasetId: string,
+  keywords: string
+): Promise<unknown[] | { snapshotId: string; status: "pending" }> {
+  return scrapeByKeywords(datasetId, keywords, "keywords");
+}
+
+/**
+ * Bright Data Etsy - Discover by keywords.
+ * Input: { keywords }
+ * Query: type=discover_new&discover_by=keywords
+ */
+export async function scrapeEtsyByKeywords(
+  datasetId: string,
+  keywords: string
+): Promise<unknown[] | { snapshotId: string; status: "pending" }> {
+  return scrapeByKeywords(datasetId, keywords, "keywords");
+}
+
+/**
+ * Bright Data Lowes - Discover by keywords.
+ * Input: { keywords, location? }
+ * Query: type=discover_new&discover_by=keywords
+ */
+export async function scrapeLowesByKeywords(
+  datasetId: string,
+  keywords: string,
+  options?: KeywordsScrapeOptions
+): Promise<unknown[] | { snapshotId: string; status: "pending" }> {
+  return scrapeByKeywords(datasetId, keywords, "keywords", options);
+}
+
+/**
+ * Bright Data Target - Discover by keywords.
+ * Input: { keywords, zipcode? }
+ * Query: type=discover_new&discover_by=keywords
+ */
+export async function scrapeTargetByKeywords(
+  datasetId: string,
+  keywords: string,
+  options?: KeywordsScrapeOptions
+): Promise<unknown[] | { snapshotId: string; status: "pending" }> {
+  return scrapeByKeywords(datasetId, keywords, "keywords", options);
+}
+
+/**
+ * Bright Data Macy's - Discover by keyword.
+ * Input: { keyword, page? }
+ * Query: type=discover_new&discover_by=keyword
+ */
+export async function scrapeMacysByKeyword(
+  datasetId: string,
+  keyword: string,
+  options?: KeywordsScrapeOptions
+): Promise<unknown[] | { snapshotId: string; status: "pending" }> {
+  return scrapeByKeyword(datasetId, keyword, options);
+}
+
+/**
+ * Bright Data Home Depot - Discover by keyword.
+ * Input: { keyword }
+ * Query: type=discover_new&discover_by=keyword
+ */
+export async function scrapeHomeDepotByKeyword(
+  datasetId: string,
+  keyword: string
+): Promise<unknown[] | { snapshotId: string; status: "pending" }> {
+  return scrapeByKeyword(datasetId, keyword);
+}
+
+async function scrapeByKeywords(
+  datasetId: string,
+  keywords: string,
+  discoverBy: "keywords",
+  options?: KeywordsScrapeOptions
+): Promise<unknown[] | { snapshotId: string; status: "pending" }> {
+  const apiKey = config.brightData?.apiKey;
+  if (!apiKey) throw new Error("BRIGHTDATA_API_KEY is not configured");
+
+  const inputEntry: Record<string, string | number | boolean> = { keywords: keywords.trim() };
+  if (options?.location) inputEntry.location = options.location;
+  if (options?.zipcode !== undefined && options.zipcode !== null) inputEntry.zipcode = String(options.zipcode);
+
+  const queryParams =
+    "dataset_id=" +
+    encodeURIComponent(datasetId) +
+    "&format=json&notify=false&include_errors=true&type=discover_new&discover_by=" +
+    discoverBy;
+
+  return executeScrapeRequest(apiKey, queryParams, inputEntry);
+}
+
+async function scrapeByKeyword(
+  datasetId: string,
+  keyword: string,
+  options?: KeywordsScrapeOptions
+): Promise<unknown[] | { snapshotId: string; status: "pending" }> {
+  const apiKey = config.brightData?.apiKey;
+  if (!apiKey) throw new Error("BRIGHTDATA_API_KEY is not configured");
+
+  const inputEntry: Record<string, string | number | boolean> = { keyword: keyword.trim() };
+  if (options?.page != null) inputEntry.page = options.page;
+
+  const queryParams =
+    "dataset_id=" +
+    encodeURIComponent(datasetId) +
+    "&format=json&notify=false&include_errors=true&type=discover_new&discover_by=keyword";
+
+  return executeScrapeRequest(apiKey, queryParams, inputEntry);
+}
+
+async function executeScrapeRequest(
+  apiKey: string,
+  queryParams: string,
+  inputEntry: Record<string, string | number | boolean>
+): Promise<unknown[] | { snapshotId: string; status: "pending" }> {
+  const response = await fetch(
+    `https://api.brightdata.com/datasets/v3/scrape?${queryParams}`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ input: [inputEntry] }),
+    }
+  );
+
+  if (!response.ok) {
+    const text = await response.text();
+    logger.warn("Bright Data scrape error", { status: response.status, text });
+    throw new Error(`Bright Data scrape error: ${response.status} ${text}`);
+  }
+
+  if (response.status === 202) {
+    const data = (await response.json()) as { snapshot_id?: string };
+    return { snapshotId: data.snapshot_id || "", status: "pending" };
+  }
+
+  const data = await response.json();
+  if (Array.isArray(data)) return data;
+  if (data?.records && Array.isArray(data.records)) return data.records;
+  if (data?.results && Array.isArray(data.results)) return data.results;
+  return [];
+}
+
 /**
  * Bright Data Web Scraper API - fetch structured data from search/catalog pages.
  * Amazon: { input: [{ url, sort_by?, zipcode? }] }
@@ -237,12 +394,25 @@ export async function fetchHtml(url: string): Promise<string> {
   return response.text();
 }
 
+export type SerpSite = "amazon" | "walmart" | "ebay" | "etsy" | "lowes" | "target" | "macys" | "homedepot";
+
+const SERP_SITE_FILTERS: Record<SerpSite, string> = {
+  amazon: "site:amazon.com",
+  walmart: "site:walmart.com",
+  ebay: "site:ebay.com",
+  etsy: "site:etsy.com",
+  lowes: "site:lowes.com",
+  target: "site:target.com",
+  macys: "site:macys.com",
+  homedepot: "site:homedepot.com",
+};
+
 /**
  * Bright Data SERP API - search Google and get parsed results.
  */
 export async function searchViaSerp(
   query: string,
-  site?: "amazon" | "walmart"
+  site?: SerpSite
 ): Promise<SerpSearchResultItem[]> {
   const apiKey = config.brightData?.apiKey;
   const zone = config.brightData?.serpZone;
@@ -250,7 +420,7 @@ export async function searchViaSerp(
     throw new Error("BRIGHTDATA_API_KEY and BRIGHTDATA_SERP_ZONE must be configured");
   }
 
-  const siteFilter = site === "amazon" ? "site:amazon.com" : site === "walmart" ? "site:walmart.com" : "";
+  const siteFilter = site ? SERP_SITE_FILTERS[site] : "";
   const searchQuery = siteFilter ? `${query} ${siteFilter}` : query;
   const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}&num=20`;
 
@@ -277,23 +447,31 @@ export async function searchViaSerp(
   return mapSerpToSearchResults(data, site);
 }
 
-function mapSerpToSearchResults(data: Record<string, unknown>, site?: "amazon" | "walmart"): SerpSearchResultItem[] {
+const SERP_PRODUCT_PATTERNS: Record<SerpSite, RegExp[]> = {
+  amazon: [/\/dp\//, /\/gp\/product\//],
+  walmart: [/\/ip\//],
+  ebay: [/\/itm\//],
+  etsy: [/\/listing\//],
+  lowes: [/\/pd\//],
+  target: [/\/p\//, /\/-\/A-/],
+  macys: [/\/shop\/product\//],
+  homedepot: [/\/p\//],
+};
+
+function mapSerpToSearchResults(data: Record<string, unknown>, site?: SerpSite): SerpSearchResultItem[] {
   const items: SerpSearchResultItem[] = [];
   const organic = data.organic_results as Array<{ title?: string; link?: string; snippet?: string }> | undefined;
   if (!organic || !Array.isArray(organic)) return items;
 
-  const baseHost = site === "amazon" ? "amazon.com" : site === "walmart" ? "walmart.com" : null;
+  const baseHost = site ? SERP_SITE_FILTERS[site].replace("site:", "") : null;
+  const productPatterns = site ? SERP_PRODUCT_PATTERNS[site] : [/\/dp\//, /\/ip\//, /\/itm\//, /\/listing\//, /\/pd\//, /\/p\//];
 
   for (const r of organic) {
     const link = r.link;
     if (!link || typeof link !== "string") continue;
     if (baseHost && !link.toLowerCase().includes(baseHost)) continue;
 
-    // Only include product pages
-    const isProduct =
-      link.includes("/dp/") ||
-      link.includes("/gp/product/") ||
-      link.includes("/ip/");
+    const isProduct = productPatterns.some((p) => p.test(link));
     if (!isProduct) continue;
 
     const name = (r.title || r.snippet || "").trim();
