@@ -7,31 +7,53 @@ import { urlToDemo } from "../lib/urlToDemo";
 const SEARCH_SITES = [
   { value: "amazon", label: "Amazon", baseUrl: "https://www.amazon.com/s?k=" },
   { value: "walmart", label: "Walmart", baseUrl: "https://www.walmart.com/search?q=" },
+  { value: "ebay", label: "eBay", baseUrl: "https://www.ebay.com/sch/i.html?_nkw=" },
+  { value: "etsy", label: "Etsy", baseUrl: "https://www.etsy.com/search?q=" },
+  { value: "target", label: "Target", baseUrl: "https://www.target.com/s?searchTerm=" },
+  { value: "lowes", label: "Lowe's", baseUrl: "https://www.lowes.com/search?searchTerm=" },
+  { value: "homedepot", label: "Home Depot", baseUrl: "https://www.homedepot.com/s/" },
+  { value: "macys", label: "Macy's", baseUrl: "https://www.macys.com/shop/search?keyword=" },
+  { value: "other", label: "Other (paste URL)", baseUrl: null },
 ] as const;
 
-function buildSearchUrl(query: string, site: (typeof SEARCH_SITES)[number]["value"]): string {
+type SearchSiteValue = (typeof SEARCH_SITES)[number]["value"];
+
+function buildSearchUrl(
+  query: string,
+  site: SearchSiteValue,
+  customUrl?: string
+): string {
+  if (site === "other" && customUrl?.trim()) {
+    return customUrl.trim();
+  }
   const entry = SEARCH_SITES.find((s) => s.value === site);
-  if (!entry) return "";
+  if (!entry || !entry.baseUrl) return "";
   return entry.baseUrl + encodeURIComponent(query.trim());
 }
 
 export function Landing() {
   const [url, setUrl] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchSite, setSearchSite] = useState<(typeof SEARCH_SITES)[number]["value"]>("amazon");
+  const [searchSite, setSearchSite] = useState<SearchSiteValue>("amazon");
+  const [customSearchUrl, setCustomSearchUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  const isOther = searchSite === "other";
+  const canSearch =
+    isOther ? customSearchUrl.trim().length > 0 : searchQuery.trim().length > 0;
+
   function handleSearchSubmit(e: FormEvent) {
     e.preventDefault();
-    const trimmed = searchQuery.trim();
-    if (!trimmed) return;
+    if (!canSearch) return;
     setSearchLoading(true);
     setError(null);
-    const searchUrl = buildSearchUrl(trimmed, searchSite);
-    navigate(`/extract-search?url=${encodeURIComponent(searchUrl)}`);
+    const searchUrl = buildSearchUrl(searchQuery, searchSite, customSearchUrl);
+    if (searchUrl) {
+      navigate(`/extract-search?url=${encodeURIComponent(searchUrl)}`);
+    }
     setSearchLoading(false);
   }
 
@@ -83,29 +105,17 @@ export function Landing() {
         <section className="search-section url-input-section">
           <h2>Search for Products</h2>
           <p>
-            Tell us what you want to buy and where. We&apos;ll show you product listings from that store.
+            Choose a store, then enter your search. We support Amazon, Walmart, eBay, Etsy, Target, Lowe&apos;s, Home Depot, and Macy&apos;s. Or paste any search results URL with &quot;Other&quot;.
           </p>
 
           <form onSubmit={handleSearchSubmit} className="url-form">
             <div className="form-row">
               <div className="form-group form-group--flex">
-                <label htmlFor="search-query">What do you want to buy?</label>
-                <input
-                  id="search-query"
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="e.g. sneakers, backpacks, monitors"
-                  disabled={searchLoading}
-                  autoComplete="off"
-                />
-              </div>
-              <div className="form-group form-group--flex">
                 <label htmlFor="search-site">Where?</label>
                 <select
                   id="search-site"
                   value={searchSite}
-                  onChange={(e) => setSearchSite(e.target.value as (typeof SEARCH_SITES)[number]["value"])}
+                  onChange={(e) => setSearchSite(e.target.value as SearchSiteValue)}
                   disabled={searchLoading}
                   aria-label="Select store"
                 >
@@ -116,9 +126,42 @@ export function Landing() {
                   ))}
                 </select>
               </div>
+              {isOther ? (
+                <div className="form-group form-group--flex" style={{ flex: 1 }}>
+                  <label htmlFor="custom-search-url">Search URL</label>
+                  <input
+                    id="custom-search-url"
+                    type="text"
+                    inputMode="url"
+                    value={customSearchUrl}
+                    onChange={(e) => setCustomSearchUrl(e.target.value)}
+                    placeholder="https://www.example.com/search?q=..."
+                    disabled={searchLoading}
+                    autoComplete="off"
+                    aria-label="Paste search results page URL"
+                  />
+                </div>
+              ) : (
+                <div className="form-group form-group--flex" style={{ flex: 1 }}>
+                  <label htmlFor="search-query">What do you want to buy?</label>
+                  <input
+                    id="search-query"
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="e.g. sneakers, backpacks, monitors"
+                    disabled={searchLoading}
+                    autoComplete="off"
+                  />
+                </div>
+              )}
             </div>
-            <button type="submit" disabled={searchLoading || !searchQuery.trim()} className="btn-primary">
-              {searchLoading ? "Searching..." : `Search ${SEARCH_SITES.find((s) => s.value === searchSite)?.label ?? ""}`}
+            <button type="submit" disabled={searchLoading || !canSearch} className="btn-primary">
+              {searchLoading
+                ? "Searching..."
+                : isOther
+                  ? "Search this page"
+                  : `Search ${SEARCH_SITES.find((s) => s.value === searchSite)?.label ?? ""}`}
             </button>
           </form>
         </section>
