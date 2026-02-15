@@ -5,7 +5,7 @@ import { getCachedSearchResults, setCachedSearchResults } from "../lib/searchRes
 import { ProductCard } from "../components/ProductCard";
 import { useCompareMode } from "../components/CompareModeContext";
 import { getSortPreference, setSortPreference } from "../lib/preferences";
-import { sortSearchResults, hasSustainabilityData } from "../lib/sortSearchResults";
+import { sortSearchResults } from "../lib/sortSearchResults";
 
 const CLOTHING_KEYWORDS = /sneakers?|shoes?|boots?|shirt|blouse|dress|jacket|coat|pants?|jeans|sweater|hoodie|bra|underwear|socks?|hat|caps?|shorts?|skirt|leggings?|joggers?|sweatshirt|tank|tee|t-shirt|blazer|vest|cardigan|romper|jumpsuit/i;
 
@@ -86,20 +86,9 @@ export function ExtractSearch() {
       });
   }, [url]);
 
-  const showSustainabilitySort = useMemo(() => hasSustainabilityData(items), [items]);
-  const effectiveSortBy =
-    sortBy === "sustainability" && !showSustainabilitySort ? "relevance" : sortBy;
-
-  useEffect(() => {
-    if (effectiveSortBy !== sortBy) {
-      setSortPreference("relevance");
-      setSortBy("relevance");
-    }
-  }, [effectiveSortBy, sortBy]);
-
   const sortedItems = useMemo(
-    () => sortSearchResults(items, effectiveSortBy),
-    [items, effectiveSortBy]
+    () => sortSearchResults(items, sortBy),
+    [items, sortBy]
   );
 
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -144,13 +133,13 @@ export function ExtractSearch() {
   const isClothingQuery = CLOTHING_KEYWORDS.test(query);
 
   const sortLabel =
-    effectiveSortBy === "relevance"
+    sortBy === "relevance"
       ? "Relevance (default)"
-      : effectiveSortBy === "price_asc"
+      : sortBy === "price_asc"
         ? "price, low to high"
-        : effectiveSortBy === "price_desc"
+        : sortBy === "price_desc"
           ? "price, high to low"
-          : effectiveSortBy === "rating"
+          : sortBy === "rating"
             ? "rating, highest first"
             : "sustainability, highest first";
 
@@ -176,7 +165,7 @@ export function ExtractSearch() {
           <label htmlFor="sort-results">Sort by</label>
           <select
             id="sort-results"
-            value={effectiveSortBy}
+            value={sortBy}
             onChange={handleSortChange}
             aria-label="Sort results by"
           >
@@ -184,9 +173,7 @@ export function ExtractSearch() {
             <option value="price_asc">Price: low to high</option>
             <option value="price_desc">Price: high to low</option>
             <option value="rating">Rating: highest first</option>
-            {showSustainabilitySort && (
-              <option value="sustainability">Sustainability: highest first</option>
-            )}
+            <option value="sustainability">Sustainability: highest first</option>
           </select>
         </div>
         {showCompareBtn && (
