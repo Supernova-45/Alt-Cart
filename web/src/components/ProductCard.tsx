@@ -139,11 +139,6 @@ export function ProductCard({
             <Link to={linkTo} className="product-card__link" onClick={(e) => e.stopPropagation()}>
               See details
             </Link>
-            {canSelect && (
-              <span className="product-card__select-label" aria-hidden>
-                {selected ? "Selected" : selectionFull ? "Compare full" : "Select"}
-              </span>
-            )}
           </div>
         </div>
       </div>

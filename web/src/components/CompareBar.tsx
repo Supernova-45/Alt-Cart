@@ -36,7 +36,7 @@ export function CompareBar() {
       <div className="compare-bar__inner">
         <span className="compare-bar__count">
           {selectedIds.length === 0
-            ? "Select 2–3 products to compare"
+            ? "Click products to select (2–3), then compare"
             : selectedIds.length === 1
               ? "1 selected"
               : `${selectedIds.length} selected`}
@@ -49,7 +49,7 @@ export function CompareBar() {
             disabled={!canCompare}
             aria-label={canCompare ? "Compare selected products" : "Select 2–3 products to compare"}
           >
-            Compare
+            Compare →
           </button>
           <button
             type="button"

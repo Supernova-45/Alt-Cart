@@ -80,28 +80,26 @@ function DemoSearchResults({
   return (
     <>
       <h1>Search results: {title}</h1>
-      <p style={{ marginBottom: "1rem", color: "var(--color-text-muted)" }}>
-        Supported products from this search. Open a passport for accessible details.
-      </p>
-      <p style={{ marginBottom: "1rem", fontSize: "var(--text-sm)", color: "var(--color-text-muted)" }}>
-        Fit and sizing info available after opening a product.
-      </p>
 
-      <div style={{ marginBottom: "1.5rem", display: "flex", flexWrap: "wrap", gap: "var(--space-md)", alignItems: "center" }}>
-        <select
-          id="sort-results"
-          value={effectiveSortBy}
-          onChange={handleSortChange}
-          aria-label="Sort results by"
-        >
-          <option value="relevance">Relevance (default)</option>
-          <option value="price_asc">Price: low to high</option>
-          <option value="price_desc">Price: high to low</option>
-          <option value="rating">Rating: highest first</option>
-          {showSustainabilitySort && (
-            <option value="sustainability">Sustainability: highest first</option>
-          )}
-        </select>
+
+      <div className="search-results-toolbar">
+        <div className="search-results-toolbar__sort">
+          <label htmlFor="sort-results">Sort by</label>
+          <select
+            id="sort-results"
+            value={effectiveSortBy}
+            onChange={handleSortChange}
+            aria-label="Sort results by"
+          >
+            <option value="relevance">Relevance (default)</option>
+            <option value="price_asc">Price: low to high</option>
+            <option value="price_desc">Price: high to low</option>
+            <option value="rating">Rating: highest first</option>
+            {showSustainabilitySort && (
+              <option value="sustainability">Sustainability: highest first</option>
+            )}
+          </select>
+        </div>
         <button
           type="button"
           className={`search-results__compare-btn ${compareMode ? "search-results__compare-btn--active" : ""}`}
@@ -109,7 +107,7 @@ function DemoSearchResults({
           aria-pressed={compareMode}
           aria-label={compareMode ? "Compare mode on" : "Enter compare mode to select products"}
         >
-          compare
+          Compare
         </button>
         <div role="status" aria-live="polite" aria-atomic="true" className="visually-hidden">
           {items.length} results sorted by {sortLabel}
