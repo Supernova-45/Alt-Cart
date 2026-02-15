@@ -71,8 +71,8 @@ export function HelpModal({ isOpen, onClose }: HelpModalProps) {
           <p>Welcome to alt+cart. Here&apos;s what you can do:</p>
           <ul>
             <li>
-              <strong>Search</strong> – Enter a search term and store, or paste a product or search URL from Amazon,
-              Walmart, eBay, Target, or Macy&apos;s.
+              <strong>Search</strong> – Enter a search term and store, or paste a product or search URL (from Amazon,
+              Walmart, eBay, Target, Macy's, etc.)&apos;s.
             </li>
             <li>
               <strong>Product passports</strong> – Open a product to see fit analysis, return risk, sustainability, and

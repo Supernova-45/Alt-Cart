@@ -3,7 +3,7 @@ import { SkipLink } from "./SkipLink";
 import { TopBar } from "./TopBar";
 import { getTheme, setTheme, type Theme } from "../lib/theme";
 import { getPreferences } from "../lib/accessibilityPreferences";
-import { setVoice } from "../lib/tts";
+import { setVoice, cancel, isSpeaking } from "../lib/tts";
 import { TTSCaptions } from "./TTSCaptions";
 import { HelpModal } from "./HelpModal";
 import { HelpButton } from "./HelpButton";
@@ -33,6 +33,15 @@ export function Shell({ children }: { children: React.ReactNode }) {
       if ((e.key === "?" || e.key === "/") && e.altKey) {
         e.preventDefault();
         setHelpOpen((prev) => !prev);
+        return;
+      }
+      if (e.key === " " && isSpeaking()) {
+        const target = e.target as HTMLElement;
+        const isInput = target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable;
+        if (!isInput) {
+          e.preventDefault();
+          cancel();
+        }
       }
     };
     window.addEventListener("keydown", handleKeyDown);
