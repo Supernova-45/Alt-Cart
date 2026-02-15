@@ -53,7 +53,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
         target.tagName === "SELECT" ||
         target.isContentEditable;
 
-      if ((e.key === "?" || e.key === "/") && e.altKey) {
+      if (e.altKey && (e.key === "?" || e.key === "/" || e.code === "Slash")) {
         e.preventDefault();
         setHelpOpen((prev) => !prev);
         return;
@@ -65,7 +65,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
       }
       if (isInput) return;
 
-      if (e.key === "p" || e.key === "P") {
+      if ((e.key === "p" || e.key === "P") && !e.metaKey && !e.ctrlKey) {
         if (isTTSSupported()) {
           e.preventDefault();
           if (isSpeaking()) {
@@ -79,19 +79,19 @@ export function Shell({ children }: { children: React.ReactNode }) {
         }
         return;
       }
-      if (e.key === "r" || e.key === "R") {
+      if ((e.key === "r" || e.key === "R") && !e.metaKey && !e.ctrlKey) {
         if (isTTSSupported()) {
           e.preventDefault();
           repeatLast();
         }
         return;
       }
-      if (e.key === "h" || e.key === "H") {
+      if ((e.key === "h" || e.key === "H") && !e.metaKey && !e.ctrlKey) {
         e.preventDefault();
         navigate("/");
         return;
       }
-      if (e.key === "c" || e.key === "C") {
+      if ((e.key === "c" || e.key === "C") && !e.metaKey && !e.ctrlKey) {
         const ids = getCompareIds();
         if (ids.length > 0) {
           e.preventDefault();

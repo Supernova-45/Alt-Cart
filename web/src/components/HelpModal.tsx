@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { speak } from "../lib/tts";
+import { speak, cancel } from "../lib/tts";
 
 const HELP_INSTRUCTIONS = `Welcome to alt+cart. Here's what you can do:
 
@@ -32,6 +32,7 @@ export function HelpModal({ isOpen, onClose }: HelpModalProps) {
       dialog.showModal();
       speak(HELP_INSTRUCTIONS, { interrupt: true });
     } else {
+      cancel();
       dialog.close();
     }
   }, [isOpen]);
@@ -39,7 +40,7 @@ export function HelpModal({ isOpen, onClose }: HelpModalProps) {
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.key === "?" || e.key === "/") && e.altKey) {
+      if (e.altKey && (e.key === "?" || e.key === "/" || e.code === "Slash")) {
         e.preventDefault();
         onClose();
       }

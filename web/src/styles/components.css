@@ -739,7 +739,7 @@ body.theme-dark .theme-pill__option--active {
 
 /* Help modal */
 .help-modal {
-  max-width: min(500px, 90vw);
+  max-width: min(680px, 92vw);
   max-height: 85vh;
   padding: 0;
   border: 1px solid var(--color-border);
