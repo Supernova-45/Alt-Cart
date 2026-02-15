@@ -569,10 +569,6 @@ body.theme-dark .theme-pill__option--active {
   border-radius: var(--radius);
 }
 
-.search-section.url-input-section {
-  max-width: 720px;
-}
-
 .search-section .form-row {
   display: flex;
   gap: var(--space-xl);
