@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useSearchParams, useLocation, Link } from "react-router-dom";
 import { extractSearch, type SearchResultItem, type SortOption } from "../lib/api";
+import { getCachedSearchResults, setCachedSearchResults } from "../lib/searchResultsCache";
 import { ProductCard } from "../components/ProductCard";
 import { useCompareMode } from "../components/CompareModeContext";
 import { getSortPreference, setSortPreference } from "../lib/preferences";
@@ -58,11 +59,22 @@ export function ExtractSearch() {
       return;
     }
 
+    const cached = getCachedSearchResults(url);
+    if (cached) {
+      setQuery(cached.data.query);
+      setDomain(cached.data.domain);
+      setItems(cached.data.items);
+      setStatus("success");
+      setErrorMessage(null);
+      return;
+    }
+
     setStatus("loading");
     setErrorMessage(null);
 
     extractSearch(url)
       .then((result) => {
+        setCachedSearchResults(url, result);
         setQuery(result.data.query);
         setDomain(result.data.domain);
         setItems(result.data.items);
