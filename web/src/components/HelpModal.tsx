@@ -15,7 +15,7 @@ Use the Preferences page to customize font, font size, TTS voice, reduced motion
 
 Toggle dark mode and low vision mode from the Preferences page.
 
-Keyboard shortcuts: Alt + ? for help. Tab and Shift+Tab to move focus. Enter to activate. Space to stop TTS. P to play or pause TTS. R to repeat. H for home. C for compare when you have items.`;
+Keyboard shortcuts: Tab and Shift+Tab to move focus forward or backward. Enter to activate focused link or button. Alt + ? to open or close help. Space to stop audio when TTS is playing. P to play or pause TTS. R to repeat last spoken text. H to go home. C to view compared items. Hover over a product and press Alt to hear its description. Focus on a product and press Space to hear its description. Escape to close help.`;
 
 interface HelpModalProps {
   isOpen: boolean;
