@@ -228,194 +228,81 @@ export function Passport() {
       {p.sustainability && (
         <SectionCard
           id="sustainability"
-          title="Sustainability Analysis"
+          title="Sustainability"
           readText={sustainabilityText}
           onReadSection={() => speak(sustainabilityText)}
         >
-          <p style={{ color: "#666", marginBottom: "1.5rem", fontSize: "0.95rem" }}>
-            This product has been analyzed across four key sustainability categories. Each category is weighted based on its environmental impact.
-          </p>
-
-          {/* Materials Section */}
-          <div style={{ marginBottom: "1.5rem", padding: "1rem", backgroundColor: "#f9fafb", borderRadius: "8px", borderLeft: "4px solid #3b82f6" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
-              <h3 style={{ fontSize: "1rem", fontWeight: "600", margin: 0 }}>
-                🌿 Materials & Composition
-              </h3>
-              <span style={{
-                fontSize: "0.875rem",
-                fontWeight: "600",
-                padding: "0.25rem 0.75rem",
-                backgroundColor: p.sustainability.categories.materials.score >= 70 ? "#d1fae5" :
-                                 p.sustainability.categories.materials.score >= 50 ? "#dbeafe" :
-                                 p.sustainability.categories.materials.score >= 30 ? "#fed7aa" : "#fee2e2",
-                color: p.sustainability.categories.materials.score >= 70 ? "#065f46" :
-                       p.sustainability.categories.materials.score >= 50 ? "#1e3a8a" :
-                       p.sustainability.categories.materials.score >= 30 ? "#92400e" : "#991b1b",
-                borderRadius: "12px"
-              }}>
-                {p.sustainability.categories.materials.score}/100
-              </span>
-            </div>
-            <p style={{ fontSize: "0.875rem", color: "#666", marginBottom: "0.5rem" }}>
-              Weight: 35% of overall score
-            </p>
-            <ul style={{ marginLeft: "1.5rem", marginTop: "0.5rem", fontSize: "0.95rem" }}>
-              {p.sustainability.categories.materials.details.map((detail, idx) => (
-                <li key={idx} style={{ marginBottom: "0.25rem" }}>{detail}</li>
-              ))}
-            </ul>
+          <div className="sustainability-overview">
+            <span className="sustainability-overview__rating">{p.sustainability.rating}</span>
+            <span className="sustainability-overview__score">{p.sustainability.overallScore}/100</span>
           </div>
 
-          {/* Manufacturing Section */}
-          <div style={{ marginBottom: "1.5rem", padding: "1rem", backgroundColor: "#f9fafb", borderRadius: "8px", borderLeft: "4px solid #8b5cf6" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
-              <h3 style={{ fontSize: "1rem", fontWeight: "600", margin: 0 }}>
-                🏭 Manufacturing & Labor
-              </h3>
-              <span style={{
-                fontSize: "0.875rem",
-                fontWeight: "600",
-                padding: "0.25rem 0.75rem",
-                backgroundColor: p.sustainability.categories.manufacturing.score >= 70 ? "#d1fae5" :
-                                 p.sustainability.categories.manufacturing.score >= 50 ? "#dbeafe" :
-                                 p.sustainability.categories.manufacturing.score >= 30 ? "#fed7aa" : "#fee2e2",
-                color: p.sustainability.categories.manufacturing.score >= 70 ? "#065f46" :
-                       p.sustainability.categories.manufacturing.score >= 50 ? "#1e3a8a" :
-                       p.sustainability.categories.manufacturing.score >= 30 ? "#92400e" : "#991b1b",
-                borderRadius: "12px"
-              }}>
-                {p.sustainability.categories.manufacturing.score}/100
-              </span>
+          <div className="sustainability-category">
+            <div className="sustainability-category__header">
+              <h3 className="sustainability-category__title">Materials</h3>
+              <span className="sustainability-category__score">{p.sustainability.categories.materials.score}/100</span>
             </div>
-            <p style={{ fontSize: "0.875rem", color: "#666", marginBottom: "0.5rem" }}>
-              Weight: 25% of overall score
-            </p>
-            <ul style={{ marginLeft: "1.5rem", marginTop: "0.5rem", fontSize: "0.95rem" }}>
-              {p.sustainability.categories.manufacturing.details.map((detail, idx) => (
-                <li key={idx} style={{ marginBottom: "0.25rem" }}>{detail}</li>
-              ))}
-            </ul>
+            {p.sustainability.categories.materials.details.length > 0 && (
+              <ul className="sustainability-category__details">
+                {p.sustainability.categories.materials.details.map((detail, idx) => (
+                  <li key={idx}>{detail}</li>
+                ))}
+              </ul>
+            )}
           </div>
 
-          {/* Certifications Section */}
-          <div style={{ marginBottom: "1.5rem", padding: "1rem", backgroundColor: "#f9fafb", borderRadius: "8px", borderLeft: "4px solid #10b981" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
-              <h3 style={{ fontSize: "1rem", fontWeight: "600", margin: 0 }}>
-                ✓ Certifications & Standards
-              </h3>
-              <span style={{
-                fontSize: "0.875rem",
-                fontWeight: "600",
-                padding: "0.25rem 0.75rem",
-                backgroundColor: p.sustainability.categories.certifications.score >= 70 ? "#d1fae5" :
-                                 p.sustainability.categories.certifications.score >= 50 ? "#dbeafe" :
-                                 p.sustainability.categories.certifications.score >= 30 ? "#fed7aa" : "#fee2e2",
-                color: p.sustainability.categories.certifications.score >= 70 ? "#065f46" :
-                       p.sustainability.categories.certifications.score >= 50 ? "#1e3a8a" :
-                       p.sustainability.categories.certifications.score >= 30 ? "#92400e" : "#991b1b",
-                borderRadius: "12px"
-              }}>
-                {p.sustainability.categories.certifications.score}/100
-              </span>
+          <div className="sustainability-category">
+            <div className="sustainability-category__header">
+              <h3 className="sustainability-category__title">Manufacturing</h3>
+              <span className="sustainability-category__score">{p.sustainability.categories.manufacturing.score}/100</span>
             </div>
-            <p style={{ fontSize: "0.875rem", color: "#666", marginBottom: "0.5rem" }}>
-              Weight: 30% of overall score
-            </p>
-            <ul style={{ marginLeft: "1.5rem", marginTop: "0.5rem", fontSize: "0.95rem" }}>
-              {p.sustainability.categories.certifications.details.map((detail, idx) => (
-                <li key={idx} style={{ marginBottom: "0.25rem" }}>{detail}</li>
-              ))}
-            </ul>
+            {p.sustainability.categories.manufacturing.details.length > 0 && (
+              <ul className="sustainability-category__details">
+                {p.sustainability.categories.manufacturing.details.map((detail, idx) => (
+                  <li key={idx}>{detail}</li>
+                ))}
+              </ul>
+            )}
           </div>
 
-          {/* Shipping Section */}
-          <div style={{ marginBottom: "1.5rem", padding: "1rem", backgroundColor: "#f9fafb", borderRadius: "8px", borderLeft: "4px solid #f59e0b" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
-              <h3 style={{ fontSize: "1rem", fontWeight: "600", margin: 0 }}>
-                📦 Shipping & Packaging
-              </h3>
-              <span style={{
-                fontSize: "0.875rem",
-                fontWeight: "600",
-                padding: "0.25rem 0.75rem",
-                backgroundColor: p.sustainability.categories.shipping.score >= 70 ? "#d1fae5" :
-                                 p.sustainability.categories.shipping.score >= 50 ? "#dbeafe" :
-                                 p.sustainability.categories.shipping.score >= 30 ? "#fed7aa" : "#fee2e2",
-                color: p.sustainability.categories.shipping.score >= 70 ? "#065f46" :
-                       p.sustainability.categories.shipping.score >= 50 ? "#1e3a8a" :
-                       p.sustainability.categories.shipping.score >= 30 ? "#92400e" : "#991b1b",
-                borderRadius: "12px"
-              }}>
-                {p.sustainability.categories.shipping.score}/100
-              </span>
+          <div className="sustainability-category">
+            <div className="sustainability-category__header">
+              <h3 className="sustainability-category__title">Certifications</h3>
+              <span className="sustainability-category__score">{p.sustainability.categories.certifications.score}/100</span>
             </div>
-            <p style={{ fontSize: "0.875rem", color: "#666", marginBottom: "0.5rem" }}>
-              Weight: 10% of overall score
-            </p>
-            <ul style={{ marginLeft: "1.5rem", marginTop: "0.5rem", fontSize: "0.95rem" }}>
-              {p.sustainability.categories.shipping.details.map((detail, idx) => (
-                <li key={idx} style={{ marginBottom: "0.25rem" }}>{detail}</li>
-              ))}
-            </ul>
+            {p.sustainability.categories.certifications.details.length > 0 && (
+              <ul className="sustainability-category__details">
+                {p.sustainability.categories.certifications.details.map((detail, idx) => (
+                  <li key={idx}>{detail}</li>
+                ))}
+              </ul>
+            )}
           </div>
 
-          {/* Sustainability Features */}
+          <div className="sustainability-category">
+            <div className="sustainability-category__header">
+              <h3 className="sustainability-category__title">Shipping</h3>
+              <span className="sustainability-category__score">{p.sustainability.categories.shipping.score}/100</span>
+            </div>
+            {p.sustainability.categories.shipping.details.length > 0 && (
+              <ul className="sustainability-category__details">
+                {p.sustainability.categories.shipping.details.map((detail, idx) => (
+                  <li key={idx}>{detail}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+
           {p.sustainability.sustainabilityBadges && p.sustainability.sustainabilityBadges.length > 0 && (
-            <div style={{ marginBottom: "1.5rem", padding: "1rem", backgroundColor: "#ecfdf5", borderRadius: "8px", borderLeft: "4px solid #10b981" }}>
-              <h3 style={{ fontSize: "1rem", fontWeight: "600", marginBottom: "0.75rem" }}>
-                🌱 Additional Sustainability Features
-              </h3>
-              <ul style={{ marginLeft: "1.5rem", fontSize: "0.95rem" }}>
+            <div className="sustainability-badges">
+              <h3 className="sustainability-badges__title">Notable features</h3>
+              <ul className="sustainability-category__details">
                 {p.sustainability.sustainabilityBadges.map((badge, idx) => (
-                  <li key={idx} style={{ marginBottom: "0.25rem" }}>{badge}</li>
+                  <li key={idx}>{badge}</li>
                 ))}
               </ul>
             </div>
           )}
-
-          {/* Overall Rating Summary */}
-          <div style={{
-            marginTop: "2rem",
-            padding: "1.5rem",
-            backgroundColor: p.sustainability.rating === "Excellent" ? "#d1fae5" :
-                             p.sustainability.rating === "Good" ? "#dbeafe" :
-                             p.sustainability.rating === "Fair" ? "#fef3c7" :
-                             p.sustainability.rating === "Poor" ? "#fee2e2" : "#fecaca",
-            borderRadius: "12px",
-            border: "2px solid " + (
-              p.sustainability.rating === "Excellent" ? "#10b981" :
-              p.sustainability.rating === "Good" ? "#3b82f6" :
-              p.sustainability.rating === "Fair" ? "#f59e0b" :
-              p.sustainability.rating === "Poor" ? "#ef4444" : "#991b1b"
-            )
-          }}>
-            <h3 style={{ fontSize: "1.2rem", fontWeight: "700", marginBottom: "0.5rem", textAlign: "center" }}>
-              Overall Sustainability Rating
-            </h3>
-            <div style={{ textAlign: "center", marginBottom: "1rem" }}>
-              <div style={{
-                fontSize: "2.5rem",
-                fontWeight: "800",
-                color: p.sustainability.rating === "Excellent" ? "#065f46" :
-                       p.sustainability.rating === "Good" ? "#1e3a8a" :
-                       p.sustainability.rating === "Fair" ? "#92400e" :
-                       p.sustainability.rating === "Poor" ? "#991b1b" : "#7f1d1d"
-              }}>
-                {p.sustainability.rating}
-              </div>
-              <div style={{ fontSize: "1.5rem", fontWeight: "600", color: "#666" }}>
-                {p.sustainability.overallScore}/100
-              </div>
-            </div>
-            <p style={{ textAlign: "center", fontSize: "0.95rem", color: "#666", margin: 0 }}>
-              {p.sustainability.rating === "Excellent" ? "This product demonstrates exceptional sustainability practices across materials, manufacturing, certifications, and shipping." :
-               p.sustainability.rating === "Good" ? "This product shows strong sustainability practices with room for improvement in some areas." :
-               p.sustainability.rating === "Fair" ? "This product has moderate sustainability practices. Consider looking for better alternatives if sustainability is important to you." :
-               p.sustainability.rating === "Poor" ? "This product has limited sustainability practices. Consider more eco-friendly alternatives." :
-               "This product shows minimal sustainability efforts. Strongly consider more sustainable alternatives."}
-            </p>
-          </div>
         </SectionCard>
       )}
 
