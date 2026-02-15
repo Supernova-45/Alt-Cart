@@ -7,9 +7,9 @@ export function Unsupported() {
 
   return (
     <div className="section-card" style={{ maxWidth: "var(--max-width)" }}>
-      <h1>Unsupported in demo</h1>
+      <h1>Unsupported in Alt+Cart</h1>
       <p style={{ marginBottom: "var(--space-lg)" }}>
-        This demo supports Amazon white sneakers and Walmart backpacks.
+        This demo doesn't currently support this URL.
       </p>
       {reason && (
         <p style={{ marginBottom: "var(--space-md)", fontSize: "var(--text-sm)", color: "var(--color-text-muted)" }}>
