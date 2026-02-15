@@ -16,7 +16,25 @@ const DOMAIN_LABELS: Record<string, string> = {
   target: "Target",
   macys: "Macy's",
   homedepot: "Home Depot",
+  generic: "This site",
 };
+
+function getDomainLabel(domain: string, url?: string): string {
+  if (DOMAIN_LABELS[domain]) return DOMAIN_LABELS[domain];
+  if (domain === "generic" && url) {
+    try {
+      const host = new URL(url).hostname.replace(/^www\./, "");
+      const parts = host.split(".");
+      if (parts.length >= 2) {
+        const name = parts[parts.length - 2];
+        return name.charAt(0).toUpperCase() + name.slice(1);
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+  return domain;
+}
 
 export function ExtractSearch() {
   const [searchParams] = useSearchParams();
@@ -106,7 +124,7 @@ export function ExtractSearch() {
     );
   }
 
-  const domainLabel = DOMAIN_LABELS[domain] ?? domain;
+  const domainLabel = getDomainLabel(domain, url ?? undefined);
   const isClothingQuery = CLOTHING_KEYWORDS.test(query);
 
   const sortLabel =
@@ -125,6 +143,11 @@ export function ExtractSearch() {
       <h1>Search results: {query}</h1>
       <p style={{ marginBottom: "1rem", color: "var(--color-text-muted)" }}>
         {items.length} products from {domainLabel}. Click a product to extract its full passport.
+        {domain === "generic" && (
+          <span style={{ display: "block", marginTop: "0.5rem", fontSize: "var(--text-sm)" }}>
+            Best-effort extraction; results may vary by site.
+          </span>
+        )}
       </p>
       {isClothingQuery && items.length > 0 && (
         <p style={{ marginBottom: "1rem", fontSize: "var(--text-sm)", color: "var(--color-text-muted)" }}>

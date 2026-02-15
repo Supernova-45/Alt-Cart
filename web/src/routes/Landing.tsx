@@ -132,7 +132,7 @@ export function Landing() {
                     inputMode="url"
                     value={customSearchUrl}
                     onChange={(e) => setCustomSearchUrl(e.target.value)}
-                    placeholder="https://www.example.com/search?q=..."
+                    placeholder="e.g. temu.com, aliexpress.us, uniqlo.com search or product URL"
                     disabled={searchLoading}
                     autoComplete="off"
                     aria-label="Paste search results page URL"

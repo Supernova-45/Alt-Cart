@@ -13,12 +13,81 @@ export type SearchDomain =
   | "lowes"
   | "target"
   | "macys"
-  | "homedepot";
+  | "homedepot"
+  | "generic";
 
 export interface ParsedSearchUrl {
   domain: SearchDomain;
   query: string;
   fullUrl: string;
+}
+
+/** E-commerce host patterns for generic extraction (partial match). */
+const GENERIC_ECOMMERCE_PATTERNS = [
+  "temu.com",
+  "aliexpress",
+  "uniqlo.com",
+  "shein.com",
+  "wish.com",
+  "overstock.com",
+  "wayfair.com",
+  "bestbuy.com",
+  "costco.com",
+  "kohls.com",
+  "nordstrom.com",
+  "zappos.com",
+  "asos.com",
+  "hm.com",
+  "gap.com",
+  "oldnavy.com",
+  "zara.com",
+];
+
+function isGenericEcommerceHost(host: string): boolean {
+  const h = host.toLowerCase();
+  return GENERIC_ECOMMERCE_PATTERNS.some((d) => h.includes(d));
+}
+
+function looksLikeSearchOrProductPage(path: string, params: URLSearchParams): boolean {
+  const p = path.toLowerCase();
+  return (
+    p.includes("/search") ||
+    p.includes("/w/") ||
+    p.includes("/s/") ||
+    p.includes("/shop") ||
+    p.includes("/browse") ||
+    p.includes("/category") ||
+    p.includes("/products") ||
+    p.includes("/item") ||
+    p.includes("/product") ||
+    p.includes("/p/") ||
+    params.has("q") ||
+    params.has("keyword") ||
+    params.has("searchTerm") ||
+    params.has("search") ||
+    /\/[a-z0-9-]+-g-\d+\.html/i.test(p) || // Temu product: name-g-123.html
+    /\/item\/\d+\.html/i.test(p) || // AliExpress item
+    /\/products\/[^/]+\/\d+/i.test(p) // Uniqlo product
+  );
+}
+
+function extractGenericQuery(host: string, url: URL): string {
+  const params = url.searchParams;
+  const path = url.pathname;
+  const q =
+    params.get("q") ||
+    params.get("keyword") ||
+    params.get("searchTerm") ||
+    params.get("search") ||
+    "";
+  if (q.trim()) return q.trim();
+  const pathMatch = path.match(/\/w\/([^/?.]+)/);
+  if (pathMatch) return decodeURIComponent(pathMatch[1].replace(/-/g, " ")).trim();
+  const pathMatch2 = path.match(/\/s\/([^/?.]+)/);
+  if (pathMatch2) return decodeURIComponent(pathMatch2[1].replace(/-/g, " ")).trim();
+  const productMatch = path.match(/-([a-z0-9-]+)-g-\d+\.html/i);
+  if (productMatch) return productMatch[1].replace(/-/g, " ").trim();
+  return url.hostname;
 }
 
 function extractQuery(host: string, url: URL): { domain: SearchDomain; query: string } | null {
@@ -88,10 +157,24 @@ export function parseSearchUrl(urlString: string): ParsedSearchUrl | null {
   try {
     const url = new URL(urlString);
     const host = url.hostname.toLowerCase();
+    const path = url.pathname;
+    const params = url.searchParams;
+
     const parsed = extractQuery(host, url);
     if (parsed) {
       return { ...parsed, fullUrl: url.toString() };
     }
+
+    // Generic fallback: accept e-commerce URLs not in the main whitelist
+    if (isGenericEcommerceHost(host) || looksLikeSearchOrProductPage(path, params)) {
+      const query = extractGenericQuery(host, url);
+      return {
+        domain: "generic",
+        query: query || host,
+        fullUrl: url.toString(),
+      };
+    }
+
     return null;
   } catch {
     return null;

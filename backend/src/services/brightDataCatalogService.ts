@@ -17,7 +17,8 @@ import { parseAmazonSearchHtml } from "../extractors/catalogHtmlParsers/amazonSe
 import { parseWalmartSearchHtml } from "../extractors/catalogHtmlParsers/walmartSearchHtmlParser";
 import type { SearchDomain } from "../utils/searchUrlParser";
 
-export type CatalogDomain = SearchDomain;
+/** Domains supported by Bright Data catalog (excludes generic). */
+export type CatalogDomain = Exclude<SearchDomain, "generic">;
 
 /**
  * Map Bright Data Web Scraper response to SearchResultItem.
