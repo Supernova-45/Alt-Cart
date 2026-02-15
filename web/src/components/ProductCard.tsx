@@ -29,17 +29,25 @@ export function ProductCard({
   imageUrl,
   imageAlt,
 }: ProductCardProps) {
-  let sanitizedReviewCount: string | undefined;
+  const formatRating = (text: string | undefined): string | undefined => {
+    if (!text) return undefined;
+    const match = text.match(/(\d+\.?\d*)\s*(?:out of\s*)?5/);
+    return match ? `${match[1]}/5 stars` : text;
+  };
+
+  let formattedReviews: string | undefined;
   if (reviewCountText) {
     const trimmed = reviewCountText.trim();
     const numMatch = trimmed.replace(/,/g, "").match(/\d+/);
     const isVariantText =
       /capacit|color|size|option|storage/i.test(trimmed) || (numMatch && numMatch[0].length < 2 && trimmed.length > 4);
     if (numMatch && !isVariantText) {
-      sanitizedReviewCount = `(${numMatch[0]})`;
+      const num = parseInt(numMatch[0], 10);
+      formattedReviews = `${num.toLocaleString()} reviews`;
     }
   }
-  const meta = [priceText, ratingText, sanitizedReviewCount].filter(Boolean).join(" · ");
+
+  const meta = [priceText, formatRating(ratingText), formattedReviews].filter(Boolean).join(", ");
   const description = [name, meta, "See details"].filter(Boolean).join(". ");
 
   const speakDescription = useCallback(() => {

@@ -49,6 +49,7 @@ export function ExtractSearch() {
   const [items, setItems] = useState<SearchResultItem[]>([]);
   const [sortBy, setSortBy] = useState<SortOption>(() => getSortPreference());
   const { compareMode, enterCompareMode } = useCompareMode();
+  const showCompareBtn = !compareMode;
 
   useEffect(() => {
     if (!url) {
@@ -175,15 +176,16 @@ export function ExtractSearch() {
             )}
           </select>
         </div>
-        <button
-          type="button"
-          className={`search-results__compare-btn ${compareMode ? "search-results__compare-btn--active" : ""}`}
-          onClick={() => enterCompareMode()}
-          aria-pressed={compareMode}
-          aria-label={compareMode ? "Compare mode on" : "Enter compare mode to select products"}
-        >
-          Compare
-        </button>
+        {showCompareBtn && (
+          <button
+            type="button"
+            className="search-results__compare-btn"
+            onClick={() => enterCompareMode()}
+            aria-label="Enter compare mode to select products"
+          >
+            Compare
+          </button>
+        )}
         <div role="status" aria-live="polite" aria-atomic="true" className="visually-hidden">
           {items.length} results sorted by {sortLabel}
         </div>

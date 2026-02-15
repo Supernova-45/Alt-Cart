@@ -1,10 +1,7 @@
 import { Link } from "react-router-dom";
 import { ProductList } from "../components/ProductList";
-import { useCompareMode } from "../components/CompareModeContext";
 
 export function Home() {
-  const { compareMode, enterCompareMode } = useCompareMode();
-
   return (
     <>
       <h1>Demo Products</h1>
@@ -22,18 +19,7 @@ export function Home() {
       </p>
 
       <section className="demo-section">
-        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "var(--space-md)", marginBottom: "1.5rem" }}>
-          <h2 style={{ margin: 0 }}>All products</h2>
-          <button
-            type="button"
-            className={`search-results__compare-btn ${compareMode ? "search-results__compare-btn--active" : ""}`}
-            onClick={() => enterCompareMode()}
-            aria-pressed={compareMode}
-            aria-label={compareMode ? "Compare mode on" : "Enter compare mode to select products"}
-          >
-            compare
-          </button>
-        </div>
+        <h2 style={{ margin: "0 0 1.5rem" }}>All products</h2>
         <ProductList />
       </section>
 

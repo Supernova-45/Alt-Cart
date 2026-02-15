@@ -55,9 +55,9 @@ export function CompareBar() {
             type="button"
             className="compare-bar__btn compare-bar__btn--secondary"
             onClick={handleCancel}
-            aria-label="Cancel and exit compare mode"
+            aria-label="Exit compare mode"
           >
-            Cancel
+            Compare
           </button>
         </div>
       </div>
