@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { speak } from "../lib/tts";
+import { addToCompare, getCompareIds, getCompareUrl, MAX_COMPARE } from "../lib/compare";
 
 interface ProductCardProps {
   /** Passport ID for demo products - links to /p/:id */
@@ -76,6 +77,7 @@ export function ProductCard({
     [speakDescription]
   );
 
+  const navigate = useNavigate();
   const linkTo = productUrl
     ? returnTo
       ? `/open?url=${encodeURIComponent(productUrl)}&returnTo=${encodeURIComponent(returnTo)}`
@@ -83,6 +85,26 @@ export function ProductCard({
     : id
       ? `/p/${id}`
       : "#";
+
+  const handleAddToCompare = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!id) return;
+      const current = getCompareIds();
+      if (current.includes(id)) {
+        navigate(getCompareUrl());
+        return;
+      }
+      addToCompare(id);
+      navigate(getCompareUrl());
+    },
+    [id, navigate]
+  );
+
+  const canAddToCompare = id != null;
+  const compareIds = getCompareIds();
+  const compareFull = compareIds.length >= MAX_COMPARE && !compareIds.includes(id ?? "");
 
   return (
     <article
@@ -109,9 +131,22 @@ export function ProductCard({
         <div className="product-card__content">
           <h2 className="product-card__title">{name}</h2>
           {meta && <p className="product-card__meta">{meta}</p>}
-          <Link to={linkTo} className="product-card__link">
-            See details
-          </Link>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-sm)", alignItems: "center" }}>
+            <Link to={linkTo} className="product-card__link">
+              See details
+            </Link>
+            {canAddToCompare && (
+              <button
+                type="button"
+                className="compare-add-btn"
+                onClick={handleAddToCompare}
+                disabled={compareFull}
+                aria-label={compareFull ? "Compare list is full" : "Add to compare"}
+              >
+                {compareFull ? "Compare full" : "Add to compare"}
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </article>

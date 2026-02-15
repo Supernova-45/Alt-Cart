@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { fetchSnapshot } from "../lib/fetchSnapshot";
 import { parseProductSnapshot } from "../lib/parseProductSnapshot";
 import { mergePassport } from "../lib/mergePassport";
@@ -7,6 +7,7 @@ import { getFallbackPassport } from "../lib/demoFallbacks";
 import { SNAPSHOTS } from "../lib/snapshotRegistry";
 import { getProduct } from "../lib/api";
 import { speak } from "../lib/tts";
+import { addToCompare, getCompareIds, getCompareUrl, MAX_COMPARE } from "../lib/compare";
 import type { ProductPassport } from "../lib/productModel";
 import { TTSControls } from "../components/TTSControls";
 import { SectionCard } from "../components/SectionCard";
@@ -110,6 +111,13 @@ export function Passport() {
 
   const p = passport;
   const fallback = getFallbackPassport(id);
+  const navigate = useNavigate();
+  const compareIds = getCompareIds();
+  const compareFull = compareIds.length >= MAX_COMPARE && !compareIds.includes(id);
+  const handleAddToCompare = () => {
+    addToCompare(id);
+    navigate(getCompareUrl());
+  };
 
   const backTo = returnTo
     ? { path: returnTo, label: "Back to search results" }
@@ -180,7 +188,18 @@ export function Passport() {
           <StatPill label="Rating" value={p.ratingText} />
           <StatPill label="Reviews" value={p.reviewCountText} />
         </div>
-        <TTSControls summaryText={p.narration.medium} disabled={loading} />
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-sm)", alignItems: "center" }}>
+          <button
+            type="button"
+            className="compare-add-btn"
+            onClick={handleAddToCompare}
+            disabled={compareFull}
+            aria-label={compareFull ? "Compare list is full" : "Add to compare"}
+          >
+            {compareFull ? "Compare full" : "Add to compare"}
+          </button>
+          <TTSControls summaryText={p.narration.medium} disabled={loading} />
+        </div>
       </header>
 
       {error && (
