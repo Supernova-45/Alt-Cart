@@ -139,7 +139,7 @@ FRONTEND_URL=http://localhost:5173
 VITE_API_BASE_URL=http://localhost:3001
 ```
 
-**Vercel deployment:** When the frontend is deployed to altcart.vercel.app, it proxies API calls to the backend. Deploy the backend as a separate Vercel project (e.g. altcartbackend.vercel.app) and ensure the web project's `vercel.json` rewrites point to it.
+**Vercel deployment:** When the frontend is deployed to alt-cart.vercel.app, it proxies API calls to the backend. Deploy the backend as a separate Vercel project (e.g. alt-cart-backend.vercel.app) and ensure the web project's `vercel.json` rewrites point to it.
 
 ## Troubleshooting: Extraction 500 Errors
 

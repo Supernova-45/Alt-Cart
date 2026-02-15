@@ -23,7 +23,7 @@ const app = express();
 // Explicit OPTIONS handler FIRST - must return 204 for preflight to pass CORS check
 app.options("*", (req, res) => {
   const origin = req.headers.origin;
-  const allowOrigin = origin && isAllowedOrigin(origin) ? origin : "https://altcart.vercel.app";
+  const allowOrigin = origin && isAllowedOrigin(origin) ? origin : "https://alt-cart.vercel.app";
   res.setHeader("Access-Control-Allow-Origin", allowOrigin);
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, HEAD");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept");

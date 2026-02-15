@@ -6,7 +6,7 @@
     {
       "source": "/api/(.*)",
       "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "https://altcart.vercel.app" },
+        { "key": "Access-Control-Allow-Origin", "value": "https://alt-cart.vercel.app" },
         { "key": "Access-Control-Allow-Methods", "value": "GET, POST, OPTIONS, HEAD" },
         { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization, Accept" },
         { "key": "Access-Control-Allow-Credentials", "value": "true" }

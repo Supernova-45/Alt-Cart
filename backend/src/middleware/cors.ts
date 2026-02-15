@@ -3,7 +3,7 @@ import { config } from "../config/env";
 
 const ALLOWED_ORIGINS = [
   config.frontendUrl,
-  "https://altcart.vercel.app",
+  "https://alt-cart.vercel.app",
   "http://localhost:5173",
   "http://localhost:5174",
   "http://127.0.0.1:5173",

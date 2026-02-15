@@ -1,4 +1,4 @@
-const BASE_URL = "https://altcart.vercel.app";
+const BASE_URL = "https://alt-cart.vercel.app";
 
 function isInvalidUrl(url) {
   return !url || url.startsWith("chrome://") || url.startsWith("chrome-extension://");
