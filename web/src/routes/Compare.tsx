@@ -12,6 +12,7 @@ import type { ProductPassport } from "../lib/productModel";
 export function Compare() {
   const [searchParams] = useSearchParams();
   const idsParam = searchParams.get("ids");
+  const returnTo = searchParams.get("returnTo");
   const ids = idsParam ? idsParam.split(",").filter(Boolean).slice(0, MAX_COMPARE) : getCompareIds();
 
   const navigate = useNavigate();
@@ -58,19 +59,26 @@ export function Compare() {
     return () => clearPlayableText();
   }, [narrative, passports.length]);
 
+  const compareUrl = (idsParam: string) => {
+    const params = new URLSearchParams();
+    params.set("ids", idsParam);
+    if (returnTo) params.set("returnTo", returnTo);
+    return `/compare?${params.toString()}`;
+  };
+
   const handleRemove = (id: string) => {
     removeFromCompare(id);
     const next = ids.filter((x) => x !== id);
     if (next.length > 0) {
-      navigate(`/compare?ids=${next.join(",")}`);
+      navigate(compareUrl(next.join(",")));
     } else {
-      navigate("/compare");
+      navigate(returnTo ? `/compare?returnTo=${encodeURIComponent(returnTo)}` : "/compare");
     }
   };
 
   const handleClear = () => {
     clearCompare();
-    navigate("/compare");
+    navigate(returnTo ? `/compare?returnTo=${encodeURIComponent(returnTo)}` : "/compare");
   };
 
   if (ids.length === 0 && !loading) {
@@ -80,9 +88,16 @@ export function Compare() {
         <p style={{ marginBottom: "1rem", color: "var(--color-text-muted)" }}>
           Select products to compare. On search results, click Compare to enter compare mode, then select 2–3 products and click Compare.
         </p>
-        <Link to="/s/a_search" className="product-card__link" style={{ display: "inline-block", marginTop: "1rem" }}>
-          Try demo search
-        </Link>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem", marginTop: "1rem" }}>
+          {returnTo && (
+            <Link to={returnTo} className="product-card__link">
+              ← Back to search results
+            </Link>
+          )}
+          <Link to="/s/a_search" className="product-card__link">
+            Try demo search
+          </Link>
+        </div>
       </div>
     );
   }
@@ -114,7 +129,7 @@ export function Compare() {
   return (
     <>
       <header className="passport-header" style={{ marginBottom: "var(--space-lg)" }}>
-        <Link to="/" className="passport-header__back">
+        <Link to={returnTo || "/"} className="passport-header__back">
           ← Back
         </Link>
         <h1 className="passport-header__title">Compare {passports.length} product{passports.length !== 1 ? "s" : ""}</h1>

@@ -1,12 +1,15 @@
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useCompareMode } from "./CompareModeContext";
-import { clearCompare } from "../lib/compare";
 
 export function CompareBar() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [extracting, setExtracting] = useState(false);
   const {
     compareMode,
     selectedIds,
+    selectedUrls,
     exitCompareMode,
     clearSelection,
     confirmCompare,
@@ -14,14 +17,28 @@ export function CompareBar() {
 
   if (!compareMode) return null;
 
-  const canCompare = selectedIds.length >= 2 && selectedIds.length <= 3;
+  const totalSelected = selectedIds.length + selectedUrls.length;
+  const canCompare = totalSelected >= 2 && totalSelected <= 3;
 
-  const handleCompare = () => {
-    if (canCompare) confirmCompare((url) => navigate(url));
+  const handleCompare = async () => {
+    if (!canCompare) return;
+    setExtracting(true);
+    try {
+      const ok = await confirmCompare((url) => {
+        const returnTo = location.pathname + location.search;
+        const finalUrl =
+          returnTo && returnTo !== "/"
+            ? `${url}${url.includes("?") ? "&" : "?"}returnTo=${encodeURIComponent(returnTo)}`
+            : url;
+        navigate(finalUrl);
+      });
+      if (!ok) setExtracting(false);
+    } catch {
+      setExtracting(false);
+    }
   };
 
   const handleCancel = () => {
-    clearCompare();
     clearSelection();
     exitCompareMode();
   };
@@ -35,21 +52,21 @@ export function CompareBar() {
     >
       <div className="compare-bar__inner">
         <span className="compare-bar__count">
-          {selectedIds.length === 0
+          {totalSelected === 0
             ? "Click products to select (2–3), then compare"
-            : selectedIds.length === 1
+            : totalSelected === 1
               ? "1 selected"
-              : `${selectedIds.length} selected`}
+              : `${totalSelected} selected`}
         </span>
         <div className="compare-bar__actions">
           <button
             type="button"
             className="compare-bar__btn compare-bar__btn--primary"
             onClick={handleCompare}
-            disabled={!canCompare}
+            disabled={!canCompare || extracting}
             aria-label={canCompare ? "Compare selected products" : "Select 2–3 products to compare"}
           >
-            Compare →
+            {extracting ? "Extracting…" : "Compare →"}
           </button>
           <button
             type="button"
@@ -57,7 +74,7 @@ export function CompareBar() {
             onClick={handleCancel}
             aria-label="Exit compare mode"
           >
-            Compare
+            Cancel
           </button>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { SkipLink } from "./SkipLink";
 import { TopBar } from "./TopBar";
 import { getTheme, setTheme, type Theme } from "../lib/theme";
@@ -42,6 +42,7 @@ function applyAccessibilityPreferences(): void {
 
 export function Shell({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const compareMode = useCompareModeOptional();
   const [theme, setThemeState] = useState<Theme>(() => getTheme());
   const [ttsCaptions, setTtsCaptions] = useState(() => getPreferences().ttsCaptions);
@@ -95,21 +96,35 @@ export function Shell({ children }: { children: React.ReactNode }) {
         return;
       }
       if ((e.key === "c" || e.key === "C") && !e.metaKey && !e.ctrlKey) {
-        if (compareMode?.compareMode && compareMode.selectedIds.length >= 2) {
+        const totalSelected = (compareMode?.selectedIds?.length ?? 0) + (compareMode?.selectedUrls?.length ?? 0);
+        if (compareMode?.compareMode && totalSelected >= 2) {
           e.preventDefault();
-          compareMode.confirmCompare(navigate);
+          const returnTo = location.pathname + location.search;
+          compareMode.confirmCompare((url) => {
+            const finalUrl =
+              returnTo && returnTo !== "/"
+                ? `${url}${url.includes("?") ? "&" : "?"}returnTo=${encodeURIComponent(returnTo)}`
+                : url;
+            navigate(finalUrl);
+          });
           return;
         }
         const ids = getCompareIds();
         if (ids.length > 0) {
           e.preventDefault();
-          navigate(getCompareUrl());
+          const returnTo = location.pathname + location.search;
+          const baseUrl = getCompareUrl();
+          const url =
+            returnTo && returnTo !== "/"
+              ? `${baseUrl}${baseUrl.includes("?") ? "&" : "?"}returnTo=${encodeURIComponent(returnTo)}`
+              : baseUrl;
+          navigate(url);
         }
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [navigate]);
+  }, [navigate, location.pathname, location.search, compareMode]);
 
   useEffect(() => {
     applyAccessibilityPreferences();

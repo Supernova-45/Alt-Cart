@@ -107,25 +107,30 @@ export function ProductCard({
       : "#";
 
   const inCompareMode = compareMode?.compareMode ?? false;
-  const selected = id != null && (compareMode?.selectedIds ?? []).includes(id);
-  const canSelect = id != null && inCompareMode;
+  const selectedById = id != null && (compareMode?.selectedIds ?? []).includes(id);
+  const selectedByUrl = productUrl != null && (compareMode?.selectedUrls ?? []).includes(productUrl);
+  const selected = selectedById || selectedByUrl;
+  const canSelect = inCompareMode && (id != null || productUrl != null);
+  const totalSelected = (compareMode?.selectedIds ?? []).length + (compareMode?.selectedUrls ?? []).length;
   const selectionFull =
     inCompareMode &&
-    (compareMode?.selectedIds ?? []).length >= 3 &&
-    !(compareMode?.selectedIds ?? []).includes(id ?? "");
+    totalSelected >= 3 &&
+    !selectedById &&
+    !selectedByUrl;
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === " " && e.target === e.currentTarget) {
         e.preventDefault();
-        if (canSelect && !selectionFull && id) {
-          compareMode?.toggleProduct(id);
+        if (canSelect && !selectionFull) {
+          if (id) compareMode?.toggleProduct(id);
+          else if (productUrl) compareMode?.toggleProductByUrl(productUrl);
         } else {
           speakDescription();
         }
       }
     },
-    [speakDescription, canSelect, selectionFull, id, compareMode]
+    [speakDescription, canSelect, selectionFull, id, productUrl, compareMode]
   );
 
   const handleCardClick = useCallback(
@@ -133,9 +138,10 @@ export function ProductCard({
       if (!canSelect || selectionFull) return;
       if ((e.target as HTMLElement).closest("a")) return;
       e.preventDefault();
-      compareMode!.toggleProduct(id!);
+      if (id) compareMode!.toggleProduct(id);
+      else if (productUrl) compareMode!.toggleProductByUrl(productUrl);
     },
-    [canSelect, selectionFull, id, compareMode]
+    [canSelect, selectionFull, id, productUrl, compareMode]
   );
 
   return (
