@@ -195,6 +195,32 @@ export function Preferences() {
         </div>
       </section>
 
+      <section aria-labelledby="prefs-tts-captions-heading" style={{ marginBottom: "var(--space-xl)" }}>
+        <h2 id="prefs-tts-captions-heading" style={{ fontSize: "var(--text-lg)", marginBottom: "var(--space-md)" }}>
+          Text-to-speech captions
+        </h2>
+        <div className="toggle">
+          <input
+            id="prefs-tts-captions"
+            type="checkbox"
+            className="toggle__input"
+            checked={prefs.ttsCaptions}
+            onChange={(e) => {
+              const v = e.target.checked;
+              setPreference("ttsCaptions", v);
+              setPrefs((p) => ({ ...p, ttsCaptions: v }));
+            }}
+            aria-describedby="prefs-tts-captions-desc"
+          />
+          <label htmlFor="prefs-tts-captions" className="toggle__label">
+            Show captions
+          </label>
+        </div>
+        <p id="prefs-tts-captions-desc" style={{ margin: "var(--space-xs) 0 0", fontSize: "var(--text-sm)", color: "var(--color-text-muted)" }}>
+          Highlight the current sentence as it is spoken.
+        </p>
+      </section>
+
       <section aria-labelledby="prefs-focus-heading" style={{ marginBottom: "var(--space-lg)" }}>
         <h2 id="prefs-focus-heading" style={{ fontSize: "var(--text-lg)", marginBottom: "var(--space-md)" }}>
           Focus

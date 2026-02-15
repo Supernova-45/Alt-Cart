@@ -5,6 +5,7 @@ import { getLowVision, setLowVision } from "../lib/lowVision";
 import { getTheme, setTheme, type Theme } from "../lib/theme";
 import { getPreferences } from "../lib/accessibilityPreferences";
 import { setVoice } from "../lib/tts";
+import { TTSCaptions } from "./TTSCaptions";
 
 function applyAccessibilityPreferences(): void {
   if (typeof document === "undefined") return;
@@ -23,10 +24,14 @@ function applyAccessibilityPreferences(): void {
 export function Shell({ children }: { children: React.ReactNode }) {
   const [lowVision, setLowVisionState] = useState(() => getLowVision());
   const [theme, setThemeState] = useState<Theme>(() => getTheme());
+  const [ttsCaptions, setTtsCaptions] = useState(() => getPreferences().ttsCaptions);
 
   useEffect(() => {
     applyAccessibilityPreferences();
-    const handler = () => applyAccessibilityPreferences();
+    const handler = () => {
+      applyAccessibilityPreferences();
+      setTtsCaptions(getPreferences().ttsCaptions);
+    };
     window.addEventListener("preferences-updated", handler);
     return () => window.removeEventListener("preferences-updated", handler);
   }, []);
@@ -73,6 +78,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
       <main id="content" className="shell__main" role="main" tabIndex={-1}>
         {children}
       </main>
+      <TTSCaptions enabled={ttsCaptions} />
     </div>
   );
 }

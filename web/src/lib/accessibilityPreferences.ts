@@ -8,6 +8,7 @@ export interface AccessibilityPreferences {
   ttsVoice: string;
   reducedMotion: ReducedMotion;
   highlightFocus: boolean;
+  ttsCaptions: boolean;
 }
 
 const PREFERENCES_KEY = "altcart-accessibility-preferences";
@@ -18,6 +19,7 @@ const DEFAULTS: AccessibilityPreferences = {
   ttsVoice: "",
   reducedMotion: "auto",
   highlightFocus: false,
+  ttsCaptions: true,
 };
 
 function loadFromStorage(): AccessibilityPreferences {
@@ -32,6 +34,7 @@ function loadFromStorage(): AccessibilityPreferences {
       ttsVoice: parsed.ttsVoice ?? DEFAULTS.ttsVoice,
       reducedMotion: parsed.reducedMotion ?? DEFAULTS.reducedMotion,
       highlightFocus: parsed.highlightFocus ?? DEFAULTS.highlightFocus,
+      ttsCaptions: parsed.ttsCaptions ?? DEFAULTS.ttsCaptions,
     };
   } catch {
     return { ...DEFAULTS };

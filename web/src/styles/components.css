@@ -636,3 +636,36 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* TTS captions */
+.tts-captions {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-height: 25vh;
+  overflow-y: auto;
+  padding: var(--space-md) var(--space-lg);
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  z-index: 50;
+}
+
+.tts-captions__content {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+.tts-captions__sentence {
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.tts-captions__sentence--active {
+  background: var(--color-accent);
+  color: var(--color-surface);
+  padding: 0.1em 0.2em;
+  border-radius: var(--radius-sm);
+}
