@@ -120,7 +120,8 @@ export function ExtractSearch() {
 
   if (status === "loading") {
     return (
-      <div className="section-card">
+      <div className="section-card section-card--loading">
+        <div className="loading-spinner" aria-hidden="true" />
         <h1>Extracting search results</h1>
         <p>Loading the search page and extracting product listings. This may take a moment.</p>
       </div>

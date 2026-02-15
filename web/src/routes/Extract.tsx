@@ -49,7 +49,8 @@ export function Extract() {
 
   if (status === "loading") {
     return (
-      <div className="section-card" style={{ maxWidth: "var(--max-width)" }}>
+      <div className="section-card section-card--loading" style={{ maxWidth: "var(--max-width)" }}>
+        <div className="loading-spinner" aria-hidden="true" />
         <h1>Extracting product data</h1>
         <p>This may take a moment while we load the page and extract the product information.</p>
       </div>

@@ -20,7 +20,12 @@ export function Open() {
   }
 
   if (!ready) {
-    return <p>Loading…</p>;
+    return (
+      <div className="passport-loading" role="status" aria-live="polite">
+        <div className="loading-spinner" aria-hidden="true" />
+        <p>Loading…</p>
+      </div>
+    );
   }
 
   const target = urlToDemo(url);

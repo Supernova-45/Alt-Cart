@@ -111,6 +111,7 @@ export function Passport() {
   if (loading && !passport) {
     return (
       <div className="passport-loading" role="status" aria-live="polite">
+        <div className="loading-spinner" aria-hidden="true" />
         <p>Loading passport…</p>
       </div>
     );
@@ -130,6 +131,7 @@ export function Passport() {
   if (!passport) {
     return (
       <div className="passport-loading" role="status" aria-live="polite">
+        <div className="loading-spinner" aria-hidden="true" />
         <p>Loading…</p>
       </div>
     );

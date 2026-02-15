@@ -196,7 +196,8 @@ export function Landing() {
 
           {loading && (
             <div role="status" aria-live="polite" className="loading-message">
-              Extracting product information... This may take 15-30 seconds.
+              <div className="loading-spinner" aria-hidden="true" />
+              <span>Extracting product information... This may take 15-30 seconds.</span>
             </div>
           )}
         </section>

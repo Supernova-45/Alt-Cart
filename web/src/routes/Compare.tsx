@@ -89,7 +89,8 @@ export function Compare() {
 
   if (loading && passports.length === 0) {
     return (
-      <div className="section-card">
+      <div className="section-card section-card--loading">
+        <div className="loading-spinner" aria-hidden="true" />
         <h1>Compare products</h1>
         <p>Loading products…</p>
       </div>
