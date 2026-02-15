@@ -59,11 +59,9 @@ function getImageDescription(el) {
 }
 
 function speak(text) {
-  if (!("speechSynthesis" in window)) return;
-  window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.rate = 1.05;
-  window.speechSynthesis.speak(u);
+  if (typeof chrome !== "undefined" && chrome.runtime) {
+    chrome.runtime.sendMessage({ type: "SPEAK", text: text });
+  }
 }
 
 function getStableKey(imgLike, desc) {
@@ -107,7 +105,7 @@ document.addEventListener("mousemove", handleMousemove, { passive: true });
 
 if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.sync) {
   chrome.storage.sync.get({ hoverSpeakEnabled: true, requireAltKey: true }, applySettings);
-  chrome.storage.onChanged.addListener((changes, area) => {
+  chrome.storage.onChanged.addListener(function (changes, area) {
     if (area === "sync") {
       chrome.storage.sync.get({ hoverSpeakEnabled: true, requireAltKey: true }, applySettings);
     }

@@ -27,6 +27,11 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.type === "OPEN_PASSPORT") {
     openPassport();
     sendResponse({ ok: true });
+  } else if (message.type === "SPEAK" && message.text) {
+    chrome.tts.speak(message.text, { rate: 1.05, lang: "en-US" }, function () {
+      sendResponse({ ok: !chrome.runtime.lastError });
+    });
+    return true;
   }
   return true;
 });

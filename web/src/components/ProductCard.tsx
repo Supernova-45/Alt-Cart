@@ -32,18 +32,40 @@ export function ProductCard({
   const formatRating = (text: string | undefined): string | undefined => {
     if (!text) return undefined;
     const match = text.match(/(\d+\.?\d*)\s*(?:out of\s*)?5/);
-    return match ? `${match[1]}/5 stars` : text;
+    if (match) {
+      const num = parseFloat(match[1]);
+      if (!isNaN(num) && num >= 0 && num <= 5) return `${match[1]}/5 stars`;
+    }
+    const fallback = text.match(/(\d\.\d)/g);
+    if (fallback) {
+      for (const m of fallback) {
+        const n = parseFloat(m);
+        if (!isNaN(n) && n >= 0 && n <= 5) return `${m}/5 stars`;
+      }
+    }
+    return undefined;
   };
 
   let formattedReviews: string | undefined;
   if (reviewCountText) {
-    const trimmed = reviewCountText.trim();
-    const numMatch = trimmed.replace(/,/g, "").match(/\d+/);
-    const isVariantText =
-      /capacit|color|size|option|storage/i.test(trimmed) || (numMatch && numMatch[0].length < 2 && trimmed.length > 4);
-    if (numMatch && !isVariantText) {
-      const num = parseInt(numMatch[0], 10);
-      formattedReviews = `${num.toLocaleString()} reviews`;
+    const trimmed = reviewCountText.trim().replace(/,/g, "").toUpperCase();
+    const kMatch = trimmed.match(/([\d.]+)\s*K/);
+    const mMatch = trimmed.match(/([\d.]+)\s*M/);
+    const isVariantText = /capacit|color|size|option|storage/i.test(reviewCountText);
+    if (!isVariantText) {
+      if (kMatch) {
+        const n = parseFloat(kMatch[1]) * 1000;
+        if (!isNaN(n)) formattedReviews = `${n >= 1000 ? (n / 1000).toFixed(1) + "K" : Math.round(n).toLocaleString()} reviews`;
+      } else if (mMatch) {
+        const n = parseFloat(mMatch[1]) * 1000000;
+        if (!isNaN(n)) formattedReviews = `${n >= 1000000 ? (n / 1000000).toFixed(1) + "M" : Math.round(n).toLocaleString()} reviews`;
+      } else {
+        const numMatch = trimmed.match(/\d+/);
+        if (numMatch && numMatch[0].length >= 2) {
+          const num = parseInt(numMatch[0], 10);
+          formattedReviews = `${num.toLocaleString()} reviews`;
+        }
+      }
     }
   }
 
@@ -57,15 +79,18 @@ export function ProductCard({
   const hoveredSpeakRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
-    const handleAltKey = (e: KeyboardEvent) => {
+    const handleAltKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Alt" && hoveredSpeakRef.current) {
         hoveredSpeakRef.current();
         e.preventDefault();
       }
     };
-    window.addEventListener("keydown", handleAltKey);
-    return () => window.removeEventListener("keydown", handleAltKey);
+    window.addEventListener("keydown", handleAltKeyDown);
+    return () => window.removeEventListener("keydown", handleAltKeyDown);
   }, []);
+
+  const lastSpokeAt = useRef<number>(0);
+  const MIN_SPEAK_INTERVAL_MS = 900;
 
   const handleMouseEnter = useCallback(() => {
     hoveredSpeakRef.current = speakDescription;
@@ -74,6 +99,19 @@ export function ProductCard({
   const handleMouseLeave = useCallback(() => {
     hoveredSpeakRef.current = null;
   }, []);
+
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent) => {
+      if (e.altKey && description) {
+        const now = Date.now();
+        if (now - lastSpokeAt.current >= MIN_SPEAK_INTERVAL_MS) {
+          lastSpokeAt.current = now;
+          speak(description);
+        }
+      }
+    },
+    [description]
+  );
 
   const compareMode = useCompareModeOptional();
   const linkTo = productUrl
@@ -122,6 +160,7 @@ export function ProductCard({
       tabIndex={0}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onMouseMove={handleMouseMove}
       onKeyDown={handleKeyDown}
       onClick={handleCardClick}
       aria-label={description}

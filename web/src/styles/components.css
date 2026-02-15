@@ -200,7 +200,7 @@ body.theme-dark .theme-pill__option--active {
 }
 
 .search-results-toolbar select {
-  padding: var(--space-xs) var(--space-xl) var(--space-xs) var(--space-md);
+  padding: var(--space-xs) var(--space-md) var(--space-xs) var(--space-sm);
   font-size: var(--text-sm);
   line-height: 1.4;
   font-family: inherit;

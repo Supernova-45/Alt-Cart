@@ -69,14 +69,42 @@ function mapScraperRecordsToItems(records: unknown[], domain: CatalogDomain): Se
 
     let ratingText: string | undefined;
     if (rating) {
-      const match = String(rating).match(/(\d+\.?\d*)\s*out of\s*5/);
-      ratingText = match ? `${match[1]} out of 5 stars` : String(rating);
+      const str = String(rating);
+      const match = str.match(/(\d+\.?\d*)\s*out of\s*5/);
+      if (match) {
+        const num = parseFloat(match[1]);
+        if (!isNaN(num) && num >= 0 && num <= 5) {
+          ratingText = `${match[1]} out of 5 stars`;
+        }
+      } else {
+        const numMatch = str.match(/(\d\.\d)/g);
+        if (numMatch) {
+          for (const m of numMatch) {
+            const n = parseFloat(m);
+            if (!isNaN(n) && n >= 0 && n <= 5) {
+              ratingText = `${m} out of 5 stars`;
+              break;
+            }
+          }
+        }
+      }
     }
 
     let reviewCountText: string | undefined;
     if (reviewCount) {
-      const num = String(reviewCount).replace(/,/g, "").match(/\d+/);
-      if (num) reviewCountText = `(${num[0]})`;
+      const str = String(reviewCount).replace(/,/g, "").toUpperCase();
+      const kMatch = str.match(/([\d.]+)\s*K/);
+      const mMatch = str.match(/([\d.]+)\s*M/);
+      if (kMatch) {
+        const n = Math.round(parseFloat(kMatch[1]) * 1000);
+        if (!isNaN(n)) reviewCountText = `(${n >= 1000 ? (n / 1000).toFixed(1) + "K" : n.toLocaleString()})`;
+      } else if (mMatch) {
+        const n = Math.round(parseFloat(mMatch[1]) * 1000000);
+        if (!isNaN(n)) reviewCountText = `(${n >= 1000000 ? (n / 1000000).toFixed(1) + "M" : n.toLocaleString()})`;
+      } else {
+        const num = str.match(/\d+/);
+        if (num) reviewCountText = `(${num[0]})`;
+      }
     }
 
     // Parse numeric values for sorting

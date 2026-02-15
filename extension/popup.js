@@ -1,40 +1,26 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const openBtn = document.getElementById("open-btn");
-  const hoverSpeakToggle = document.getElementById("hover-speak-toggle");
-  const helpBtn = document.getElementById("help-btn");
-  const helpDialog = document.getElementById("help-dialog");
-  const helpCloseBtn = document.getElementById("help-close-btn");
+/**
+ * Popup init: load saved state and attach event handlers.
+ * Uses addEventListener (required by extension CSP - no inline handlers).
+ */
+(function () {
+  var toggle = document.getElementById("hover-speak-toggle");
+  var openBtn = document.getElementById("open-btn");
 
-  chrome.storage.sync.get({ hoverSpeakEnabled: true }, (stored) => {
-    hoverSpeakToggle.checked = stored.hoverSpeakEnabled;
-  });
-
-  hoverSpeakToggle.addEventListener("change", () => {
-    chrome.storage.sync.set({ hoverSpeakEnabled: hoverSpeakToggle.checked });
-  });
-
-  openBtn.addEventListener("mousedown", (e) => {
-    e.preventDefault();
-    chrome.runtime.sendMessage({ type: "OPEN_PASSPORT" }, () => {
-      window.close();
+  if (toggle) {
+    chrome.storage.sync.get({ hoverSpeakEnabled: true }, function (stored) {
+      if (toggle) toggle.checked = stored.hoverSpeakEnabled;
     });
-  });
-
-  function openHelp() {
-    helpDialog.showModal();
-    helpCloseBtn.focus();
+    toggle.addEventListener("change", function () {
+      chrome.storage.sync.set({ hoverSpeakEnabled: toggle.checked });
+    });
   }
 
-  function closeHelp() {
-    helpDialog.close();
-    helpBtn.focus();
+  if (openBtn) {
+    openBtn.addEventListener("mousedown", function (e) {
+      e.preventDefault();
+      chrome.runtime.sendMessage({ type: "OPEN_PASSPORT" }, function () {
+        window.close();
+      });
+    });
   }
-
-  helpBtn.addEventListener("click", openHelp);
-
-  helpCloseBtn.addEventListener("click", closeHelp);
-
-  helpDialog.addEventListener("cancel", () => {
-    helpBtn.focus();
-  });
-});
+})();
