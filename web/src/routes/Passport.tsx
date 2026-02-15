@@ -6,6 +6,7 @@ import { mergePassport } from "../lib/mergePassport";
 import { getFallbackPassport } from "../lib/demoFallbacks";
 import { SNAPSHOTS } from "../lib/snapshotRegistry";
 import { getProduct } from "../lib/api";
+import { getCachedPassport } from "../lib/passportCache";
 import { speak, setPlayableText, clearPlayableText } from "../lib/tts";
 import type { ProductPassport } from "../lib/productModel";
 import { TTSControls } from "../components/TTSControls";
@@ -54,7 +55,15 @@ export function Passport() {
       return;
     }
 
-    // For non-demo products, try API first
+    // For non-demo products, check cache first (from extract→passport flow; avoids serverless instance mismatch)
+    const cached = getCachedPassport(id);
+    if (cached) {
+      setPassport(cached);
+      setLoading(false);
+      return;
+    }
+
+    // Otherwise fetch from API
     getProduct(id)
       .then((response) => {
         if (response) {
@@ -196,9 +205,14 @@ export function Passport() {
       ? `Notable features: ${p.sustainability.sustainabilityBadges.join(". ")}`
       : "";
 
+  const getShareLabel = (share: number) => {
+    const pct = Math.round(share * 100);
+    return pct >= 60 ? "very high" : pct >= 40 ? "high" : pct >= 25 ? "moderate" : "low";
+  };
+
   const reviewerWarningsText = [
     ...p.themes.map(
-      (t) => `${t.label}: ${t.severity} severity. ${t.evidence.join(" ")}`
+      (t) => `${t.label}: ${getShareLabel(t.share)} (${Math.round(t.share * 100)}% of reviews). ${t.evidence.join(" ")}`
     ),
   ]
     .filter(Boolean)
@@ -409,10 +423,13 @@ export function Passport() {
         {p.themes.length > 0 && (
           <div className="passport-body">
             <h3 className="passport-body__subtitle">Themes</h3>
-            {p.themes.map((t, i) => (
+            {p.themes.map((t, i) => {
+              const pct = Math.round(t.share * 100);
+              const shareLabel = getShareLabel(t.share);
+              return (
               <div key={i} className="passport-body__theme" style={{ marginBottom: "var(--space-md)" }}>
                 <p>
-                  <strong>{t.label}</strong> — {t.severity} ({Math.round(t.share * 100)}% of reviews)
+                  <strong>{t.label}</strong> — {shareLabel} ({pct}% of reviews)
                 </p>
                 <ul className="passport-body__list">
                   {t.evidence.map((e, j) => (
@@ -420,7 +437,8 @@ export function Passport() {
                   ))}
                 </ul>
               </div>
-            ))}
+            );
+            })}
           </div>
         )}
       </SectionCard>

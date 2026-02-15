@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams, Navigate, Link } from "react-router-dom";
 import { extractProduct } from "../lib/api";
 import { isExtractableProductUrl } from "../lib/urlToDemo";
+import { setCachedPassport } from "../lib/passportCache";
 
 export function Extract() {
   const [searchParams] = useSearchParams();
@@ -29,6 +30,7 @@ export function Extract() {
 
     extractProduct(url)
       .then((result) => {
+        setCachedPassport(result.data.id, result.data.passport);
         setRedirectId(result.data.id);
         setStatus("success");
       })
