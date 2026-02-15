@@ -1,6 +1,8 @@
 import type { ProductPassport } from "./productModel";
 import { SNAPSHOTS, PRODUCT_IMAGE_URLS } from "./snapshotRegistry";
 import type { ProductSnapshotId } from "./snapshotRegistry";
+import { generateReturnRisk } from "./returnRiskGenerator";
+import { generateSustainability } from "./sustainabilityGenerator";
 
 const DEMO_PASSPORTS: Record<ProductSnapshotId, ProductPassport> = {
   adidas: {
@@ -702,7 +704,18 @@ const DEMO_PASSPORTS: Record<ProductSnapshotId, ProductPassport> = {
 
 export function getFallbackPassport(id: string): ProductPassport | undefined {
   if (id in DEMO_PASSPORTS) {
-    return DEMO_PASSPORTS[id as ProductSnapshotId];
+    const passport = { ...DEMO_PASSPORTS[id as ProductSnapshotId] };
+    passport.returnRisk = generateReturnRisk(passport.name, passport.ratingText);
+    if (passport.sustainability) {
+      passport.sustainability = generateSustainability(
+        passport.name,
+        passport.sustainability.extractedMaterials,
+        passport.sustainability.extractedCertifications,
+        passport.sustainability.origin,
+        passport.sustainability.sustainabilityBadges
+      );
+    }
+    return passport;
   }
   return undefined;
 }

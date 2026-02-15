@@ -162,7 +162,6 @@ export function Passport() {
     p.priceText && p.priceText,
     p.fitSummary && `Fit: ${p.fitSummary.verdict}, ${Math.round(p.fitSummary.confidence * 100)}% confidence.`,
     p.shortDescription,
-    p.demoDisclosure,
   ]
     .filter(Boolean)
     .join(" ");
@@ -199,7 +198,6 @@ export function Passport() {
     .join(" ");
 
   const returnRiskText = [
-    "Fewer returns mean less waste and lower carbon footprint.",
     `Return risk: ${p.returnRisk.label}.`,
     p.returnRisk.drivers.join(" "),
   ]
@@ -247,18 +245,17 @@ export function Passport() {
         readText={summaryText}
         onReadSection={() => speak(summaryText)}
       >
-        {p.brand && <p><strong>Brand:</strong> {p.brand}</p>}
-        {p.priceText && <p><strong>Price:</strong> {p.priceText}</p>}
-        {p.fitSummary && (
-          <p>
-            <strong>Fit:</strong> {p.fitSummary.verdict} (confidence:{" "}
-            {Math.round(p.fitSummary.confidence * 100)}%)
-          </p>
-        )}
-        <p>{p.shortDescription}</p>
-        <p style={{ fontSize: "var(--text-sm)", color: "var(--color-text-muted)" }}>
-          {p.demoDisclosure}
-        </p>
+        <div className="passport-body">
+          {p.brand && <p><strong>Brand:</strong> {p.brand}</p>}
+          {p.priceText && <p><strong>Price:</strong> {p.priceText}</p>}
+          {p.fitSummary && (
+            <p>
+              <strong>Fit:</strong> {p.fitSummary.verdict} (confidence:{" "}
+              {Math.round(p.fitSummary.confidence * 100)}%)
+            </p>
+          )}
+          <p>{p.shortDescription}</p>
+        </div>
       </SectionCard>
 
       {p.fitSummary && (
@@ -268,23 +265,23 @@ export function Passport() {
           readText={sizingText}
           onReadSection={() => speak(sizingText)}
         >
-          <p>
-            <strong>Fit:</strong> {p.fitSummary.verdict} (confidence:{" "}
-            {Math.round(p.fitSummary.confidence * 100)}%)
-          </p>
-          <p style={{ fontSize: "var(--text-sm)", color: "var(--color-text-muted)", marginBottom: "var(--space-md)" }}>
-            Based on customer review analysis.
-          </p>
-          {p.fitSummary.evidence.length > 0 && (
-            <>
-              <h3 style={{ fontSize: "var(--text-base)", marginBottom: "var(--space-sm)" }}>Review insights</h3>
-              <ul>
-                {p.fitSummary.evidence.map((e, i) => (
-                  <li key={i}>{e}</li>
-                ))}
-              </ul>
-            </>
-          )}
+          <div className="passport-body">
+            <p>
+              <strong>Fit:</strong> {p.fitSummary.verdict} (confidence:{" "}
+              {Math.round(p.fitSummary.confidence * 100)}%)
+            </p>
+            <p style={{ marginBottom: "var(--space-md)" }}>Based on customer review analysis.</p>
+            {p.fitSummary.evidence.length > 0 && (
+              <>
+                <h3 className="passport-body__subtitle">Review insights</h3>
+                <ul className="passport-body__list">
+                  {p.fitSummary.evidence.map((e, i) => (
+                    <li key={i}>{e}</li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </div>
         </SectionCard>
       )}
 
@@ -304,7 +301,7 @@ export function Passport() {
               style={{ objectFit: "contain", borderRadius: "var(--radius-sm)", background: "transparent" }}
             />
           )}
-          <div style={{ flex: 1, minWidth: 0 }}>
+          <div className="passport-body" style={{ flex: 1, minWidth: 0 }}>
             <p><strong>Short:</strong> {p.images.altShort}</p>
             <p>{p.images.altLong}</p>
           </div>
@@ -319,7 +316,7 @@ export function Passport() {
           onReadSection={() => speak(sustainabilityText)}
         >
           <div className="sustainability-overview">
-            <span className="sustainability-overview__rating">{p.sustainability.rating}</span>
+            <span className="sustainability-overview__label">{p.sustainability.rating}</span>
             <span className="sustainability-overview__score">{p.sustainability.overallScore}/100</span>
           </div>
 
@@ -399,14 +396,14 @@ export function Passport() {
         onReadSection={() => speak(reviewerWarningsText)}
       >
         {p.themes.length > 0 && (
-          <div>
-            <h3>Themes</h3>
+          <div className="passport-body">
+            <h3 className="passport-body__subtitle">Themes</h3>
             {p.themes.map((t, i) => (
-              <div key={i} style={{ marginBottom: "var(--space-sm)" }}>
+              <div key={i} className="passport-body__theme" style={{ marginBottom: "var(--space-md)" }}>
                 <p>
                   <strong>{t.label}</strong> — {t.severity} ({Math.round(t.share * 100)}% of reviews)
                 </p>
-                <ul>
+                <ul className="passport-body__list">
                   {t.evidence.map((e, j) => (
                     <li key={j}>{e}</li>
                   ))}
@@ -423,18 +420,17 @@ export function Passport() {
         readText={returnRiskText}
         onReadSection={() => speak(returnRiskText)}
       >
-        <p style={{ marginBottom: "var(--space-md)" }}>
-          Fewer returns mean less waste and lower carbon footprint.
-        </p>
-        <p>
-          <strong>Risk:</strong> {p.returnRisk.label} (
-          {Math.round(p.returnRisk.score * 100)}%)
-        </p>
-        <ul>
-          {p.returnRisk.drivers.map((d, i) => (
-            <li key={i}>{d}</li>
-          ))}
-        </ul>
+        <div className="passport-body">
+          <p>
+            <strong>Risk:</strong> {p.returnRisk.label} (
+            {Math.round(p.returnRisk.score * 100)}%)
+          </p>
+          <ul className="passport-body__list">
+            {p.returnRisk.drivers.map((d, i) => (
+              <li key={i}>{d}</li>
+            ))}
+          </ul>
+        </div>
       </SectionCard>
     </>
   );

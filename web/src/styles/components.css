@@ -321,6 +321,37 @@ body.theme-dark .theme-pill__option--active {
   margin-bottom: var(--space-lg);
 }
 
+/* Passport body text - cohesive grey body copy across sections */
+.passport-body {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+.passport-body strong {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.passport-body__subtitle {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 var(--space-sm);
+}
+
+.passport-body__list {
+  margin: 0;
+  padding-left: var(--space-lg);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+.passport-body__list li {
+  margin-bottom: var(--space-xs);
+}
+
 .section-card__header {
   display: flex;
   justify-content: space-between;
@@ -649,22 +680,25 @@ body.theme-dark .theme-pill__option--active {
 /* Sustainability section - clean, editorial */
 .sustainability-overview {
   display: flex;
-  gap: var(--space-lg);
+  align-items: baseline;
+  gap: var(--space-sm);
   flex-wrap: wrap;
   margin-bottom: var(--space-xl);
   padding-bottom: var(--space-xl);
   border-bottom: 1px solid var(--color-border);
 }
 
-.sustainability-overview__rating {
-  font-size: var(--text-lg);
+.sustainability-overview__label {
+  font-size: var(--text-base);
   font-weight: 600;
   color: var(--color-text);
 }
 
 .sustainability-overview__score {
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
 }
 
 .sustainability-category {
