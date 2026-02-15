@@ -44,6 +44,7 @@ export function Landing() {
   const isOther = searchSite === "other";
   const canSearch =
     isOther ? customSearchUrl.trim().length > 0 : searchQuery.trim().length > 0;
+  const canGetProduct = url.trim().length > 0;
 
   function handleSearchSubmit(e: FormEvent) {
     e.preventDefault();
@@ -59,6 +60,7 @@ export function Landing() {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    if (!canGetProduct) return;
     setLoading(true);
     setError(null);
 
@@ -184,7 +186,7 @@ export function Landing() {
               />
             </div>
 
-            <button type="submit" disabled={loading} className="btn-primary">
+            <button type="submit" disabled={loading || !canGetProduct} className="btn-primary">
               {loading ? "Extracting Product..." : "Get Product"}
             </button>
           </form>
