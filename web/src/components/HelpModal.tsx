@@ -69,7 +69,7 @@ export function HelpModal({ isOpen, onClose }: HelpModalProps) {
           Help
         </h2>
         <div id="help-content" className="help-modal__content">
-          <p>Welcome to alt+cart. Here&apos;s what you can do:</p>
+          <p>Here&apos;s what you can do in alt+cart:</p>
           <ul>
             <li>
               <strong>Search</strong> – Enter a search term and store, or paste a product or search URL (from Amazon,
@@ -80,12 +80,11 @@ export function HelpModal({ isOpen, onClose }: HelpModalProps) {
               image descriptions.
             </li>
             <li>
-              <strong>Text-to-speech</strong> – Use Play, Pause, Repeat, and Stop. Each section has a &quot;Read this
-              section&quot; button.
+              <strong>Text-to-speech</strong> – Use Play, Pause, Repeat, and Stop.
             </li>
             <li>
-              <strong>Compare</strong> – On search results, click Compare to enter compare mode, select 2–3 products,
-              then click Compare to view.
+              <strong>Compare</strong> – On search results, click Compare and select 2–3 products,
+then click Compare to view.
             </li>
             <li>
               <strong>Preferences</strong> – Customize font, font size, TTS voice, reduced motion, and more.
@@ -98,11 +97,11 @@ export function HelpModal({ isOpen, onClose }: HelpModalProps) {
             Keyboard shortcuts
           </h3>
           <dl className="help-modal__shortcuts">
-            <dt>Tab / Shift+Tab</dt>
+            <dt>Tab / ⇧+Tab</dt>
             <dd>Move focus forward or backward</dd>
             <dt>Enter</dt>
             <dd>Activate focused link or button</dd>
-            <dt>Alt + ?</dt>
+            <dt>⌥ + ?</dt>
             <dd>Open or close help</dd>
             <dt>Space</dt>
             <dd>Stop audio when TTS is playing</dd>
@@ -114,7 +113,7 @@ export function HelpModal({ isOpen, onClose }: HelpModalProps) {
             <dd>Go to home</dd>
             <dt>C</dt>
             <dd>View compare (when in compare mode with 2+ selected, or when you have items from a previous session)</dd>
-            <dt>Alt</dt>
+            <dt>⌥</dt>
             <dd>Hover over a product card and press Alt to hear its description</dd>
             <dt>Space</dt>
             <dd>Focus a product card and press Space to hear its description</dd>

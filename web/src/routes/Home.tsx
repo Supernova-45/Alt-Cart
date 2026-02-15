@@ -6,7 +6,7 @@ export function Home() {
     <>
       <h1>Demo Products</h1>
       <p style={{ marginBottom: "1rem", color: "var(--color-text-muted)" }}>
-        Explore pre-loaded demo products to see how alt+cart works. No extraction needed.
+        Explore demo searches to see how alt+cart works.
       </p>
       <p style={{ marginBottom: "1.5rem", fontSize: "var(--text-sm)" }}>
         <Link to="/s/a_search" className="product-card__link">
