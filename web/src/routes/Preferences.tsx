@@ -76,6 +76,32 @@ export function Preferences() {
         Customize your experience for accessibility and comfort.
       </p>
 
+      <section aria-labelledby="prefs-low-vision-heading" style={{ marginBottom: "var(--space-xl)" }}>
+        <h2 id="prefs-low-vision-heading" style={{ fontSize: "var(--text-lg)", marginBottom: "var(--space-md)" }}>
+          Low vision mode
+        </h2>
+        <div className="toggle">
+          <input
+            id="prefs-low-vision"
+            type="checkbox"
+            className="toggle__input"
+            checked={prefs.lowVision}
+            onChange={(e) => {
+              const v = e.target.checked;
+              setPreference("lowVision", v);
+              setPrefs((p) => ({ ...p, lowVision: v }));
+            }}
+            aria-describedby="prefs-low-vision-desc"
+          />
+          <label htmlFor="prefs-low-vision" className="toggle__label">
+            Enable low vision mode
+          </label>
+        </div>
+        <p id="prefs-low-vision-desc" style={{ margin: "var(--space-xs) 0 0", fontSize: "var(--text-sm)", color: "var(--color-text-muted)" }}>
+          Larger type, higher contrast, and bolder borders for improved readability.
+        </p>
+      </section>
+
       <section aria-labelledby="prefs-font-heading" style={{ marginBottom: "var(--space-xl)" }}>
         <h2 id="prefs-font-heading" style={{ fontSize: "var(--text-lg)", marginBottom: "var(--space-md)" }}>
           Typography

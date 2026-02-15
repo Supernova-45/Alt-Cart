@@ -9,6 +9,7 @@ export interface AccessibilityPreferences {
   reducedMotion: ReducedMotion;
   highlightFocus: boolean;
   ttsCaptions: boolean;
+  lowVision: boolean;
 }
 
 const PREFERENCES_KEY = "altcart-accessibility-preferences";
@@ -20,14 +21,16 @@ const DEFAULTS: AccessibilityPreferences = {
   reducedMotion: "auto",
   highlightFocus: false,
   ttsCaptions: true,
+  lowVision: false,
 };
 
 function loadFromStorage(): AccessibilityPreferences {
   if (typeof window === "undefined") return { ...DEFAULTS };
   try {
     const raw = localStorage.getItem(PREFERENCES_KEY);
-    if (!raw) return { ...DEFAULTS };
-    const parsed = JSON.parse(raw) as Partial<AccessibilityPreferences>;
+    const parsed = raw ? (JSON.parse(raw) as Partial<AccessibilityPreferences>) : {};
+    const lowVisionFallback =
+      parsed.lowVision ?? (typeof window !== "undefined" && localStorage.getItem("altcart-low-vision") === "true");
     return {
       fontFamily: parsed.fontFamily ?? DEFAULTS.fontFamily,
       fontSize: parsed.fontSize ?? DEFAULTS.fontSize,
@@ -35,6 +38,7 @@ function loadFromStorage(): AccessibilityPreferences {
       reducedMotion: parsed.reducedMotion ?? DEFAULTS.reducedMotion,
       highlightFocus: parsed.highlightFocus ?? DEFAULTS.highlightFocus,
       ttsCaptions: parsed.ttsCaptions ?? DEFAULTS.ttsCaptions,
+      lowVision: parsed.lowVision ?? lowVisionFallback ?? DEFAULTS.lowVision,
     };
   } catch {
     return { ...DEFAULTS };

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { SkipLink } from "./SkipLink";
 import { TopBar } from "./TopBar";
-import { getLowVision, setLowVision } from "../lib/lowVision";
 import { getTheme, setTheme, type Theme } from "../lib/theme";
 import { getPreferences } from "../lib/accessibilityPreferences";
 import { setVoice } from "../lib/tts";
@@ -21,10 +20,10 @@ function applyAccessibilityPreferences(): void {
   if (prefs.reducedMotion === "on") document.body.classList.add("preferences-reduced-motion-on");
   if (prefs.reducedMotion === "off") document.body.classList.add("preferences-reduced-motion-off");
   document.body.classList.toggle("preferences-highlight-focus", prefs.highlightFocus);
+  document.body.classList.toggle("low-vision", prefs.lowVision);
 }
 
 export function Shell({ children }: { children: React.ReactNode }) {
-  const [lowVision, setLowVisionState] = useState(() => getLowVision());
   const [theme, setThemeState] = useState<Theme>(() => getTheme());
   const [ttsCaptions, setTtsCaptions] = useState(() => getPreferences().ttsCaptions);
   const [helpOpen, setHelpOpen] = useState(false);
@@ -52,16 +51,6 @@ export function Shell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (typeof document !== "undefined") {
-      if (lowVision) {
-        document.body.classList.add("low-vision");
-      } else {
-        document.body.classList.remove("low-vision");
-      }
-    }
-  }, [lowVision]);
-
-  useEffect(() => {
-    if (typeof document !== "undefined") {
       if (theme === "dark") {
         document.body.classList.add("theme-dark");
       } else {
@@ -69,11 +58,6 @@ export function Shell({ children }: { children: React.ReactNode }) {
       }
     }
   }, [theme]);
-
-  const handleLowVisionChange = (enabled: boolean) => {
-    setLowVision(enabled);
-    setLowVisionState(enabled);
-  };
 
   const handleThemeChange = (next: Theme) => {
     setTheme(next);
@@ -83,12 +67,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
   return (
     <div className="shell">
       <SkipLink />
-      <TopBar
-        lowVision={lowVision}
-        onLowVisionChange={handleLowVisionChange}
-        theme={theme}
-        onThemeChange={handleThemeChange}
-      />
+      <TopBar theme={theme} onThemeChange={handleThemeChange} />
       <main id="content" className="shell__main" role="main" tabIndex={-1}>
         {children}
       </main>

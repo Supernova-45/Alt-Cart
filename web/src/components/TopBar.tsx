@@ -5,13 +5,9 @@ import type { Theme } from "../lib/theme";
 import { ThemeToggle } from "./ThemeToggle";
 
 export function TopBar({
-  lowVision,
-  onLowVisionChange,
   theme,
   onThemeChange,
 }: {
-  lowVision: boolean;
-  onLowVisionChange: (enabled: boolean) => void;
   theme: Theme;
   onThemeChange: (theme: Theme) => void;
 }) {
@@ -29,30 +25,17 @@ export function TopBar({
         alt+cart
       </Link>
       <div className="top-bar__actions">
-        <ThemeToggle theme={theme} onChange={onThemeChange} />
         <Link to="/preferences" className="top-bar__compare" aria-label="Preferences">
-          Preferences
+          preferences
         </Link>
         <Link
           to={getCompareUrl()}
           className="top-bar__compare"
           aria-label={compareCount > 0 ? `Compare ${compareCount} product${compareCount !== 1 ? "s" : ""}` : "Compare products"}
         >
-          Compare{compareCount > 0 ? ` (${compareCount})` : ""}
+          compare{compareCount > 0 ? ` (${compareCount})` : ""}
         </Link>
-        <div className="toggle">
-        <label htmlFor="low-vision-toggle" className="toggle__label">
-          Low Vision Mode
-        </label>
-        <input
-          id="low-vision-toggle"
-          type="checkbox"
-          className="toggle__input"
-          checked={lowVision}
-          onChange={(e) => onLowVisionChange(e.target.checked)}
-          aria-label="Toggle low vision mode"
-        />
-        </div>
+        <ThemeToggle theme={theme} onChange={onThemeChange} />
       </div>
     </header>
   );
