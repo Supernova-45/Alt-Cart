@@ -93,11 +93,12 @@ then click Compare to view.
               <strong>Dark mode &amp; low vision</strong> – Toggle from the Preferences page.
             </li>
           </ul>
-          <h3 style={{ fontSize: "var(--text-base)", marginTop: "var(--space-lg)", marginBottom: "var(--space-sm)" }}>
-            Keyboard shortcuts
-          </h3>
-          <dl className="help-modal__shortcuts">
-            <dt>Tab / ⇧+Tab</dt>
+          <div className="help-modal__shortcuts-box">
+            <h3 className="help-modal__shortcuts-title">
+              Keyboard shortcuts
+            </h3>
+            <dl className="help-modal__shortcuts">
+            <dt>Tab / ⇧ + Tab</dt>
             <dd>Move focus forward or backward</dd>
             <dt>Enter</dt>
             <dd>Activate focused link or button</dd>
@@ -106,20 +107,21 @@ then click Compare to view.
             <dt>Space</dt>
             <dd>Stop audio when TTS is playing</dd>
             <dt>P</dt>
-            <dd>Play or pause TTS (on passport or compare page)</dd>
+            <dd>Play or pause TTS</dd>
             <dt>R</dt>
             <dd>Repeat last spoken text</dd>
             <dt>H</dt>
-            <dd>Go to home</dd>
+            <dd>Go home</dd>
             <dt>C</dt>
-            <dd>View compare (when in compare mode with 2+ selected, or when you have items from a previous session)</dd>
+            <dd>View compared items</dd>
             <dt>⌥</dt>
-            <dd>Hover over a product card and press Alt to hear its description</dd>
+            <dd>Hover over product and press Alt to hear description</dd>
             <dt>Space</dt>
-            <dd>Focus a product card and press Space to hear its description</dd>
-            <dt>Escape</dt>
-            <dd>Close help (when help is open)</dd>
+            <dd>Focus on product and press Space to hear description</dd>
+            <dt>Esc</dt>
+            <dd>Close help</dd>
           </dl>
+          </div>
         </div>
         <div className="help-modal__actions">
           <button
@@ -128,7 +130,7 @@ then click Compare to view.
             onClick={onClose}
             aria-label="Close help"
           >
-            Close (Alt + ?)
+            Close (⌥ + ?)
           </button>
         </div>
       </div>
