@@ -114,3 +114,10 @@ npm start
 | BROWSERBASE_API_KEY | Browserbase API key | Yes |
 | BROWSERBASE_PROJECT_ID | Browserbase project ID | Yes |
 | FRONTEND_URL | Frontend URL for CORS | No (default: http://localhost:5173) |
+| BRIGHTDATA_API_KEY | Bright Data API key (for catalog/search) | No |
+| BRIGHTDATA_AMAZON_SEARCH_DATASET_ID | Amazon Search Results dataset ID | No |
+| BRIGHTDATA_WALMART_SEARCH_DATASET_ID | Walmart Search Results dataset ID | No |
+| BRIGHTDATA_UNLOCKER_ZONE | Web Unlocker zone name | No (default: web_unlocker1) |
+| BRIGHTDATA_SERP_ZONE | SERP API zone name | No (default: serp_api1) |
+
+**Bright Data (optional):** When `BRIGHTDATA_API_KEY` is set, catalog/search uses Bright Data (Web Scraper API, Web Unlocker, SERP API) first. Product passport extraction always uses Browserbase.

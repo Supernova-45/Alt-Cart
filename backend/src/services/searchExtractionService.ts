@@ -2,17 +2,13 @@ import { parseSearchUrl } from "../utils/searchUrlParser";
 import { StagehandService } from "./stagehandService";
 import { AmazonSearchExtractor } from "../extractors/amazonSearchExtractor";
 import { WalmartSearchExtractor } from "../extractors/walmartSearchExtractor";
+import { getCatalogResults } from "./brightDataCatalogService";
+import { config } from "../config/env";
 import { logger } from "../utils/logger";
 import { ExtractionError } from "../middleware/errorHandler";
+import type { SearchResultItem } from "../types/search";
 
-export interface SearchResultItem {
-  name: string;
-  price?: string;
-  ratingText?: string;
-  reviewCountText?: string;
-  imageUrl?: string;
-  productUrl: string;
-}
+export type { SearchResultItem } from "../types/search";
 
 export class SearchExtractionService {
   async extractSearchResults(url: string): Promise<{ query: string; domain: string; items: SearchResultItem[] }> {
@@ -23,6 +19,24 @@ export class SearchExtractionService {
 
     logger.info("Starting search extraction", { url, domain: parsed.domain, query: parsed.query });
 
+    // 1. Try Bright Data first if configured
+    if (config.brightData?.apiKey) {
+      try {
+        const items = await getCatalogResults(parsed.query, parsed.domain);
+        if (items.length > 0) {
+          logger.info("Bright Data catalog extraction succeeded", { count: items.length });
+          return {
+            query: parsed.query,
+            domain: parsed.domain,
+            items,
+          };
+        }
+      } catch (err) {
+        logger.warn("Bright Data catalog failed, falling back to Browserbase", { error: err });
+      }
+    }
+
+    // 2. Fallback: Browserbase + Stagehand
     const stagehandService = new StagehandService();
 
     try {
