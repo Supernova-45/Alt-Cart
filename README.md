@@ -1,161 +1,56 @@
-# alt+cart
+# alt+cart : Seamless, sustainable shopping for the visually impaired
 
-**Seamless, sustainable shopping made accessible.**
+## Inspiration
 
-alt+cart transforms any e-commerce product page into an **accessible Product Passport**—a screen-reader-first, keyboard-navigable format with full text-to-speech support. Search across Amazon, Walmart, eBay, Target, Macy's, Etsy, Lowe's, Home Depot, and more—choose a store and enter a query, or paste a search URL from virtually any e-commerce site. We extract live product data, analyze reviews for fit and return risk, surface sustainability insights, and let you compare products with a spoken narrative.
+330 million people globally are visually impaired. 81 percent of shoppers with disabilities experience critical issues while online shopping. Two-thirds of shopping transactions initiated by visually impaired users are abandoned due to websites being inaccessible.
 
----
+Yet today, there exist *no online shopping-centric platforms* designed for the visually impaired. Screen readers can read the DOM, but e-commerce websites aren't documents. Due to nonstandard layouts and scattered images, existing toolscan’t reliably answer the questions that matter: 
+- What does this item actually look like? 
+- Will it fit me?
+- Would I regret this purchase?
+- Is there a greener choice?
 
-## What Makes alt+cart Different
+## What it does
 
-### Original
+**alt+cart** is a Chrome extension + web app that makes shopping readable again:
 
-- **Product Passport** — A unified, structured format that turns scattered e-commerce pages into coherent, scannable product summaries. No more hunting through tabs or parsing dense layouts.
-- **Review intelligence** — Fit analysis ("runs small", "true to size"), return risk assessment, and thematic review summaries (quality, value, style, sizing) derived from real customer feedback.
-- **Spoken product comparison** — Select 2–3 products, then hear a natural-language comparison that highlights differences in fit, return risk, and sustainability.
-- **Cross-domain extraction** — One pipeline for Amazon, Walmart, eBay, Target, Macy's, Etsy, Lowe's, and Home Depot. Paste a URL from any supported retailer and get a passport.
+1) Hold Alt + hover to hear what’s on the page
+- On any product page, hold Alt and hover over an image (or text region) to hear a spoken description of shopping-relevant details.
 
-### Wowing
+1) Search for any item and get an accessible product info page:
+  - Name + price + popularity
+  - Key specs (materials, dimensions, compatibility, care)
+  - What people complain about in reviews
+  - Sustainability signals (materials, certifications, manufacturing, badges)
 
-- **Live extraction** — We load the actual product page in a headless browser, extract structured data, and transform it in real time. No static scrapes or stale caches.
-- **Search-to-passport flow** — Search for products by store and keyword, browse results with sort-by-price/rating/sustainability, then open any product for a full passport.
-- **Chrome extension** — Open the current tab in alt+cart with one click or **Alt+Shift+P**. Works on product and search pages across supported retailers.
-- **Hold Alt + hover** — Hear image descriptions spoken aloud on any page where the extension is active.
+2) Select 2-4 items for a conversational side-by-side comparison: 
+  - fit/sizing conflicts (“true to size” vs “runs small”)
+  - quality/durability themes
+  - return-risk drivers
 
-### Accessible
+All of this can be navigated with just keyboard. We include TTS controls, captions and sentence highlighting, and user configuration options for font size, dyslexia-friendly font, reduced motion, and high contrast.
 
-- **Screen-reader first** — Semantic HTML, ARIA labels, proper heading hierarchy, and skip links. Built for NVDA, JAWS, VoiceOver, and TalkBack.
-- **Full TTS support** — Every section has a "Read this section" button. Play, pause, repeat, and adjust speech rate. Narrations are written for listening, not just reading.
-- **Keyboard-only navigation** — Tab through the interface, activate with Enter, use shortcuts (H home, P play/pause, R repeat, C compare, Alt+? help).
-- **Preferences** — Font size, dyslexia-friendly font, reduced motion, high contrast, low vision mode, and TTS voice selection.
-- **Dark mode** — Easy on the eyes, theme toggle in the header.
+## How we built it
 
-### Sustainable
+**Product extraction:** 
+- **Browserbase** gives us stable, remote Chrome sessions that work inside serverless deployment.
+- **Stagehand** drives navigation, waits for dynamic content, and runs DOM queries.certifications.
+- **Bright Data** powers catalog search for known domains (Amazon, Walmart, eBay, Etsy, Lowe's, Target, Macy's, Home Depot). We try Bright Data first for speed and reliability. Search results are then sortable by relevance, price, or rating.
 
-- **Sustainability scoring** — Materials, manufacturing, certifications, and shipping are scored and explained. Climate Pledge Friendly and similar badges are surfaced.
-- **Sort by sustainability** — On search results, sort products by sustainability score alongside price and rating.
-- **Sustainability in comparison** — When comparing products, hear which has the best sustainability profile and how they differ.
+**Pipeline:**
+- **Backend:** Extracted reviews feed into fit analysis (keyword matching for "runs small", "true to size") and thematic extraction (quality, value, style, sizing). Return risk is computed from rating distribution and review complaints. Sustainability scores come from materials, certifications, origin, and badges. Image descriptions are generated for the main product image.
+- **Website:** Node.js, Express, TypeScript, Zod, React, Web Speech API (TTS). Deployed on Vercel.
+- **Chrome extension:** Chrome Manifest v3, content script for Alt+hover image descriptions.
 
----
+## Challenges we ran into
 
-## How It Works
+- **Fragmented site structures:** Amazon, Walmart, and Macy's each structure product pages differently. We built five domain-specific extractors with fallback selectors (e.g. `#productTitle` vs `meta[property="og:title"]` vs `h1`) to handle variation.
+- **Rate limits and latency:** Bright Data and Browserbase can take over a minute to return a response, which posed challenges we tried to address with a fallback system.
+- **Reviews are messy and contradictory:** Efficiently extracting meaningful information from free-form review text required keyword sets and severity scoring.
 
-### Product Passport Pipeline
+## What's next
 
-1. **User provides a URL** — Product page from Amazon, Walmart, eBay, Target, or Macy's.
-2. **Backend loads the page** — Stagehand + Browserbase spin up a headless browser and navigate to the URL.
-3. **Domain-specific extraction** — Dedicated extractors parse product name, price, rating, reviews, images, materials, certifications, and badges.
-4. **Transform to ProductPassport** — Reviews are analyzed for fit and themes; return risk is computed; sustainability is scored; image descriptions are generated.
-5. **Accessible display** — Clean, structured UI with TTS controls, keyboard navigation, and screen-reader-optimized markup.
-
-### Search Pipeline
-
-1. **User searches** — Choose a store (Amazon, Walmart, eBay, etc.) and enter a query, or paste a search results URL.
-2. **Extract catalog** — Bright Data (when configured) or Browserbase + generic DOM parsing fetches product cards with name, price, rating, image, and link.
-3. **Sort and browse** — Sort by relevance, price, rating, or sustainability. Click any product to extract its full passport.
-4. **Compare** — Enter compare mode, select 2–3 products, and hear a spoken comparison.
-
-### Tech Stack
-
-| Layer | Technologies |
-|-------|--------------|
-| **Backend** | Node.js, Express, TypeScript, Stagehand (AI browser automation), Browserbase (managed browsers), Bright Data (catalog/search), Zod |
-| **Frontend** | React 18, TypeScript, React Router, Web Speech API (TTS), Vite |
-| **Extension** | Chrome Manifest v3, content script for Alt+hover image descriptions |
-
----
-
-## Project Structure
-
-```
-alt+cart/
-├── backend/          # Extraction API
-│   └── src/
-│       ├── extractors/     # Amazon, Walmart, eBay, Target, Macy's
-│       ├── services/       # Extraction, transform, search, Bright Data
-│       └── routes/          # /api/products, /api/search
-├── web/               # React frontend
-│   └── src/
-│       ├── routes/         # Landing, Passport, Compare, ExtractSearch
-│       ├── components/     # ProductCard, TTSControls, CompareBar
-│       └── lib/            # API, sorting, comparison narrative
-└── extension/         # Chrome extension
-    ├── manifest.json
-    ├── content.js         # Alt+hover speak alt text
-    └── service_worker.js  # Open in alt+cart
-```
-
----
-
-## Quick Start
-
-### Backend
-
-```bash
-cd backend
-npm install
-cp .env.example .env
-# Add BROWSERBASE_API_KEY, BROWSERBASE_PROJECT_ID
-npm run dev
-```
-
-Runs on `http://localhost:3001`.
-
-### Frontend
-
-```bash
-cd web
-npm install
-npm run dev
-```
-
-Runs on `http://localhost:5173`.
-
-### Chrome Extension
-
-1. Run the web app.
-2. Chrome → `chrome://extensions` → Developer mode → Load unpacked → select `extension/`.
-3. Visit a product page → **Alt+Shift+P** or click the extension icon.
-
----
-
----
-
-## API Endpoints
-
-- `GET /api/health` — Health check
-- `POST /api/products/extract` — Extract product passport from URL
-- `GET /api/products/:id` — Get extracted product by ID
-- `POST /api/search/extract` — Extract search results from URL
-
----
-
-## Environment Variables
-
-### Backend
-
-| Variable | Description |
-|----------|-------------|
-| `BROWSERBASE_API_KEY` | Required for product extraction |
-| `BROWSERBASE_PROJECT_ID` | Required for product extraction |
-| `BRIGHTDATA_API_KEY` | Optional; enables catalog search for Amazon, Walmart, eBay, Etsy, Lowe's, Target, Macy's, Home Depot |
-
-See `backend/README.md` for full list.
-
----
-
-## Deployment
-
-- **Frontend**: Vercel (e.g. `alt-cart.vercel.app`)
-- **Backend**: Vercel serverless (proxied from frontend `/api`)
-- **Extraction timeout**: Set Function Max Duration to 60s+ in Vercel (extraction can take 15–30 seconds)
-
----
-
-## License
-
-MIT
-
----
-
-Built for accessible, sustainable shopping.
+- More realistic AI text-to-speech options
+- A hands-free conversational voice agent for direct interaction while shopping
+- Improving extraction robustness across a diverse set of e-commerce sites using LLMs
+- A more personalized experience for each user, describing their preferred fit, items they've bought in the past, and their sustainability preferences.
